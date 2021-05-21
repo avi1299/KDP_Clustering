@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <omp.h>
+//#include <omp.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>

@@ -9,7 +9,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
     if(fgets(line, LLEN, fp_in) == NULL)
     {
         printf("Error: infile is empty!\n"); 
-        exit;
+        exit(1);
     }
     sscanf(line,"%*s %lf %lf %lf %*lf %*lf %*lf %*s %*d %*d",&boxlength[0],&boxlength[1],&boxlength[2]);
     //printf("%s",line);
