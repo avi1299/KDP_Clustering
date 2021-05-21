@@ -1,6 +1,7 @@
 #include "input.h"
 #include "stack.h"
 
+//Populates the array of Molecules
 void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int* start_mol_no)
 {
     int i,atom_no,mol_no;
@@ -86,6 +87,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
     }
 }
 
+//Checks and reports whether the strict definition of connectedness results in the same or lesser connections
 void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules,int start_mol_no)
 {
     int i,j;
@@ -101,10 +103,11 @@ void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules
     printf("Strict : %d  Not Strict: %d\n",strict,not_strict);
 }
 
+
+//Constructs adjacency list from the array of molecules by checking connectednes between molecules
 void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_molecules,int start_mol_no,stack adjacency_list[])
 {
     int i,j;
-    int strict=0,not_strict=0;
     int end_mol_no=start_mol_no+no_of_molecules;
     for(i=start_mol_no;i<end_mol_no-1;i++)
     {

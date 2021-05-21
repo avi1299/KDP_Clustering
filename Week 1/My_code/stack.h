@@ -6,17 +6,20 @@
 #include <unistd.h>
 #include <time.h>
 
+//Structure for node
 typedef struct node
 {
     int data;
     struct node* next;
 }node;
 
+//Structure for stack
 typedef struct
 {
     node* top;
 }stack;
 
+//Creates a node and adds it to stack. Its value is provided as an argument
 void add_node_given_value(stack existing_stack, int val)
 {
     node* p=malloc(sizeof(node));
@@ -33,6 +36,7 @@ void add_node_given_value(stack existing_stack, int val)
     }
 }
 
+//Adds a node to the stack. The pointer to the node is provided as an argument
 void add_node(stack existing_stack, node* p)
 {
     if(existing_stack.top==NULL)
@@ -47,6 +51,7 @@ void add_node(stack existing_stack, node* p)
     }
 }
 
+//Pops node from the top of stack, frees the node and returns the value of interger
 int pop_and_return_value(stack existing_stack)
 {
     node *temp;
@@ -60,6 +65,7 @@ int pop_and_return_value(stack existing_stack)
     return c;
 }
 
+//Pops elements from stack A and pushes them onto stack B until stack A is empty
 void pop_from_a_into_b(stack a,stack b)
 {
     node *temp;
