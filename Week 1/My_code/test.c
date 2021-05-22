@@ -2,7 +2,7 @@
 #include "stack.h"
 
 //Populates the array of Molecules
-void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int* start_mol_no)
+void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no)
 {
     int i,atom_no,mol_no;
     char line[LLEN],atom_name[LLEN],mol_name[LLEN];
@@ -32,7 +32,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].P[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].P[i]=coordinate[i];
             }
             //For the OHL_1 atom
             {
@@ -40,7 +40,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
                 sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].OHL_1[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].OHL_1[i]=coordinate[i];
             }
             //For the HOL_1 atom
             {
@@ -48,7 +48,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
                 sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].HOL_1[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].HOL_1[i]=coordinate[i];
             }
             //For the OHL_2 atom
             {
@@ -56,7 +56,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
                 sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].OHL_2[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].OHL_2[i]=coordinate[i];
             }
             //For the HOL_2 atom
             {
@@ -64,7 +64,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
                 sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].HOL_2[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].HOL_2[i]=coordinate[i];
             }
             //For the O2L_1 atom
             {
@@ -72,7 +72,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
                 sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].O2L_1[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].O2L_1[i]=coordinate[i];
             }
             //For the O2L_2 atom
             {
@@ -80,7 +80,7 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
                 sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[mol_no].O2L_2[i]=coordinate[i];
+                    molecules[mol_no-*start_mol_no].O2L_2[i]=coordinate[i];
             }
         
         }
@@ -88,13 +88,12 @@ void populator(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mole
 }
 
 //Checks and reports whether the strict definition of connectedness results in the same or lesser connections
-void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules,int start_mol_no)
+void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules)
 {
     int i,j;
     int strict=0,not_strict=0;
-    int end_mol_no=start_mol_no+no_of_molecules;
-    for(i=start_mol_no;i<end_mol_no-1;i++)
-        for(j=i+1;j<end_mol_no;j++)
+    for(i=0;i<no_of_molecules-1;i++)
+        for(j=i+1;j<no_of_molecules;j++)
         {
             //printf("Are molecules %d and %d connected: %d\n",i,j,connected_molecules(molecules[i],molecules[j],boxlength));
             strict+=connected_molecules_strict(molecules[i],molecules[j],boxlength);
@@ -105,24 +104,69 @@ void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules
 
 
 //Constructs adjacency list from the array of molecules by checking connectednes between molecules
-void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_molecules,int start_mol_no,stack adjacency_list[])
+void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[])
 {
     int i,j;
-    int end_mol_no=start_mol_no+no_of_molecules;
-    for(i=start_mol_no;i<end_mol_no-1;i++)
-    {
+    for(i=0;i<no_of_molecules;i++)
         adjacency_list[i].top=NULL;
-        for(j=i+1;j<end_mol_no;j++)
+    for(i=0;i<no_of_molecules-1;i++)
+    {
+        for(j=i+1;j<no_of_molecules;j++)
         {
-            //printf("Are molecules %d and %d connected: %d\n",i,j,connected_molecules(molecules[i],molecules[j],boxlength));
             if(connected_molecules(molecules[i],molecules[j],boxlength))
             {
-                add_node_given_value(adjacency_list[i],j);
+                add_node_given_value(&adjacency_list[i],j);
+                add_node_given_value(&adjacency_list[j],i);
+
+                //Shows which molecules are connected
                 printf("Nodes %d and %d are connected\n",i,j);
+                //print_stack(&adjacency_list[i]);
+                //print_stack(&adjacency_list[j]);
             }
         }
     }
 }
+
+void dfs_util(stack* to_search,stack adjacency_list[],int visited[],int no_of_molecules,int cluster_number)
+{
+    int c;
+    while(to_search->top!=NULL)
+    {
+        c=pop_and_return_value(to_search);
+        visited[c]=cluster_number;
+        pop_after_checking_visited(&adjacency_list[c],to_search,visited);
+    }
+}
+
+void dfs(stack adjacency_list[],int visited[],int no_of_molecules)
+{
+    stack to_search;
+    to_search.top=NULL;
+    int i=0;
+    int cluster_number=0;
+    while(i<no_of_molecules)
+    {
+        if(visited[i]==-1)
+        {
+            visited[i]=cluster_number;
+            if(adjacency_list[i].top!=NULL)
+            {
+                //print_stack(&adjacency_list[i]);
+                //add_node_given_value(&to_search,i);
+                //print_stack(&to_search);
+                pop_after_checking_visited(&adjacency_list[i],&to_search,visited);
+                //printf("Popped after checking visited\n");
+                //print_stack(&adjacency_list[i]);
+                //print_stack(&to_search);
+                dfs_util(&to_search, adjacency_list,visited,no_of_molecules,cluster_number);
+            }
+            cluster_number++;
+        }
+        i++;
+    }
+}
+
+
 
 int main(int argc,char *argv[])
 {
@@ -165,7 +209,7 @@ int main(int argc,char *argv[])
     populator(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no);
 
     //Check if strictness matters
-    strict_vs_relaxed(molecules,boxlength,no_of_molecules,start_mol_no);
+    strict_vs_relaxed(molecules,boxlength,no_of_molecules);
 
     //int end_mol_no=start_mol_no+no_of_molecules;
 
@@ -177,9 +221,36 @@ int main(int argc,char *argv[])
 
     //int connectedness[MAX_M]={0};
 
-    stack adjacency_list[MAX_M];
-    adjacency_list_constructor(molecules,boxlength,no_of_molecules,start_mol_no,adjacency_list);
-    return 0;
+    stack adjacency_list[no_of_molecules];
+   // int visited[no_of_molecules]={-1};
+    adjacency_list_constructor(molecules,boxlength,no_of_molecules,adjacency_list);
     
+    //Printing the adjacency list
+    for(i=0;i<no_of_molecules;i++)
+    {
+        printf("%d :",i);
+        print_stack(&adjacency_list[i]);
+    }
 
+
+    int visited[no_of_molecules];
+    for(i=0;i<no_of_molecules;i++)
+        visited[i]=-1;
+
+
+    dfs(adjacency_list,visited,no_of_molecules);
+
+    //Printing the cluster number
+    for(i=0;i<no_of_molecules;i++)
+        printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
+
+    /*If the adjacency lists are empty after the operation, it is an indication that
+    all the vertices were processed during DFS*/    
+    for(i=0;i<no_of_molecules;i++)
+    {
+        printf("%d :",i);
+        print_stack(&adjacency_list[i]);
+    }
+
+    return 0;
 }
