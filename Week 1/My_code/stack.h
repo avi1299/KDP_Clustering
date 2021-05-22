@@ -17,6 +17,7 @@ typedef struct node
 typedef struct
 {
     node* top;
+    int length;
 }stack;
 
 void print_node(node a)
@@ -46,6 +47,7 @@ void add_node_given_value(stack *existing_stack, int val)
     else
         p->next=existing_stack->top;
     existing_stack->top=p;
+    existing_stack->length++;
 
 }
 
@@ -57,6 +59,7 @@ void add_node(stack *existing_stack, node* p)
     else
         p->next=existing_stack->top;
     existing_stack->top=p;
+    existing_stack->length++;
 
 }
 
@@ -68,6 +71,7 @@ int pop_and_return_value(stack *existing_stack)
         return -1;
     temp=existing_stack->top;
     existing_stack->top=(existing_stack->top)->next;
+    existing_stack->length--;
     //Consider making c a global variable to avoid repeated declaration
     int c=temp->data;
     free(temp);
@@ -82,6 +86,7 @@ node* pop_and_return_node(stack *existing_stack)
         return NULL;
     temp=existing_stack->top;
     existing_stack->top=(existing_stack->top)->next;
+    existing_stack->length--;
     return temp;
 }
 
@@ -93,6 +98,7 @@ void pop_from_a_into_b(stack *a,stack *b)
     {
         temp=a->top;
         a->top=(a->top)->next;
+        a->length--;
         add_node(b,temp);
     }
 }
@@ -105,6 +111,7 @@ void pop_after_checking_visited(stack *a,stack *b,int visited[])
     {
         temp=a->top;
         a->top=(a->top)->next;
+        a->length--;
         if(visited[temp->data]==-1)
             add_node(b,temp);
     }
