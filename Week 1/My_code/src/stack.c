@@ -1,24 +1,4 @@
-#include <stdio.h>
-//#include <omp.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <unistd.h>
-#include <time.h>
-
-//Structure for node
-typedef struct node
-{
-    int data;
-    struct node* next;
-}node;
-
-//Structure for stack
-typedef struct
-{
-    node* top;
-    int length;
-}stack;
+#include "stack.h"
 
 void print_node(node a)
 {

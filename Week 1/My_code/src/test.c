@@ -120,7 +120,7 @@ int main(int argc,char *argv[])
         print_stack(&adjacency_list[i]);
     }
     */
-    
+     
 
     return 0;
 }

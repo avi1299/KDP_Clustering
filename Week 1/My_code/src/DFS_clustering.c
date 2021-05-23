@@ -1,5 +1,4 @@
-#include "stack.h"
-
+#include "DFS_clustering.h"
 
 void dfs_util(stack* to_search,stack adjacency_list[],int visited[],int no_of_molecules,int cluster_number)
 {

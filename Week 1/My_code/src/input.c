@@ -1,15 +1,4 @@
-#include <stdio.h>
-//#include <omp.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <unistd.h>
-#include <time.h>
-
-
-#include "HPO.h"
-
-#define LLEN 300
+#include "input.h"
 
 void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no)
 {
