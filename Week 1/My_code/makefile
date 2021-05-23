@@ -21,6 +21,9 @@ $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
 test: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
+run: test
+	./test -f M1C_S2.pdb
+
 .PHONY: clean
 
 clean:
