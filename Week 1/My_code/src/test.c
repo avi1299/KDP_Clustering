@@ -95,21 +95,20 @@ int main(int argc,char *argv[])
     //Printing the adjacency list
     for(i=0;i<no_of_molecules;i++)
     {
-        printf("%d :",i);
+        printf("%d\t: Connected to %d molecules : Stack : ",i,adjacency_list[i].length);
         print_stack(&adjacency_list[i]);
     }
-
 
     int visited[no_of_molecules];
     for(i=0;i<no_of_molecules;i++)
         visited[i]=-1;
 
-
     dfs(adjacency_list,visited,no_of_molecules);
 
     //Printing the cluster number
-    for(i=0;i<no_of_molecules;i++)
-        printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
+    //for(i=0;i<no_of_molecules;i++)
+    //    printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
+
 
     /*If the adjacency lists are empty after the operation, it is an indication that
     all the vertices were processed during DFS*/  
