@@ -36,9 +36,6 @@ void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_
 }
 
 
-
-
-
 int main(int argc,char *argv[])
 {
     FILE *fp_in, *fp_out;
@@ -48,7 +45,7 @@ int main(int argc,char *argv[])
     HPO molecules[MAX_M]; //only for 5000 molecules
     //static cluster_mt cluster[MAX_M];//for all the clusters
     coordinates boxlength;//, coordinate;
-    /*------------------------------ read the arguments-----------------------------------------*/
+    /*------------------------- read the arguments-------------------------*/
     int c;
     while(( c = getopt(argc, argv, "f:o:")) != -1 )
     {
@@ -70,45 +67,55 @@ int main(int argc,char *argv[])
                 break;
         }
     }
-    /*------------------------------ read the arguments-----------------------------------------*/
+    /*------------------------- read the arguments-------------------------*/
+
+
+    /*---------------------------- read the file --------------------------*/
 
     //Populate the array after reading PDB
     PDB_reader(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no);
-
-    //Check if strictness matters
-    strict_vs_relaxed(molecules,boxlength,no_of_molecules);
-
-    //int end_mol_no=start_mol_no+no_of_molecules;
-
 
     //Prints all the molecules
     // printf("%d %d",start_mol_no,end_mol_no);
     // for(i=start_mol_no;i<end_mol_no;i++)
     //     print_HPO(molecules[i]);
 
-    //int connectedness[MAX_M]={0};
+    /*---------------------------- read the file --------------------------*/
+
+    //Check if strictness matters
+    strict_vs_relaxed(molecules,boxlength,no_of_molecules);
+
+
 
     stack adjacency_list[no_of_molecules];
    // int visited[no_of_molecules]={-1};
     adjacency_list_constructor(molecules,boxlength,no_of_molecules,adjacency_list);
+
+    /*------------------------connectedness calculations-----------------*/
     
-    //Printing the adjacency list
+    //Printing the adjacency list and connectedness
     for(i=0;i<no_of_molecules;i++)
     {
-        printf("%d\t: Connected to %d molecules : Stack : ",i,adjacency_list[i].length);
+        printf("Molecule %d\t| Connected to %d molecules | Stack : ",i,adjacency_list[i].length);
         print_stack(&adjacency_list[i]);
     }
+
+    //Statistics of connectedness
+    int connectedness[5];
+    for(i=0;i<no_of_molecules;i++)
+        connectedness[adjacency_list[i].length]++;
+    for(i=0;i<5;i++)
+        printf("The number of molecules with %d connections is %d\n",i,connectedness[i]);
+
+    /*------------------------connectedness calculations-----------------*/
 
     int visited[no_of_molecules];
     for(i=0;i<no_of_molecules;i++)
         visited[i]=-1;
 
-    dfs(adjacency_list,visited,no_of_molecules);
+    int number_of_clusters;
 
-    //Printing the cluster number
-    //for(i=0;i<no_of_molecules;i++)
-    //    printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
-
+    dfs(adjacency_list,visited,no_of_molecules,&number_of_clusters);
 
     /*If the adjacency lists are empty after the operation, it is an indication that
     all the vertices were processed during DFS*/  
@@ -119,7 +126,31 @@ int main(int argc,char *argv[])
         print_stack(&adjacency_list[i]);
     }
     */
-     
+
+    /*--------------------------clustering calculations------------------*/
+
+    printf("Number of clusters: %d\n",number_of_clusters);
+
+
+    //Printing the cluster number
+    //for(i=0;i<no_of_molecules;i++)
+    //    printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
+
+    stack cluster[number_of_clusters];
+    for(i=0;i<number_of_clusters;i++)
+    {
+        cluster[i].length=0;
+        cluster[i].top=NULL;
+    }
+    for(i=0;i<no_of_molecules;i++)
+        add_node_given_value(&cluster[visited[i]],i);
+    for(i=0;i<number_of_clusters;i++)
+    {
+        printf("Cluster %d\t| Cluster size : %d | Molecules: ",i,cluster[i].length);
+        print_stack(&cluster[i]);
+    }
+    /*--------------------------clustering calculations------------------*/
+
 
     return 0;
 }
