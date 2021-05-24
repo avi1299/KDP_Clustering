@@ -17,6 +17,18 @@ void print_stack(stack *a)
     printf("NULL\n");
 }
 
+void print_stack_elements(stack* a)
+{
+    node *temp;
+    temp=a->top;
+    while(temp!=NULL)
+    {
+        printf("%d ",temp->data);
+        temp=temp->next;
+    }
+    printf("\n");
+}
+
 //Creates a node and adds it to stack. Its value is provided as an argument
 void add_node_given_value(stack *existing_stack, int val)
 {
