@@ -137,6 +137,11 @@ int main(int argc,char *argv[])
     //    printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
 
     stack cluster[number_of_clusters];
+    int cluster_max_size=0;
+    int cluster_size[no_of_molecules];
+    for(i=0;i<no_of_molecules;i++)
+        cluster_size[i]=0;
+
     for(i=0;i<number_of_clusters;i++)
     {
         cluster[i].length=0;
@@ -148,7 +153,17 @@ int main(int argc,char *argv[])
     {
         printf("Cluster %d\t| Cluster size : %d | Molecules: ",i,cluster[i].length);
         print_stack(&cluster[i]);
+
+        cluster_size[cluster[i].length]++;
+        if(cluster[i].length>cluster_max_size)
+            cluster_max_size=cluster[i].length;
     }
+
+    for(i=0;i<=cluster_max_size;i++)
+        printf("The number of clusters with %d molecules is %d\n",i,cluster_size[i]);
+
+
+
     /*--------------------------clustering calculations------------------*/
 
 
