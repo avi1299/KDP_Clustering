@@ -2,6 +2,7 @@
 //#include "stack.h"
 #include "DFS_clustering.h"
 #include "input.h"
+#include "output.h"
 
 //#define LLEN 300
 #define NAME 100
@@ -65,12 +66,14 @@ int main(int argc,char *argv[])
     int i;
     int verbose_level=0;
     int check_strict_flag=0;
+    int greater_than_flag=0;
+    int threshold=-1;
     HPO molecules[MAX_M]; //only for 5000 molecules
     //static cluster_mt cluster[MAX_M];//for all the clusters
     coordinates boxlength;//, coordinate;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:c")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:cgs:")) != -1 )
     {
         switch(c)
         {
@@ -102,6 +105,12 @@ int main(int argc,char *argv[])
                 break;
             case 'c':
                 check_strict_flag=1;
+                break;
+            case 'g':
+                greater_than_flag=1;
+                break;
+            case 's':
+                threshold=atoi(optarg);
                 break;
             case '?':
                 if (optopt=='v')
@@ -257,6 +266,19 @@ int main(int argc,char *argv[])
     }
 
     /*--------------------------END: clustering calculations------------------*/
+
+    /*-----------------------START: Output PDB------------------*/
+    if(threshold==-1)
+        threshold=cluster_max_size;
+    if(fp_out!=NULL)
+    {
+        fprintf(fp_out, "CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
+                boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);
+        fprintf_conf_PDB(fp_out,molecules,cluster,number_of_clusters,threshold,greater_than_flag);
+        fclose(fp_out);
+    }
+
+    /*-----------------------END: Output PDB------------------*/
 
 
     return 0;

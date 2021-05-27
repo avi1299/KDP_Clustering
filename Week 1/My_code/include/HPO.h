@@ -1,3 +1,6 @@
+#ifndef HPO_HEADER
+#define HPO_HEADER
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -53,3 +56,5 @@ void print_HPO(HPO *mol);
 
 //Checks and reports whether the strict definition of connectedness results in the same or lesser connections
 void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules);
+
+#endif

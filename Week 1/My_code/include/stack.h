@@ -1,3 +1,5 @@
+#ifndef STACK_HEADER
+#define STACK_HEADER
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -39,4 +41,6 @@ void pop_from_a_into_b(stack *a,stack *b);
 
 //Pops elements from stack A and pushes them onto stack B until stack A is empty. Checks if the elements have been visited or not
 void pop_after_checking_visited(stack *a,stack *b,int visited[]);
+
+#endif
 

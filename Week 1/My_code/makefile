@@ -8,10 +8,10 @@ LDIR =./lib
 
 LIBS=-lm
 
-_DEPS = DFS_clustering.h HPO.h input.h stack.h
+_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = HPO.o stack.o DFS_clustering.o  input.o  test.o
+_OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o test.o 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

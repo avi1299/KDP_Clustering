@@ -85,6 +85,7 @@ void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mol
         
         }
     }
+    fclose(fp_in);
 }
 
 //Assumptions: All the molecules are listed together and in order of molecules OHL HOL P O2L OHL HOL O2L
@@ -172,6 +173,7 @@ void PDB_reader_alternate(FILE* fp_in,HPO molecules[],coordinates boxlength,int 
         
         }
     }
+    fclose(fp_in);
 }
 
 //Assumption all the molecules are listed together and though order of molecules doesn't matter, all the 7 atoms corresponding to a molecule should be together
@@ -256,4 +258,5 @@ void PDB_reader_universal(FILE* fp_in,HPO molecules[],coordinates boxlength,int 
         
         }
     }
+    fclose(fp_in);
 }
