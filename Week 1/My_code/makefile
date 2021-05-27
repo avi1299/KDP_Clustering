@@ -22,10 +22,10 @@ test: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 run: test
-	./test -f M1C_S2.pdb
+	./test -f M1C_S2.pdb -c -v3
 
 run_silent: test
-	./test -f M1C_S2.pdb > /dev/null
+	./test -f M1C_S2.pdb
 
 gmon.out: run_silent
 

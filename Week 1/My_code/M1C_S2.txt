@@ -1,0 +1,226 @@
+BoxLength = 38.262000 38.262000 38.262000 
+Strict : 32  Not Strict: 32
+Nodes 0 and 59 are connected
+Nodes 2 and 14 are connected
+Nodes 3 and 19 are connected
+Nodes 5 and 7 are connected
+Nodes 6 and 102 are connected
+Nodes 12 and 15 are connected
+Nodes 13 and 101 are connected
+Nodes 14 and 24 are connected
+Nodes 16 and 64 are connected
+Nodes 19 and 87 are connected
+Nodes 20 and 26 are connected
+Nodes 26 and 55 are connected
+Nodes 30 and 34 are connected
+Nodes 30 and 46 are connected
+Nodes 31 and 40 are connected
+Nodes 32 and 88 are connected
+Nodes 35 and 41 are connected
+Nodes 36 and 67 are connected
+Nodes 37 and 39 are connected
+Nodes 38 and 63 are connected
+Nodes 38 and 80 are connected
+Nodes 39 and 87 are connected
+Nodes 46 and 51 are connected
+Nodes 51 and 85 are connected
+Nodes 52 and 54 are connected
+Nodes 58 and 75 are connected
+Nodes 61 and 101 are connected
+Nodes 63 and 65 are connected
+Nodes 65 and 85 are connected
+Nodes 69 and 94 are connected
+Nodes 70 and 86 are connected
+Nodes 91 and 100 are connected
+Molecule 0	| Connected to 1 molecules | Stack : 59 <- NULL
+Molecule 1	| Connected to 0 molecules | Stack : NULL
+Molecule 2	| Connected to 1 molecules | Stack : 14 <- NULL
+Molecule 3	| Connected to 1 molecules | Stack : 19 <- NULL
+Molecule 4	| Connected to 0 molecules | Stack : NULL
+Molecule 5	| Connected to 1 molecules | Stack : 7 <- NULL
+Molecule 6	| Connected to 1 molecules | Stack : 102 <- NULL
+Molecule 7	| Connected to 1 molecules | Stack : 5 <- NULL
+Molecule 8	| Connected to 0 molecules | Stack : NULL
+Molecule 9	| Connected to 0 molecules | Stack : NULL
+Molecule 10	| Connected to 0 molecules | Stack : NULL
+Molecule 11	| Connected to 0 molecules | Stack : NULL
+Molecule 12	| Connected to 1 molecules | Stack : 15 <- NULL
+Molecule 13	| Connected to 1 molecules | Stack : 101 <- NULL
+Molecule 14	| Connected to 2 molecules | Stack : 24 <- 2 <- NULL
+Molecule 15	| Connected to 1 molecules | Stack : 12 <- NULL
+Molecule 16	| Connected to 1 molecules | Stack : 64 <- NULL
+Molecule 17	| Connected to 0 molecules | Stack : NULL
+Molecule 18	| Connected to 0 molecules | Stack : NULL
+Molecule 19	| Connected to 2 molecules | Stack : 87 <- 3 <- NULL
+Molecule 20	| Connected to 1 molecules | Stack : 26 <- NULL
+Molecule 21	| Connected to 0 molecules | Stack : NULL
+Molecule 22	| Connected to 0 molecules | Stack : NULL
+Molecule 23	| Connected to 0 molecules | Stack : NULL
+Molecule 24	| Connected to 1 molecules | Stack : 14 <- NULL
+Molecule 25	| Connected to 0 molecules | Stack : NULL
+Molecule 26	| Connected to 2 molecules | Stack : 55 <- 20 <- NULL
+Molecule 27	| Connected to 0 molecules | Stack : NULL
+Molecule 28	| Connected to 0 molecules | Stack : NULL
+Molecule 29	| Connected to 0 molecules | Stack : NULL
+Molecule 30	| Connected to 2 molecules | Stack : 46 <- 34 <- NULL
+Molecule 31	| Connected to 1 molecules | Stack : 40 <- NULL
+Molecule 32	| Connected to 1 molecules | Stack : 88 <- NULL
+Molecule 33	| Connected to 0 molecules | Stack : NULL
+Molecule 34	| Connected to 1 molecules | Stack : 30 <- NULL
+Molecule 35	| Connected to 1 molecules | Stack : 41 <- NULL
+Molecule 36	| Connected to 1 molecules | Stack : 67 <- NULL
+Molecule 37	| Connected to 1 molecules | Stack : 39 <- NULL
+Molecule 38	| Connected to 2 molecules | Stack : 80 <- 63 <- NULL
+Molecule 39	| Connected to 2 molecules | Stack : 87 <- 37 <- NULL
+Molecule 40	| Connected to 1 molecules | Stack : 31 <- NULL
+Molecule 41	| Connected to 1 molecules | Stack : 35 <- NULL
+Molecule 42	| Connected to 0 molecules | Stack : NULL
+Molecule 43	| Connected to 0 molecules | Stack : NULL
+Molecule 44	| Connected to 0 molecules | Stack : NULL
+Molecule 45	| Connected to 0 molecules | Stack : NULL
+Molecule 46	| Connected to 2 molecules | Stack : 51 <- 30 <- NULL
+Molecule 47	| Connected to 0 molecules | Stack : NULL
+Molecule 48	| Connected to 0 molecules | Stack : NULL
+Molecule 49	| Connected to 0 molecules | Stack : NULL
+Molecule 50	| Connected to 0 molecules | Stack : NULL
+Molecule 51	| Connected to 2 molecules | Stack : 85 <- 46 <- NULL
+Molecule 52	| Connected to 1 molecules | Stack : 54 <- NULL
+Molecule 53	| Connected to 0 molecules | Stack : NULL
+Molecule 54	| Connected to 1 molecules | Stack : 52 <- NULL
+Molecule 55	| Connected to 1 molecules | Stack : 26 <- NULL
+Molecule 56	| Connected to 0 molecules | Stack : NULL
+Molecule 57	| Connected to 0 molecules | Stack : NULL
+Molecule 58	| Connected to 1 molecules | Stack : 75 <- NULL
+Molecule 59	| Connected to 1 molecules | Stack : 0 <- NULL
+Molecule 60	| Connected to 0 molecules | Stack : NULL
+Molecule 61	| Connected to 1 molecules | Stack : 101 <- NULL
+Molecule 62	| Connected to 0 molecules | Stack : NULL
+Molecule 63	| Connected to 2 molecules | Stack : 65 <- 38 <- NULL
+Molecule 64	| Connected to 1 molecules | Stack : 16 <- NULL
+Molecule 65	| Connected to 2 molecules | Stack : 85 <- 63 <- NULL
+Molecule 66	| Connected to 0 molecules | Stack : NULL
+Molecule 67	| Connected to 1 molecules | Stack : 36 <- NULL
+Molecule 68	| Connected to 0 molecules | Stack : NULL
+Molecule 69	| Connected to 1 molecules | Stack : 94 <- NULL
+Molecule 70	| Connected to 1 molecules | Stack : 86 <- NULL
+Molecule 71	| Connected to 0 molecules | Stack : NULL
+Molecule 72	| Connected to 0 molecules | Stack : NULL
+Molecule 73	| Connected to 0 molecules | Stack : NULL
+Molecule 74	| Connected to 0 molecules | Stack : NULL
+Molecule 75	| Connected to 1 molecules | Stack : 58 <- NULL
+Molecule 76	| Connected to 0 molecules | Stack : NULL
+Molecule 77	| Connected to 0 molecules | Stack : NULL
+Molecule 78	| Connected to 0 molecules | Stack : NULL
+Molecule 79	| Connected to 0 molecules | Stack : NULL
+Molecule 80	| Connected to 1 molecules | Stack : 38 <- NULL
+Molecule 81	| Connected to 0 molecules | Stack : NULL
+Molecule 82	| Connected to 0 molecules | Stack : NULL
+Molecule 83	| Connected to 0 molecules | Stack : NULL
+Molecule 84	| Connected to 0 molecules | Stack : NULL
+Molecule 85	| Connected to 2 molecules | Stack : 65 <- 51 <- NULL
+Molecule 86	| Connected to 1 molecules | Stack : 70 <- NULL
+Molecule 87	| Connected to 2 molecules | Stack : 39 <- 19 <- NULL
+Molecule 88	| Connected to 1 molecules | Stack : 32 <- NULL
+Molecule 89	| Connected to 0 molecules | Stack : NULL
+Molecule 90	| Connected to 0 molecules | Stack : NULL
+Molecule 91	| Connected to 1 molecules | Stack : 100 <- NULL
+Molecule 92	| Connected to 0 molecules | Stack : NULL
+Molecule 93	| Connected to 0 molecules | Stack : NULL
+Molecule 94	| Connected to 1 molecules | Stack : 69 <- NULL
+Molecule 95	| Connected to 0 molecules | Stack : NULL
+Molecule 96	| Connected to 0 molecules | Stack : NULL
+Molecule 97	| Connected to 0 molecules | Stack : NULL
+Molecule 98	| Connected to 0 molecules | Stack : NULL
+Molecule 99	| Connected to 0 molecules | Stack : NULL
+Molecule 100	| Connected to 1 molecules | Stack : 91 <- NULL
+Molecule 101	| Connected to 2 molecules | Stack : 61 <- 13 <- NULL
+Molecule 102	| Connected to 1 molecules | Stack : 6 <- NULL
+Molecule 103	| Connected to 0 molecules | Stack : NULL
+The number of molecules with 0 connections is 53
+The number of molecules with 1 connections is 38
+The number of molecules with 2 connections is 13
+The number of molecules with 3 connections is 0
+The number of molecules with 4 connections is 0
+Number of clusters: 72
+Cluster 0	| Cluster size : 2 | Molecules: 59 <- 0 <- NULL
+Cluster 1	| Cluster size : 1 | Molecules: 1 <- NULL
+Cluster 2	| Cluster size : 3 | Molecules: 24 <- 14 <- 2 <- NULL
+Cluster 3	| Cluster size : 5 | Molecules: 87 <- 39 <- 37 <- 19 <- 3 <- NULL
+Cluster 4	| Cluster size : 1 | Molecules: 4 <- NULL
+Cluster 5	| Cluster size : 2 | Molecules: 7 <- 5 <- NULL
+Cluster 6	| Cluster size : 2 | Molecules: 102 <- 6 <- NULL
+Cluster 7	| Cluster size : 1 | Molecules: 8 <- NULL
+Cluster 8	| Cluster size : 1 | Molecules: 9 <- NULL
+Cluster 9	| Cluster size : 1 | Molecules: 10 <- NULL
+Cluster 10	| Cluster size : 1 | Molecules: 11 <- NULL
+Cluster 11	| Cluster size : 2 | Molecules: 15 <- 12 <- NULL
+Cluster 12	| Cluster size : 3 | Molecules: 101 <- 61 <- 13 <- NULL
+Cluster 13	| Cluster size : 2 | Molecules: 64 <- 16 <- NULL
+Cluster 14	| Cluster size : 1 | Molecules: 17 <- NULL
+Cluster 15	| Cluster size : 1 | Molecules: 18 <- NULL
+Cluster 16	| Cluster size : 3 | Molecules: 55 <- 26 <- 20 <- NULL
+Cluster 17	| Cluster size : 1 | Molecules: 21 <- NULL
+Cluster 18	| Cluster size : 1 | Molecules: 22 <- NULL
+Cluster 19	| Cluster size : 1 | Molecules: 23 <- NULL
+Cluster 20	| Cluster size : 1 | Molecules: 25 <- NULL
+Cluster 21	| Cluster size : 1 | Molecules: 27 <- NULL
+Cluster 22	| Cluster size : 1 | Molecules: 28 <- NULL
+Cluster 23	| Cluster size : 1 | Molecules: 29 <- NULL
+Cluster 24	| Cluster size : 9 | Molecules: 85 <- 80 <- 65 <- 63 <- 51 <- 46 <- 38 <- 34 <- 30 <- NULL
+Cluster 25	| Cluster size : 2 | Molecules: 40 <- 31 <- NULL
+Cluster 26	| Cluster size : 2 | Molecules: 88 <- 32 <- NULL
+Cluster 27	| Cluster size : 1 | Molecules: 33 <- NULL
+Cluster 28	| Cluster size : 2 | Molecules: 41 <- 35 <- NULL
+Cluster 29	| Cluster size : 2 | Molecules: 67 <- 36 <- NULL
+Cluster 30	| Cluster size : 1 | Molecules: 42 <- NULL
+Cluster 31	| Cluster size : 1 | Molecules: 43 <- NULL
+Cluster 32	| Cluster size : 1 | Molecules: 44 <- NULL
+Cluster 33	| Cluster size : 1 | Molecules: 45 <- NULL
+Cluster 34	| Cluster size : 1 | Molecules: 47 <- NULL
+Cluster 35	| Cluster size : 1 | Molecules: 48 <- NULL
+Cluster 36	| Cluster size : 1 | Molecules: 49 <- NULL
+Cluster 37	| Cluster size : 1 | Molecules: 50 <- NULL
+Cluster 38	| Cluster size : 2 | Molecules: 54 <- 52 <- NULL
+Cluster 39	| Cluster size : 1 | Molecules: 53 <- NULL
+Cluster 40	| Cluster size : 1 | Molecules: 56 <- NULL
+Cluster 41	| Cluster size : 1 | Molecules: 57 <- NULL
+Cluster 42	| Cluster size : 2 | Molecules: 75 <- 58 <- NULL
+Cluster 43	| Cluster size : 1 | Molecules: 60 <- NULL
+Cluster 44	| Cluster size : 1 | Molecules: 62 <- NULL
+Cluster 45	| Cluster size : 1 | Molecules: 66 <- NULL
+Cluster 46	| Cluster size : 1 | Molecules: 68 <- NULL
+Cluster 47	| Cluster size : 2 | Molecules: 94 <- 69 <- NULL
+Cluster 48	| Cluster size : 2 | Molecules: 86 <- 70 <- NULL
+Cluster 49	| Cluster size : 1 | Molecules: 71 <- NULL
+Cluster 50	| Cluster size : 1 | Molecules: 72 <- NULL
+Cluster 51	| Cluster size : 1 | Molecules: 73 <- NULL
+Cluster 52	| Cluster size : 1 | Molecules: 74 <- NULL
+Cluster 53	| Cluster size : 1 | Molecules: 76 <- NULL
+Cluster 54	| Cluster size : 1 | Molecules: 77 <- NULL
+Cluster 55	| Cluster size : 1 | Molecules: 78 <- NULL
+Cluster 56	| Cluster size : 1 | Molecules: 79 <- NULL
+Cluster 57	| Cluster size : 1 | Molecules: 81 <- NULL
+Cluster 58	| Cluster size : 1 | Molecules: 82 <- NULL
+Cluster 59	| Cluster size : 1 | Molecules: 83 <- NULL
+Cluster 60	| Cluster size : 1 | Molecules: 84 <- NULL
+Cluster 61	| Cluster size : 1 | Molecules: 89 <- NULL
+Cluster 62	| Cluster size : 1 | Molecules: 90 <- NULL
+Cluster 63	| Cluster size : 2 | Molecules: 100 <- 91 <- NULL
+Cluster 64	| Cluster size : 1 | Molecules: 92 <- NULL
+Cluster 65	| Cluster size : 1 | Molecules: 93 <- NULL
+Cluster 66	| Cluster size : 1 | Molecules: 95 <- NULL
+Cluster 67	| Cluster size : 1 | Molecules: 96 <- NULL
+Cluster 68	| Cluster size : 1 | Molecules: 97 <- NULL
+Cluster 69	| Cluster size : 1 | Molecules: 98 <- NULL
+Cluster 70	| Cluster size : 1 | Molecules: 99 <- NULL
+Cluster 71	| Cluster size : 1 | Molecules: 103 <- NULL
+The number of clusters with 0 molecules is 0
+The number of clusters with 1 molecules is 53
+The number of clusters with 2 molecules is 14
+The number of clusters with 3 molecules is 3
+The number of clusters with 4 molecules is 0
+The number of clusters with 5 molecules is 1
+The number of clusters with 6 molecules is 0
+The number of clusters with 7 molecules is 0
+The number of clusters with 8 molecules is 0
+The number of clusters with 9 molecules is 1
