@@ -2,14 +2,15 @@
 
 //Assumption all the molecules are listed together and though order of molecules doesn't matter, all the 7 atoms corresponding to a molecule should be together
 //i.e. one after the other.
-void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no)
+void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
 {
     int i,atom_no,mol_no,old_mol_no=-1;;
-    char line[LLEN],atom_name[LLEN],mol_name[LLEN];
+    char line[LLEN],atom_name[LLEN],mol_name[LLEN],tag[LLEN];
     int HOL_read=0;
     int OHL_read=0;
     int O2L_read=0;
     *no_of_molecules=-1;
+    *conf_number=0;
     coordinates coordinate;
     if(fgets(line, LLEN, fp_in) == NULL)
     {
@@ -23,7 +24,9 @@ void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mol
     {
         if(fgets(line, LLEN, fp_in) == NULL)
             break;
-        sscanf(line,"%*s %d %s %s X %d %lf %lf %lf %*lf %*lf",&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
+        sscanf(line,"%s %d %s %s X %d %lf %lf %lf %*lf %*lf",tag,&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
+        if(strcmp(tag,"END")==0)
+            (*conf_number)++;
         //Executes below when it encounters HPO molecules. It extracts information for every atom in every HPO molecule 
         if(strcmp(mol_name,"HPO")==0)
         {
@@ -89,6 +92,7 @@ void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mol
         }
     }
     (*no_of_molecules)++;
+    (*no_of_molecules)=(*no_of_molecules)/(*conf_number);
     fclose(fp_in);
 }
 
