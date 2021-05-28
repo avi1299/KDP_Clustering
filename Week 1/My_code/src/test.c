@@ -139,7 +139,7 @@ int main(int argc,char *argv[])
     }
 
     if(verbose_level>=1)
-        printf("Nummber of molecules: %d\n\n",no_of_molecules);
+        printf("Number of molecules: %d\n\n",no_of_molecules);
     if (verbose_level>=3)
         printf("BoxLength = %lf %lf %lf \n\n",boxlength[0],boxlength[1],boxlength[2]);
     if (verbose_level>=4)

@@ -37,8 +37,6 @@ void fprintf_conf_PDB(FILE* fp_out,HPO molecules[],stack clusters[],int number_o
         int mol_no=0;
         int atom_no=0;
         int i;
-    if(fp_out!=NULL)
-    {
         if(greater_than_flag==1)
         {
                 for(i=0; i<number_of_clusters; i++)
@@ -50,5 +48,4 @@ void fprintf_conf_PDB(FILE* fp_out,HPO molecules[],stack clusters[],int number_o
                         if(clusters[i].length==threshold)
                                 fprintf_cluster_PDB(fp_out,molecules,&clusters[i],&mol_no,&atom_no);
         fprintf(fp_out, "END\n");
-    }
 }
