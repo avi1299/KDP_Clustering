@@ -129,7 +129,7 @@ int main(int argc,char *argv[])
 
     /*-------------------------START: read the file --------------------------*/
 
-    PDB_reader_universal(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no);
+    PDB_reader(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no);
 
     //Check if strictness matters
     if(check_strict_flag)

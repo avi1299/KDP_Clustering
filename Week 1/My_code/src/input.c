@@ -2,7 +2,7 @@
 
 //Assumption all the molecules are listed together and though order of molecules doesn't matter, all the 7 atoms corresponding to a molecule should be together
 //i.e. one after the other.
-void PDB_reader_universal(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no)
+void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no)
 {
     int i,atom_no,mol_no,old_mol_no=-1;;
     char line[LLEN],atom_name[LLEN],mol_name[LLEN];
