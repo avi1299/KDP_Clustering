@@ -109,3 +109,16 @@ void pop_after_checking_visited(stack *a,stack *b,int visited[])
     }
 }
 
+//Pops all elements of the stack and return nothing
+void empty_stack(stack *a)
+{
+    node* temp;
+    while(a->top!=NULL)
+    {
+        temp=a->top;
+        a->top=temp->next;
+        free(temp);
+        a->length--;
+    }
+}
+

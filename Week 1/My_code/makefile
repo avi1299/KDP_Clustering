@@ -25,9 +25,10 @@ run: test
 	./test -f M1C_S2.pdb -c -v3
 
 run_silent: test
-	./test -f M1C_S2.pdb
+	./test -f M1A_S2_16.pdb -o out.pdb
 
 gmon.out: run_silent
+
 
 perf: gmon.out test
 	gprof test gmon.out > perf_analysis.txt
