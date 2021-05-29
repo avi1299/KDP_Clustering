@@ -6,11 +6,9 @@ To compile the program use the makefile as:
 
 This creates the binary test.
 
-To give it a PDB input run,
+To see all the options, run,
 
-`$ ./test -f <input_file.PDB>`
-
-The output will be verbose.
+`$ ./test -h`
 
 To see the performance of the program, run,
 
