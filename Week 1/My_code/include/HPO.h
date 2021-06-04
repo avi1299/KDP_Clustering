@@ -8,6 +8,7 @@
 
 #define CUTOFF 6.25//Cutoff is 2.5 nm but we are squaring it to save on computation
 #define CUTOFF_STRICT 12.25//Cutoff for strict method is 3.5nm. Squaring it to save on computation
+#define MAX_CONNECTIONS 6
 #define SQR(x) (x)*(x)
 
 //coordinates is a typedef that represents the X,Y,Z values of a point in space

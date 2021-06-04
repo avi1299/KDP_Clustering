@@ -13,12 +13,12 @@ int main(int argc,char *argv[])
 {
     //Initialize flags and FIle pointers
     FILE *fp_in, *fp_out;
-    int verbose_level=0;
-    int check_strict_flag=0;
-    int greater_than_flag=0;
-    int threshold=-1;
-    int threshold_flag=0;
-    int probability_flag=0;
+    static int verbose_level=0;
+    static int check_strict_flag=0;
+    static int greater_than_flag=0;
+    static int threshold=-1;
+    static int threshold_flag=0;
+    static int probability_flag=0;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
     while(( c = getopt(argc, argv, "f:o:v:cgs:hp")) != -1 )
@@ -111,7 +111,7 @@ int main(int argc,char *argv[])
     /*-------------------------END: read the file --------------------------*/
     //Constructing the graph by the means of an adjacency list
     stack adjacency_list[no_of_molecules];
-    int connectedness[5];
+    int connectedness[MAX_CONNECTIONS+1];
     int visited[no_of_molecules];
     int number_of_clusters;
     stack cluster[no_of_molecules];
@@ -169,15 +169,15 @@ int main(int argc,char *argv[])
             printf("\n");
         }
 
-
+        
         if(verbose_level>=2)
         {
             //Statistics of connectedness
-            for(i=0;i<5;i++)
+            for(i=0;i<=MAX_CONNECTIONS;i++)
                 connectedness[i]=0;
             for(i=0;i<no_of_molecules;i++)
                 connectedness[adjacency_list[i].length]++;
-            for(i=0;i<5;i++)
+            for(i=0;i<=MAX_CONNECTIONS;i++)
                 printf("The number of molecules with %d connections is %d\n",i,connectedness[i]);
             printf("\n");
         }

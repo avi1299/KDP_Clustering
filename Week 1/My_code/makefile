@@ -22,7 +22,7 @@ test: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 run: test
-	./test -f M1C_S2.pdb -c -v3
+	./test -f M1A_S2_16.pdb -o out.pdb -v1
 
 run_silent: test
 	./test -f M1A_S2_16.pdb -o out.pdb

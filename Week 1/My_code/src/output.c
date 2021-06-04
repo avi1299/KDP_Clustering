@@ -7,25 +7,25 @@ void fprintf_cluster_PDB(FILE* fp_out,HPO molecules[],stack* cluster,int *mol_no
     {
         (*mol_no)++;
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  PL  SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  PL  HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].P[0],molecules[temp->data].P[1],molecules[temp->data].P[2]);
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  OHL SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  OHL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].OHL_1[0],molecules[temp->data].OHL_1[1],molecules[temp->data].OHL_1[2]);
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  HOL SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  HOL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].HOL_1[0],molecules[temp->data].HOL_1[1],molecules[temp->data].HOL_1[2]);
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  OHL SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  OHL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].OHL_2[0],molecules[temp->data].OHL_2[1],molecules[temp->data].OHL_2[2]);
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  HOL SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  HOL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].HOL_2[0],molecules[temp->data].HOL_2[1],molecules[temp->data].HOL_2[2]);
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  O2L SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  O2L HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].O2L_1[0],molecules[temp->data].O2L_1[1],molecules[temp->data].O2L_1[2]);
         (*atom_no)++;
-        fprintf(fp_out, "ATOM  %5d  O2L SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+        fprintf(fp_out, "ATOM  %5d  O2L HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                 (*atom_no), (*mol_no),molecules[temp->data].O2L_2[0],molecules[temp->data].O2L_2[1],molecules[temp->data].O2L_2[2]);
         temp=temp->next;
     }
