@@ -1,2 +1,0 @@
-remove !(resi 105+93 or resi 105+87 or resi 105+56 or resi 105+47 or resi 105+44 or resi 105+4)
-remove !(resi 169 or resi 160 or resi 140 or resi 139 or resi 123 or resi 120 or resi 110)
