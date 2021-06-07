@@ -1,3 +1,4 @@
-CPP_code/lib/*
 .DS_Store
 .gitignore
+gromacs_install
+gromacs-2021.1

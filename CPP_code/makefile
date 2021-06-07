@@ -1,10 +1,10 @@
 IDIR =./include
 SDIR =./src
 CC=g++
-CFLAGS=-I$(IDIR) -pg -I/usr/local/gromacs/include -I./lib/gromacs-2021.1/src -DGMX_DOUBLE=0 -fopenmp
+CFLAGS=-I$(IDIR) -pg -DGMX_DOUBLE=0 -fopenmp
 
 ODIR=./obj
-LDIR =/usr/local/gromacs/lib
+LDIR =./lib
 
 LIBS=-lgromacs  -lm
 
@@ -19,7 +19,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 test: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) -L $(LDIR) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) -L$(LDIR) $(LIBS)
 
 run: test
 	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/out.pdb -v1

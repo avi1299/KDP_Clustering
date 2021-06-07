@@ -108,7 +108,7 @@ int main(int argc,char *argv[])
 
 
     //XTC Experimenting-------------------------------------------------
-    struct t_fileio* fio = open_xtc("md.xtc", "r");
+    struct t_fileio* fio = open_xtc("../Datafiles/md.xtc", "r");
     int natoms;
     int64_t step;
     real time,prec;
