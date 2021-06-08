@@ -5,6 +5,7 @@
 #include "output.h"
 #include "graph.h"
 #include <omp.h>
+#include <string.h>
 #include "gromacs/fileio/xtcio.h"
 
 //#define LLEN 300
@@ -14,16 +15,19 @@
 int main(int argc,char *argv[])
 {
     //Initialize flags and FIle pointers
-    FILE *fp_in, *fp_out;
+    FILE *fp_in = NULL, *fp_out=NULL;
+    struct t_fileio* fio = NULL;
     static int verbose_level=0;
     static int check_strict_flag=0;
     static int greater_than_flag=0;
     static int threshold=-1;
     static int threshold_flag=0;
     static int probability_flag=0;
+    static int XTC_in_flag=0;
+    //static int XTC_out_flag=0;
     const char *ext = ".xtc";
-    size_t xlen = strlen(ext);
-    size_t slen;
+    int xlen = strlen(ext);
+    int slen;
     //t_fileio *fif=open_xtc("t.xtc","r");
     /*------------------------- START: read the arguments-------------------------*/
     int c;
@@ -43,17 +47,18 @@ int main(int argc,char *argv[])
                 printf("  -p \t\t: Prints the percentage of molecule belonging to a cluster rather than the number of molecules\n");
                 exit(0);
             case 'f':
-                if(( fp_in  =fopen(optarg,"r"))==NULL)
+                slen = strlen(optarg);
+                if(strcasecmp(optarg + slen - xlen, ext) == 0)
+                {
+                    XTC_in_flag=1;
+                    fio = open_xtc(optarg, "r");
+                    //printf("XTC file\n");
+                    //exit(0);
+                }
+                else if(( fp_in  =fopen(optarg,"r"))==NULL)
                 {
                     printf("cannot open Infile \n"); 
                     exit(0); 
-                }
-                slen = strlen(optarg);
-                if(strcmp(optarg + slen - xlen, ext) == 0)
-                {
-                    fclose(fp_in);
-                    printf("XTC file\n");
-                    exit(0);
                 }
                 break;
             case 'o':
@@ -62,6 +67,14 @@ int main(int argc,char *argv[])
                     printf("cannot open Outfile \n"); 
                     exit(0); 
                 }
+                // slen = strlen(optarg);
+                // if(strcasecmp(optarg + slen - xlen, ext) == 0)
+                // {
+                //     XTC_out_flag=1;
+                //     fclose(fp_out);
+                //     //printf("XTC file\n");
+                //     //exit(0);
+                // }
                 break;
             case 'v':
                 verbose_level=atoi(optarg);
@@ -100,6 +113,7 @@ int main(int argc,char *argv[])
 
         }
     }
+
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
     int no_of_molecules=0;
@@ -108,26 +122,40 @@ int main(int argc,char *argv[])
 
 
     //XTC Experimenting-------------------------------------------------
-    struct t_fileio* fio = open_xtc("../Datafiles/md.xtc", "r");
-    int natoms;
-    int64_t step;
-    real time,prec;
-    matrix box;
-    gmx_bool bOK;
-    rvec* x;
-    int a = read_first_xtc(fio,&natoms,&step,&time,box,&x,&prec,&bOK);
-    printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
-    for(i=0;i<DIM;i++)
+    if(XTC_in_flag==1)
     {
-        for(j=0;j<DIM;j++)
-            printf("%f\t",box[i][j]);
-        printf("\n");
-    }
-    for(i=0;i<natoms;i+=500)
-        printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
-        
+        int natoms;
+        int64_t step;
+        real time,prec;
+        matrix box;
+        gmx_bool bOK;
+        rvec* x;
+        int a = read_first_xtc(fio,&natoms,&step,&time,box,&x,&prec,&bOK);
+        printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
+        for(i=0;i<DIM;i++)
+        {
+            for(j=0;j<DIM;j++)
+                printf("%f\t",box[i][j]);
+            printf("\n");
+        }
+        for(i=0;i<natoms;i+=500)
+            printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
+                
+        a = read_first_xtc(fio,&natoms,&step,&time,box,&x,&prec,&bOK);
+        printf("Next XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
+        for(i=0;i<DIM;i++)
+        {
+            for(j=0;j<DIM;j++)
+                printf("%f\t",box[i][j]);
+            printf("\n");
+        }
+        for(i=0;i<natoms;i+=500)
+            printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
 
-    close_xtc(fio);
+        close_xtc(fio);
+        exit(0);
+    }
+
     //XTC Experimenting-------------------------------------------------
  
 

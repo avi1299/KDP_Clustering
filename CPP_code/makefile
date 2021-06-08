@@ -1,10 +1,12 @@
 IDIR =./include
 SDIR =./src
-CC=g++
-CFLAGS=-I$(IDIR) -pg -DGMX_DOUBLE=0 -fopenmp
-
 ODIR=./obj
 LDIR =./lib
+CC=g++
+CFLAGS=-I$(IDIR) -pg -DGMX_DOUBLE=0 -fopenmp
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+MKFILE_DIR := $(dir $(MKFILE_PATH))
+LD_LIBRARY_PATH=$(MKFILE_DIR)lib
 
 LIBS=-lgromacs  -lm
 
@@ -15,11 +17,12 @@ _OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o test.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
 
-test: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) -L$(LDIR) $(LIBS)
+$(ODIR)/%.o:$(SDIR)/%.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) -L$(LDIR) $(LIBS) -Wl,-rpath=$(LD_LIBRARY_PATH)
+
+test:$(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) -L$(LDIR) $(LIBS) -Wl,-rpath=$(LD_LIBRARY_PATH)
 
 run: test
 	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/out.pdb -v1
