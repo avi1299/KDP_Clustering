@@ -25,12 +25,18 @@ test:$(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) -L$(LDIR) $(LIBS) -Wl,-rpath=$(LD_LIBRARY_PATH)
 
 run: test
-	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/out.pdb -v1
+	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/test_out.pdb -v1
+
+xtc_1: test
+	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -v2 -s0 -g -c
+
+xtc_1_silent: test
+	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb
 
 run_silent: test
-	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/out.pdb
+	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/test_out.pdb
 
-gmon.out: run_silent
+gmon.out: xtc_1_silent
 
 
 perf: gmon.out test
@@ -42,3 +48,4 @@ clean:
 	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
 	rm -f gmon.out perf_analysis.txt
 	rm -f test
+	rm -f ../Datafiles/test_out.pdb

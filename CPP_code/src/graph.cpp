@@ -1,5 +1,7 @@
 #include "graph.h"
 
+int parallelism_enabled=0;
+
 //Constructs adjacency list from the array of molecules by checking connectednes between molecules
 void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[])
 {
@@ -9,8 +11,10 @@ void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_
         adjacency_list[i].top=NULL;
         adjacency_list[i].length=0;
     }
+    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(i=0;i<no_of_molecules-1;i++)
     {
+        //#pragma omp parallel for
         for(j=i+1;j<no_of_molecules;j++)
         {
             if(connected_molecules(&molecules[i],&molecules[j],boxlength))
@@ -30,8 +34,10 @@ void adjacency_list_constructor_verbose(HPO molecules[],coordinates boxlength,in
         adjacency_list[i].top=NULL;
         adjacency_list[i].length=0;
     }
+    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(i=0;i<no_of_molecules-1;i++)
     {
+        //#pragma omp parallel for
         for(j=i+1;j<no_of_molecules;j++)
         {
             if(connected_molecules(&molecules[i],&molecules[j],boxlength))

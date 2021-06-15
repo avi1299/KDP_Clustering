@@ -26,6 +26,17 @@ typedef struct
         coordinates O2L_2;
 } HPO;
 
+enum atom_order {
+ P,
+ OHL_1,
+ HOL_1,
+ OHL_2,
+ HOL_2,
+ O2L_1,
+ O2L_2
+};
+
+
 //Structure for cluster
 typedef struct
 {

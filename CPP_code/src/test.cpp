@@ -8,6 +8,8 @@
 #include <string.h>
 #include "gromacs/fileio/xtcio.h"
 
+//void XTC_reader(struct t_fileio *fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
+
 //#define LLEN 300
 #define NAME 100
 #define MAX_M 5000
@@ -15,7 +17,7 @@
 int main(int argc,char *argv[])
 {
     //Initialize flags and FIle pointers
-    FILE *fp_in = NULL, *fp_out=NULL;
+    FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
     struct t_fileio* fio = NULL;
     static int verbose_level=0;
     static int check_strict_flag=0;
@@ -31,7 +33,7 @@ int main(int argc,char *argv[])
     //t_fileio *fif=open_xtc("t.xtc","r");
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:cgs:hp")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hp")) != -1 )
     {
         switch(c)
         {
@@ -39,6 +41,7 @@ int main(int argc,char *argv[])
                 printf("Usage: ./test [OPTIONS].. [ARGUMENTS]..\n");
                 printf("  -h\t\t: Prints the help information and exits\n");
                 printf("  -f <file>\t: Specify the input file\n");
+                printf("  -t <file>\t: Specify the .top file in case of XTC input\n");
                 printf("  -o <file>\t: Specify the output file\n");
                 printf("  -v <int>\t: Specify the verbose level among {1,2,3,4}\n");
                 printf("  -c \t\t: Enables checking if stricter connectedness conditions affects number of connections in each configuration\n");
@@ -67,14 +70,13 @@ int main(int argc,char *argv[])
                     printf("cannot open Outfile \n"); 
                     exit(0); 
                 }
-                // slen = strlen(optarg);
-                // if(strcasecmp(optarg + slen - xlen, ext) == 0)
-                // {
-                //     XTC_out_flag=1;
-                //     fclose(fp_out);
-                //     //printf("XTC file\n");
-                //     //exit(0);
-                // }
+                break;
+            case 't':
+                if(( fp_top  =fopen(optarg,"r"))==NULL)
+                {
+                    printf("cannot open Topfile \n"); 
+                    exit(0); 
+                }
                 break;
             case 'v':
                 verbose_level=atoi(optarg);
@@ -118,57 +120,38 @@ int main(int argc,char *argv[])
     int start_mol_no=-1;
     int no_of_molecules=0;
     int i,j;
-
-
-
-    //XTC Experimenting-------------------------------------------------
-    if(XTC_in_flag==1)
-    {
-        int natoms;
-        int64_t step;
-        real time,prec;
-        matrix box;
-        gmx_bool bOK;
-        rvec* x;
-        int a = read_first_xtc(fio,&natoms,&step,&time,box,&x,&prec,&bOK);
-        printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
-        for(i=0;i<DIM;i++)
-        {
-            for(j=0;j<DIM;j++)
-                printf("%f\t",box[i][j]);
-            printf("\n");
-        }
-        for(i=0;i<natoms;i+=500)
-            printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
-                
-        a = read_first_xtc(fio,&natoms,&step,&time,box,&x,&prec,&bOK);
-        printf("Next XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
-        for(i=0;i<DIM;i++)
-        {
-            for(j=0;j<DIM;j++)
-                printf("%f\t",box[i][j]);
-            printf("\n");
-        }
-        for(i=0;i<natoms;i+=500)
-            printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
-
-        close_xtc(fio);
-        exit(0);
-    }
-
-    //XTC Experimenting-------------------------------------------------
- 
-
-
     
     HPO molecules[MAX_M]; //only for 5000 molecules
+    // printf("%x\n",&molecules[0]);
+    // printf("%x\n",&molecules[0].P);
+    // printf("%x\n",&molecules[0].OHL_1);
+    // printf("%x\n",&molecules[0].HOL_1);
+    // printf("%x\n",&molecules[0].OHL_2);
+    // printf("%x\n",&molecules[0].HOL_2);
+    // printf("%x\n",&molecules[0].O2L_1);
+    // printf("%x\n",&molecules[0].O2L_2);
     //static cluster_mt cluster[MAX_M];//for all the clusters
     coordinates boxlength;//, coordinate;
     int conf_number,conf;
     HPO* mol_start=NULL;
     /*-------------------------START: read the file --------------------------*/
-
-    PDB_reader(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
+    if(XTC_in_flag==1)
+    {
+        if(fp_top==NULL)
+        {
+            printf("Top file not specified\n");
+            exit(0);
+        }
+        // @ts-ignore
+        XTC_reader(fio,fp_top,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
+        //exit(0);
+        // for(i=0;i<no_of_molecules;i++)
+        //     print_HPO(&molecules[i]);
+        // printf("\n");
+        
+    }
+    else
+        PDB_reader(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
     
     if(verbose_level>=1)
     {
@@ -186,12 +169,14 @@ int main(int argc,char *argv[])
     int number_of_clusters;
     stack cluster[no_of_molecules];
     int cluster_max_size=0;
-    int cluster_size[no_of_molecules];
+    int cluster_size[no_of_molecules+1];
 
     if(fp_out!=NULL)
     {
         fprintf(fp_out, "CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
                 boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);
+        // printf("CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
+        //         boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);     
     }
     
     for(conf=0;conf<conf_number;conf++)
@@ -282,7 +267,7 @@ int main(int argc,char *argv[])
         //    printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
 
     
-        for(i=0;i<no_of_molecules;i++)
+        for(i=0;i<=no_of_molecules;i++)
             cluster_size[i]=0;
 
         //Initializing the stacks
@@ -309,6 +294,7 @@ int main(int argc,char *argv[])
 
         if(verbose_level>=3)
         {
+            //printf("%d\n",cluster[1].length);
             for(i=0;i<number_of_clusters;i++)
             {
                 printf("Cluster %d\t| Cluster size : %d | Molecules: ",i,cluster[i].length);
