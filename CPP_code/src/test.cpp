@@ -7,16 +7,19 @@
 #include <omp.h>
 #include <string.h>
 #include "gromacs/fileio/xtcio.h"
+#include <time.h>
 
-//void XTC_reader(struct t_fileio *fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
+void XTC_reader(struct t_fileio *fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
 
 //#define LLEN 300
 #define NAME 100
-#define MAX_M 5000
+#define MAX_M 100000
 
 int main(int argc,char *argv[])
 {
     //Initialize flags and FIle pointers
+    double time_spent = 0.0;
+    clock_t begin = clock();
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
     struct t_fileio* fio = NULL;
     static int verbose_level=0;
@@ -26,11 +29,9 @@ int main(int argc,char *argv[])
     static int threshold_flag=0;
     static int probability_flag=0;
     static int XTC_in_flag=0;
-    //static int XTC_out_flag=0;
     const char *ext = ".xtc";
     int xlen = strlen(ext);
     int slen;
-    //t_fileio *fif=open_xtc("t.xtc","r");
     /*------------------------- START: read the arguments-------------------------*/
     int c;
     while(( c = getopt(argc, argv, "f:o:v:t:cgs:hp")) != -1 )
@@ -55,8 +56,6 @@ int main(int argc,char *argv[])
                 {
                     XTC_in_flag=1;
                     fio = open_xtc(optarg, "r");
-                    //printf("XTC file\n");
-                    //exit(0);
                 }
                 else if(( fp_in  =fopen(optarg,"r"))==NULL)
                 {
@@ -115,13 +114,15 @@ int main(int argc,char *argv[])
 
         }
     }
-
+    
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
     int no_of_molecules=0;
     int i,j;
-    
-    HPO molecules[MAX_M]; //only for 5000 molecules
+    //printf("hi\n");
+    //std::vector<HPO> molecules;
+    //molecules.resize(MAX_M);
+    static HPO molecules[MAX_M]; //only for 5000 molecules
     // printf("%x\n",&molecules[0]);
     // printf("%x\n",&molecules[0].P);
     // printf("%x\n",&molecules[0].OHL_1);
@@ -335,5 +336,10 @@ int main(int argc,char *argv[])
 
     if(fp_out!=NULL)
         fclose(fp_out);
+
+    clock_t end = clock();
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+ 
+    printf("The elapsed time is %f seconds\n", time_spent);
     return 0;
 }

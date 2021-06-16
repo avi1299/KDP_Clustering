@@ -3,7 +3,7 @@ SDIR =./src
 ODIR=./obj
 LDIR =./lib
 CC=g++
-CFLAGS=-I$(IDIR) -pg -DGMX_DOUBLE=0 -fopenmp
+CFLAGS=-I$(IDIR) -DGMX_DOUBLE=0 -fopenmp -pg -g
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MKFILE_DIR := $(dir $(MKFILE_PATH))
 LD_LIBRARY_PATH=$(MKFILE_DIR)lib
@@ -37,7 +37,6 @@ run_silent: test
 	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/test_out.pdb
 
 gmon.out: xtc_1_silent
-
 
 perf: gmon.out test
 	gprof test gmon.out > perf_analysis.txt

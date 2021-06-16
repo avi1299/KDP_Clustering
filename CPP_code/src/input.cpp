@@ -205,6 +205,11 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates bo
         *conf_number=1;
         *start_mol_no=*no_of_molecules;
         molecule_entry(molecules,x,atom_name_list,*no_of_molecules);
+        while(read_next_xtc(fio,natoms,&step,&time,box,x,&prec,&bOK))
+        {
+            molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],x,atom_name_list,*no_of_molecules);
+            (*conf_number)++;
+        }
         // printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
         // for(i=0;i<DIM;i++)
         // {
