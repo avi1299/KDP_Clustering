@@ -3,14 +3,14 @@ SDIR =./src
 ODIR=./obj
 LDIR =./lib
 CC=g++
-CFLAGS=-I$(IDIR) -DGMX_DOUBLE=0 -fopenmp -pg -g
+CFLAGS=-I$(IDIR) -DGMX_DOUBLE=0 -fopenmp #-pg -g
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MKFILE_DIR := $(dir $(MKFILE_PATH))
 LD_LIBRARY_PATH=$(MKFILE_DIR)lib
 
 LIBS=-lgromacs  -lm
 
-_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h
+_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h cluster.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o test.o
@@ -28,7 +28,7 @@ run: test
 	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/test_out.pdb -v1
 
 xtc_1: test
-	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -v2 -s0 -g -c
+	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -v2
 
 xtc_1_silent: test
 	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb

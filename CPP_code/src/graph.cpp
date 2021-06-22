@@ -53,3 +53,21 @@ void adjacency_list_constructor_verbose(HPO molecules[],coordinates boxlength,in
         }
     }
 }
+
+void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters)
+{
+    int i;
+    node* temp;
+    double sum;
+    for(i=0;i<number_of_clusters;i++)
+    {
+        sum=0;
+        temp=cluster[i].top;
+        while(temp!=NULL)
+        {
+            sum+=coordination_no[temp->data];
+            temp=temp->next;
+        }
+        cluster_coordination_no[i]=sum/cluster[i].length;
+    }
+}

@@ -1,0 +1,56 @@
+#include "forcefield.itp"
+#include "tip3p.itp"
+
+[ moleculetype ]
+; molname   nrexcl
+K           1
+
+[ atoms ]
+; id    at type     res nr  residu name at name  cg nr  charge   
+1       POT         1       K           K        1      1        
+
+[ moleculetype ]
+HPO         3
+
+[ atoms ]
+1       PL          1       HPO         PL       1      1.25
+2       OHL         1       HPO        OHL       1     -0.72
+3       HOL         1       HPO        HOL       1      0.39
+4       OHL         1       HPO        OHL       1     -0.72
+5       HOL         1       HPO        HOL       1      0.39
+6       O2L         1       HPO        O2L       1     -0.795
+7       O2L         1       HPO        O2L       1     -0.795
+
+[ bonds ]
+1       2           1
+1       4           1
+1       6           1
+1       7           1
+2       3           1
+4       5           1
+
+[ angles ]
+1       2           3       5
+1       4           5       5
+2       1           4       5
+2       1           6       5
+2       1           7       5
+4       1           6       5
+4       1           7       5
+6       1           7       5
+
+[ dihedrals ]
+3       2           1       4          9
+3       2           1       6          9
+3       2           1       7          9
+5       4           1       2          9
+5       4           1       6          9
+5       4           1       7          9
+
+[ system ]
+KH2PO4 in water
+
+[ molecules ]
+K        104
+HPO      104
+SOL      1632

@@ -4,12 +4,15 @@
 #include "input.h"
 #include "output.h"
 #include "graph.h"
+#include "cluster.h"
 #include <omp.h>
 #include <string.h>
 #include "gromacs/fileio/xtcio.h"
 #include <time.h>
 
-void XTC_reader(struct t_fileio *fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
+void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters);
+
 
 //#define LLEN 300
 #define NAME 100
@@ -18,9 +21,11 @@ void XTC_reader(struct t_fileio *fio,FILE* fp_top,HPO molecules[],coordinates bo
 int main(int argc,char *argv[])
 {
     //Initialize flags and FIle pointers
+
     double time_spent = 0.0;
     clock_t begin = clock();
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
+    real time_to_start=0.0;
     struct t_fileio* fio = NULL;
     static int verbose_level=0;
     static int check_strict_flag=0;
@@ -144,7 +149,7 @@ int main(int argc,char *argv[])
             exit(0);
         }
         // @ts-ignore
-        XTC_reader(fio,fp_top,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
+        XTC_reader(fio,fp_top,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number,time_to_start);
         //exit(0);
         // for(i=0;i<no_of_molecules;i++)
         //     print_HPO(&molecules[i]);
@@ -165,13 +170,18 @@ int main(int argc,char *argv[])
     /*-------------------------END: read the file --------------------------*/
     //Constructing the graph by the means of an adjacency list
     stack adjacency_list[no_of_molecules];
+    int coordination_no[no_of_molecules];
+    double average_cluster_coordination_no[no_of_molecules];
+    double coordination_no_for_cluster_size[no_of_molecules+1];
     int connectedness[MAX_CONNECTIONS+1];
     int visited[no_of_molecules];
     int number_of_clusters;
     stack cluster[no_of_molecules];
     int cluster_max_size=0;
     int cluster_size[no_of_molecules+1];
+    double cluster_coordination_statistic[no_of_molecules+1];
 
+    //Printing the start of the PDB file
     if(fp_out!=NULL)
     {
         fprintf(fp_out, "CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
@@ -225,14 +235,16 @@ int main(int argc,char *argv[])
             printf("\n");
         }
 
-        
+        for(i=0;i<=MAX_CONNECTIONS;i++)
+            connectedness[i]=0;
+        for(i=0;i<no_of_molecules;i++)
+        {
+            connectedness[adjacency_list[i].length]++;
+            coordination_no[i]=adjacency_list[i].length;
+        }
         if(verbose_level>=2)
         {
             //Statistics of connectedness
-            for(i=0;i<=MAX_CONNECTIONS;i++)
-                connectedness[i]=0;
-            for(i=0;i<no_of_molecules;i++)
-                connectedness[adjacency_list[i].length]++;
             for(i=0;i<=MAX_CONNECTIONS;i++)
                 printf("The number of molecules with %d connections is %d\n",i,connectedness[i]);
             printf("\n");
@@ -267,9 +279,16 @@ int main(int argc,char *argv[])
         //for(i=0;i<no_of_molecules;i++)
         //    printf("%d molecule belongs to cluster number %d\n",i+start_mol_no,visited[i]);
 
-    
+        //Setting the array to 0;
         for(i=0;i<=no_of_molecules;i++)
             cluster_size[i]=0;
+            
+        for(i=0;i<no_of_molecules;i++)
+        {
+            average_cluster_coordination_no[i]=0;
+            cluster_coordination_statistic[i]=0;
+        }
+            
 
         //Initializing the stacks
         for(i=0;i<number_of_clusters;i++)
@@ -290,6 +309,24 @@ int main(int argc,char *argv[])
             if(cluster[i].length>cluster_max_size)
                 cluster_max_size=cluster[i].length;
         }
+
+        
+
+        //Calculation average coordination number of cluster
+        calculate_cluster_coordination_number(cluster,coordination_no,average_cluster_coordination_no,number_of_clusters);
+
+        for(i=0;i<number_of_clusters;i++)
+        {
+            cluster_coordination_statistic[cluster[i].length]+=average_cluster_coordination_no[i];
+        }
+        for(i=2;i<=cluster_max_size;i++)
+        {
+            if(cluster_size[i]!=0)
+                cluster_coordination_statistic[i]/=cluster_size[i];
+            else
+                cluster_coordination_statistic[i]=0;
+        }
+
         if(verbose_level>=1)
             printf("Number of clusters: %d  with largest size: %d\n\n",number_of_clusters,cluster_max_size);
 
@@ -298,7 +335,7 @@ int main(int argc,char *argv[])
             //printf("%d\n",cluster[1].length);
             for(i=0;i<number_of_clusters;i++)
             {
-                printf("Cluster %d\t| Cluster size : %d | Molecules: ",i,cluster[i].length);
+                printf("Cluster %d\t| Cluster size : %d | Coordin. No. : %lf |Molecules: ",i,cluster[i].length,average_cluster_coordination_no[i]);
                 print_stack(&cluster[i]);
             }
             printf("\n");
@@ -309,7 +346,7 @@ int main(int argc,char *argv[])
         {
             if(probability_flag==0)
                 for(i=1;i<=cluster_max_size;i++)
-                    printf("The number of clusters with %d molecules is %d\n",i,cluster_size[i]);
+                    printf("The number of clusters with %d molecules is %d with avg connections %lf\n",i,cluster_size[i],cluster_coordination_statistic[i]);
             else
                 for(i=1;i<=cluster_max_size;i++)
                     printf("Percentage of molecules belonging to a cluster of size %d is %5.3lf\n",i,(double)cluster_size[i]*i/no_of_molecules*100);            

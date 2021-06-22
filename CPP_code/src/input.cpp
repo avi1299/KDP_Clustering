@@ -182,7 +182,7 @@ void molecule_entry(HPO molecules[],rvec* x,char ** atom_name_list, int no_of_mo
     }
 }
 
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
 {
         char **atom_name_list;
         atom_name_list=(char **)malloc(sizeof(char *)*7);
@@ -202,14 +202,21 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates bo
         {
             boxlength[i]=box[i][i]*10;
         }
-        *conf_number=1;
+        *conf_number=0;
         *start_mol_no=*no_of_molecules;
-        molecule_entry(molecules,x,atom_name_list,*no_of_molecules);
-        while(read_next_xtc(fio,natoms,&step,&time,box,x,&prec,&bOK))
+        //molecule_entry(molecules,x,atom_name_list,*no_of_molecules);
+        do
         {
-            molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],x,atom_name_list,*no_of_molecules);
-            (*conf_number)++;
+            //printf("Time: %f\n",time);
+            if(time>=time_to_start)
+            {
+                molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],x,atom_name_list,*no_of_molecules);
+                (*conf_number)++;
+            }
+
         }
+        while(read_next_xtc(fio,natoms,&step,&time,box,x,&prec,&bOK));
+        //printf("Time: %f\n",time);
         // printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
         // for(i=0;i<DIM;i++)
         // {
