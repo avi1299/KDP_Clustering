@@ -16,7 +16,7 @@ void calculate_cluster_coordination_number(stack cluster[],int coordination_no[]
 
 //#define LLEN 300
 #define NAME 100
-#define MAX_M 100000
+#define MAX_M 20000000
 
 int main(int argc,char *argv[])
 {
@@ -25,7 +25,9 @@ int main(int argc,char *argv[])
     double time_spent = 0.0;
     clock_t begin = clock();
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
+    FILE *fp_stats=fopen("cluster_statistics.dat","w");
     real time_to_start=0.0;
+    int print_every_x_confs=10;
     struct t_fileio* fio = NULL;
     static int verbose_level=0;
     static int check_strict_flag=0;
@@ -39,7 +41,7 @@ int main(int argc,char *argv[])
     int slen;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hp")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:")) != -1 )
     {
         switch(c)
         {
@@ -54,6 +56,7 @@ int main(int argc,char *argv[])
                 printf("  -s <int>\t: Specify size of clusters to be outputted in PDB format\n");
                 printf("  -g \t\t: Used with -s to include clusters having size greater than or equal to the argument for -s\n");
                 printf("  -p \t\t: Prints the percentage of molecule belonging to a cluster rather than the number of molecules\n");
+                printf("  -m \t\t: Prints statisitics every argument number of configurations. Needs verbose levle to be 0\n");
                 exit(0);
             case 'f':
                 slen = strlen(optarg);
@@ -106,6 +109,14 @@ int main(int argc,char *argv[])
             case 's':
                 threshold_flag=1;
                 threshold=atoi(optarg);
+                break;
+             case 'm':
+                print_every_x_confs=atoi(optarg);
+                if(print_every_x_confs<1)
+                {
+                    printf("Please set argument for -m as in int greater than 0\n");
+                    exit(0);
+                }
                 break;
             case '?':
                 if (optopt=='v')
@@ -353,6 +364,17 @@ int main(int argc,char *argv[])
             printf("\n");
         }
 
+        // if((conf%10==0)&&(verbose_level==0))
+        // {
+        //     printf("Conf: %d | Max Cluster size: %d\n",conf,cluster_max_size);
+        // }
+
+        //Adding details to cluster_statisitcs.dat
+        for(i=1;i<=no_of_molecules;i++)
+            fprintf(fp_stats,"%d ",cluster_size[i]);
+        fprintf(fp_stats,"\n");
+        
+
         /*--------------------------END: clustering calculations------------------*/
 
         /*-----------------------START: Output PDB------------------*/
@@ -364,15 +386,33 @@ int main(int argc,char *argv[])
         }
 
         /*-----------------------END: Output PDB------------------*/
+
+        /*-----------------------START: Print Stats------------------*/
+        if(threshold_flag==0)
+            threshold=cluster_max_size;
+        if(fp_out!=NULL)
+        {
+            fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag);
+        }
+
+        /*-----------------------END: Print Stats------------------*/
         for(i=0;i<number_of_clusters;i++)
         {
             empty_stack(&cluster[i]);
+        }
+
+        if((verbose_level==0)&&(conf%print_every_x_confs==0))
+        {
+            double percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
+            printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf\n",conf,cluster_max_size,percent_clustered_molecules);
         }
 
     }
 
     if(fp_out!=NULL)
         fclose(fp_out);
+
+    fclose(fp_stats);
 
     clock_t end = clock();
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;

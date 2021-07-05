@@ -31,7 +31,13 @@ xtc_1: test
 	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -v2
 
 xtc_1_silent: test
-	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb
+	./test -f ../Datafiles/M2A_S3_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -m 10
+
+xtc_1001: test
+	./test -f ../Datafiles/M2A_S3_1001_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -v2
+
+xtc_1001_silent: test
+	./test -f ../Datafiles/M2A_S3_1001_Avi.xtc -t ../Datafiles/M2A_S3.top -o ../Datafiles/test_out.pdb -m 10
 
 run_silent: test
 	./test -f ../Datafiles/M1A_S2_16.pdb -o ../Datafiles/test_out.pdb
