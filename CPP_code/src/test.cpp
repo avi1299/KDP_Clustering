@@ -10,28 +10,34 @@
 #include "gromacs/fileio/xtcio.h"
 #include <time.h>
 
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
-void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters);
+//void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
+//void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters);
+//void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag);
 
 
 //#define LLEN 300
 #define NAME 100
 #define MAX_M 20000000
+#define MAX_MOLECULES 1200 
 
 int main(int argc,char *argv[])
 {
     //Initialize flags and FIle pointers
 
     double time_spent = 0.0;
-    clock_t begin = clock();
+    double overall_cluster_size=0,overall_percentage_clustered=0,overall_percentage_strong=0;
+    double percent_clustered_molecules,strong_ratio;
+    clock_t begin = omp_get_wtime();
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
     FILE *fp_stats=fopen("cluster_statistics.dat","w");
+    FILE *fp_cms=fopen("cluster_max_size.dat","w");
     real time_to_start=0.0;
     int print_every_x_confs=10;
     struct t_fileio* fio = NULL;
     static int verbose_level=0;
     static int check_strict_flag=0;
     static int greater_than_flag=0;
+    static int strong_connections_flag=0;
     static int threshold=-1;
     static int threshold_flag=0;
     static int probability_flag=0;
@@ -41,7 +47,7 @@ int main(int argc,char *argv[])
     int slen;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:r")) != -1 )
     {
         switch(c)
         {
@@ -57,6 +63,7 @@ int main(int argc,char *argv[])
                 printf("  -g \t\t: Used with -s to include clusters having size greater than or equal to the argument for -s\n");
                 printf("  -p \t\t: Prints the percentage of molecule belonging to a cluster rather than the number of molecules\n");
                 printf("  -m \t\t: Prints statisitics every argument number of configurations. Needs verbose levle to be 0\n");
+                printf("  -r \t\t: Uses only strong bonds to perform clustering\n");
                 exit(0);
             case 'f':
                 slen = strlen(optarg);
@@ -100,6 +107,9 @@ int main(int argc,char *argv[])
             case 'c':
                 check_strict_flag=1;
                 break;
+            case 'r':
+                strong_connections_flag=1;
+                break;
             case 'p':
                 probability_flag=1;
                 break;
@@ -138,7 +148,9 @@ int main(int argc,char *argv[])
     //printf("hi\n");
     //std::vector<HPO> molecules;
     //molecules.resize(MAX_M);
-    static HPO molecules[MAX_M]; //only for 5000 molecules
+    static HPO molecules[MAX_M];
+    static K Kmolecules[MAX_M];
+    static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     // printf("%x\n",&molecules[0]);
     // printf("%x\n",&molecules[0].P);
     // printf("%x\n",&molecules[0].OHL_1);
@@ -225,13 +237,21 @@ int main(int argc,char *argv[])
             printf("\n");
         }
 
-        if(verbose_level>=3)
-        {
-            adjacency_list_constructor_verbose(mol_start,boxlength,no_of_molecules,adjacency_list);
-            printf("\n");
-        }
-        else
-            adjacency_list_constructor(mol_start,boxlength,no_of_molecules,adjacency_list);
+        adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
+
+        // if(verbose_level>=3)
+        // {
+        //     if(strong_connections_flag)
+        //         strongly_adjacency_list_constructor_verbose(mol_start,boxlength,no_of_molecules,adjacency_list);
+        //     else
+        //         adjacency_list_constructor_verbose(mol_start,boxlength,no_of_molecules,adjacency_list);
+        //     printf("\n");
+        // }
+        // else
+        //     if(strong_connections_flag)
+        //         strongly_adjacency_list_constructor(mol_start,boxlength,no_of_molecules,adjacency_list);
+        //     else
+        //         adjacency_list_constructor(mol_start,boxlength,no_of_molecules,adjacency_list);
 
             /*------------------------START: connectedness calculations-----------------*/
     
@@ -373,6 +393,8 @@ int main(int argc,char *argv[])
         for(i=1;i<=no_of_molecules;i++)
             fprintf(fp_stats,"%d ",cluster_size[i]);
         fprintf(fp_stats,"\n");
+
+        fprintf(fp_cms,"%d\n",cluster_max_size);
         
 
         /*--------------------------END: clustering calculations------------------*/
@@ -401,21 +423,32 @@ int main(int argc,char *argv[])
             empty_stack(&cluster[i]);
         }
 
+        overall_cluster_size+=cluster_max_size;
+        percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
+        overall_percentage_clustered+=percent_clustered_molecules;
+        strong_ratio=strong_connection_ratio(mol_start,boxlength,no_of_molecules)*100;
+        overall_percentage_strong+=strong_ratio;
+
         if((verbose_level==0)&&(conf%print_every_x_confs==0))
         {
-            double percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
-            printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf\n",conf,cluster_max_size,percent_clustered_molecules);
+            //double percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
+            printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio);
         }
 
     }
+    overall_cluster_size/=conf_number;
+    overall_percentage_clustered/=conf_number;
+    overall_percentage_strong/=conf_number;
+    printf("\nOverall | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong);
 
     if(fp_out!=NULL)
         fclose(fp_out);
 
     fclose(fp_stats);
+    fclose(fp_cms);
 
-    clock_t end = clock();
-    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+    clock_t end = omp_get_wtime();
+    time_spent += (double)(end - begin);
  
     printf("The elapsed time is %f seconds\n", time_spent);
     return 0;
