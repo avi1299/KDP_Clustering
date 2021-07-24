@@ -63,7 +63,7 @@ int connected_or_not(coordinates point1, coordinates point2, coordinates boxleng
 //Defining conditions of being connected
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom
 int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength);
-int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int* connection_strength);
+//int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int* connection_strength);
 
 
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L atom

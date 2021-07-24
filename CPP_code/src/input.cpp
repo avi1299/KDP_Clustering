@@ -3,13 +3,14 @@
 
 //Assumption all the molecules are listed together and though order of molecules doesn't matter, all the 7 atoms corresponding to a molecule should be together
 //i.e. one after the other.
-void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
+void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
 {
     int i,atom_no,mol_no,old_mol_no=-1;;
     char line[LLEN],atom_name[LLEN],mol_name[LLEN],tag[LLEN];
     int HOL_read=0;
     int OHL_read=0;
     int O2L_read=0;
+    int k_count=0;
     *no_of_molecules=-1;
     *conf_number=0;
     coordinates coordinate;
@@ -29,7 +30,13 @@ void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mol
         if(strcmp(tag,"END")==0)
             (*conf_number)++;
         //Executes below when it encounters HPO molecules. It extracts information for every atom in every HPO molecule 
-        if(strcmp(mol_name,"HPO")==0)
+        else if(strcmp(mol_name,"K")==0)
+        {
+            for(i=0;i<3;i++)
+                    Kmolecules[k_count].posn[i]=coordinate[i];
+            k_count++;
+        }
+        else if(strcmp(mol_name,"HPO")==0)
         {
             //Noting where the first HPO molecule was encountered
             if(*start_mol_no==-1)
@@ -97,16 +104,19 @@ void PDB_reader(FILE* fp_in,HPO molecules[],coordinates boxlength,int *no_of_mol
     fclose(fp_in);
 }
 
-void molecule_entry(HPO molecules[],rvec* x,char ** atom_name_list, int no_of_molecules)
+void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,char ** atom_name_list, int no_of_molecules)
 {
     int i,j,k;
+    //Input K molecules
+    for(i=0;i<no_of_molecules;i++){
+        for(j=0;j<3;j++){
+            Kmolecules[i].posn[j]=x[i][j]*10;
+        }
+    }
     int atom_no=no_of_molecules;
     int index=0;
     int OHL_read=0,O2L_read=0,HOL_read=0;
-    // for(i=0;i<7;i++)
-    // {
-    //     printf("%s\n",atom_name_list[i]);
-    // }
+    //Input HPO molecules
     for(j=0;j<no_of_molecules;j++)
     {
         //printf("molecule %d\n",j);
@@ -182,15 +192,11 @@ void molecule_entry(HPO molecules[],rvec* x,char ** atom_name_list, int no_of_mo
     }
 }
 
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
 {
         char **atom_name_list;
         atom_name_list=(char **)malloc(sizeof(char *)*7);
         TOP_reader(fp_top,no_of_molecules,"HPO",atom_name_list);
-        // for(int k=0;k<7;k++)
-        //     {
-        //         printf("%s\n",atom_name_list[k]);
-        //     }
         int natoms,i,j;
         int64_t step;
         real time,prec;
@@ -204,47 +210,16 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates bo
         }
         *conf_number=0;
         *start_mol_no=*no_of_molecules;
-        //molecule_entry(molecules,x,atom_name_list,*no_of_molecules);
         do
         {
-            //printf("Time: %f\n",time);
             if(time>=time_to_start)
             {
-                molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],x,atom_name_list,*no_of_molecules);
+                molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],&Kmolecules[(*no_of_molecules)*(*conf_number)],x,atom_name_list,*no_of_molecules);
                 (*conf_number)++;
             }
 
         }
         while(read_next_xtc(fio,natoms,&step,&time,box,x,&prec,&bOK));
-        //printf("Time: %f\n",time);
-        // printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
-        // for(i=0;i<DIM;i++)
-        // {
-        //     for(j=0;j<DIM;j++)
-        //         printf("%f\t",box[i][j]);
-        //     printf("\n");
-        // }
-        // for(i=0;i<natoms;i+=500)
-        //     printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
-        
-        // for(i=0;i<*no_of_molecules;i++)
-        //     print_HPO(&molecules[i]);
-        // while(read_next_xtc(fio,natoms,&step,&time,box,x,&prec,&bOK))
-        // {
-        //     a++;
-        //     printf("XTC read: %d\n",a);
-        //     //printf("XTC read: %d\nnatoms: %d\nstep: %ld\ntime: %f\nprec: %f\nbOK: %d\nbox: \n",a,natoms,step,time,prec,bOK);
-        //     // for(i=0;i<DIM;i++)
-        //     // {
-        //     //     for(j=0;j<DIM;j++)
-        //     //         printf("%f\t",box[i][j]);
-        //     //     printf("\n");
-        //     // }
-        // }     
-
-//        for(i=0;i<natoms;i+=500)
-//            printf("Atom %d: %f %f %f\n",i,x[i][0],x[i][1],x[i][2]);
-
         close_xtc(fio);
 }
 
@@ -323,10 +298,6 @@ void TOP_reader(FILE* fp_top,int *no_of_molecules,char *molecule_to_search,char 
         {
             skip_comments(fp_top,line);
             read_mol_order(fp_top,line,atom_name_list);
-            // for(int i=0;i<7;i++)
-            // {
-            //     printf("%s\n",atom_name_list[i]);
-            // }
         }
         else if((strcasecmp(tag,"molecules")==0))
         {

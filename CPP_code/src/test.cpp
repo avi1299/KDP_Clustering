@@ -5,29 +5,22 @@
 #include "output.h"
 #include "graph.h"
 #include "cluster.h"
+#include "constants.h"
 #include <omp.h>
 #include <string.h>
 #include "gromacs/fileio/xtcio.h"
 #include <time.h>
 
-//void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
-//void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters);
-//void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag);
 
-
-//#define LLEN 300
-#define NAME 100
-#define MAX_M 20000000
-#define MAX_MOLECULES 1200 
 
 int main(int argc,char *argv[])
 {
-    //Initialize flags and FIle pointers
-
-    double time_spent = 0.0;
+    //Initializing flags, time variables, file pointers and so on
+    struct timespec start, finish;
+    double elapsed;
+    clock_gettime(CLOCK_MONOTONIC, &start);
     double overall_cluster_size=0,overall_percentage_clustered=0,overall_percentage_strong=0;
     double percent_clustered_molecules,strong_ratio;
-    clock_t begin = omp_get_wtime();
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
     FILE *fp_stats=fopen("cluster_statistics.dat","w");
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
@@ -145,21 +138,10 @@ int main(int argc,char *argv[])
     int start_mol_no=-1;
     int no_of_molecules=0;
     int i,j;
-    //printf("hi\n");
-    //std::vector<HPO> molecules;
-    //molecules.resize(MAX_M);
+
     static HPO molecules[MAX_M];
     static K Kmolecules[MAX_M];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
-    // printf("%x\n",&molecules[0]);
-    // printf("%x\n",&molecules[0].P);
-    // printf("%x\n",&molecules[0].OHL_1);
-    // printf("%x\n",&molecules[0].HOL_1);
-    // printf("%x\n",&molecules[0].OHL_2);
-    // printf("%x\n",&molecules[0].HOL_2);
-    // printf("%x\n",&molecules[0].O2L_1);
-    // printf("%x\n",&molecules[0].O2L_2);
-    //static cluster_mt cluster[MAX_M];//for all the clusters
     coordinates boxlength;//, coordinate;
     int conf_number,conf;
     HPO* mol_start=NULL;
@@ -171,17 +153,12 @@ int main(int argc,char *argv[])
             printf("Top file not specified\n");
             exit(0);
         }
-        // @ts-ignore
-        XTC_reader(fio,fp_top,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number,time_to_start);
-        //exit(0);
-        // for(i=0;i<no_of_molecules;i++)
-        //     print_HPO(&molecules[i]);
-        // printf("\n");
-        
+        XTC_reader(fio,fp_top,molecules,Kmolecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number,time_to_start);
+
     }
     else
-        PDB_reader(fp_in,molecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
-    
+        PDB_reader(fp_in,molecules,Kmolecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
+
     if(verbose_level>=1)
     {
         printf("Number of configurations: %d\n\n",conf_number);
@@ -237,23 +214,13 @@ int main(int argc,char *argv[])
             printf("\n");
         }
 
-        adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
 
-        // if(verbose_level>=3)
-        // {
-        //     if(strong_connections_flag)
-        //         strongly_adjacency_list_constructor_verbose(mol_start,boxlength,no_of_molecules,adjacency_list);
-        //     else
-        //         adjacency_list_constructor_verbose(mol_start,boxlength,no_of_molecules,adjacency_list);
-        //     printf("\n");
-        // }
-        // else
-        //     if(strong_connections_flag)
-        //         strongly_adjacency_list_constructor(mol_start,boxlength,no_of_molecules,adjacency_list);
-        //     else
-        //         adjacency_list_constructor(mol_start,boxlength,no_of_molecules,adjacency_list);
-
-            /*------------------------START: connectedness calculations-----------------*/
+        /*------------------------START: connectedness calculations-----------------*/
+        
+        /*This part is parallelized */
+        //adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
+        adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix);
+        adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
     
         //Printing the adjacency list and connectedness
         if(verbose_level>=3)
@@ -395,6 +362,13 @@ int main(int argc,char *argv[])
         fprintf(fp_stats,"\n");
 
         fprintf(fp_cms,"%d\n",cluster_max_size);
+        // int k;
+        // if(conf==0)
+        // for(i=0;i<2;i++)
+        // for(j=0;j<MAX_MOLECULES;j++)
+        // for(k=0;k<MAX_MOLECULES;k++)
+        // fprintf(fp_cms,"%d",adjacency_matrix[i][j][k]);
+
         
 
         /*--------------------------END: clustering calculations------------------*/
@@ -410,12 +384,12 @@ int main(int argc,char *argv[])
         /*-----------------------END: Output PDB------------------*/
 
         /*-----------------------START: Print Stats------------------*/
-        if(threshold_flag==0)
-            threshold=cluster_max_size;
-        if(fp_out!=NULL)
-        {
-            fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag);
-        }
+        // if(threshold_flag==0)
+        //     threshold=cluster_max_size;
+        // if(fp_out!=NULL)
+        // {
+        //     fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag);
+        // }
 
         /*-----------------------END: Print Stats------------------*/
         for(i=0;i<number_of_clusters;i++)
@@ -426,7 +400,7 @@ int main(int argc,char *argv[])
         overall_cluster_size+=cluster_max_size;
         percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
         overall_percentage_clustered+=percent_clustered_molecules;
-        strong_ratio=strong_connection_ratio(mol_start,boxlength,no_of_molecules)*100;
+        strong_ratio=strong_connection_ratio(adjacency_matrix,no_of_molecules)*100;
         overall_percentage_strong+=strong_ratio;
 
         if((verbose_level==0)&&(conf%print_every_x_confs==0))
@@ -447,9 +421,11 @@ int main(int argc,char *argv[])
     fclose(fp_stats);
     fclose(fp_cms);
 
-    clock_t end = omp_get_wtime();
-    time_spent += (double)(end - begin);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
  
-    printf("The elapsed time is %f seconds\n", time_spent);
+    printf("The elapsed time is %f seconds\n", elapsed);
     return 0;
 }

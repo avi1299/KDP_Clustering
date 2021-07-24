@@ -2,109 +2,6 @@
 
 int parallelism_enabled=1;
 
-//Constructs adjacency list from the array of molecules by checking connectednes between molecules
-void adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[])
-{
-    int i,j;
-    for(i=0;i<no_of_molecules;i++)
-    {
-        adjacency_list[i].top=NULL;
-        adjacency_list[i].length=0;
-    }
-    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    for(i=0;i<no_of_molecules-1;i++)
-    {
-        //#pragma omp parallel for
-        for(j=i+1;j<no_of_molecules;j++)
-        {
-            if(connected_molecules(&molecules[i],&molecules[j],boxlength))
-            {
-                add_node_given_value(&adjacency_list[i],j);
-                add_node_given_value(&adjacency_list[j],i);
-            }
-        }
-    }
-}
-
-void adjacency_list_constructor_verbose(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[])
-{
-    int i,j;
-    for(i=0;i<no_of_molecules;i++)
-    {
-        adjacency_list[i].top=NULL;
-        adjacency_list[i].length=0;
-    }
-    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    for(i=0;i<no_of_molecules-1;i++)
-    {
-        //#pragma omp parallel for
-        for(j=i+1;j<no_of_molecules;j++)
-        {
-            if(connected_molecules(&molecules[i],&molecules[j],boxlength))
-            {
-                add_node_given_value(&adjacency_list[i],j);
-                add_node_given_value(&adjacency_list[j],i);
-
-                //Shows which molecules are connected
-                printf("Nodes %d and %d are connected\n",i,j);
-                //print_stack(&adjacency_list[i]);
-                //print_stack(&adjacency_list[j]);
-            }
-        }
-    }
-}
-
-void strongly_adjacency_list_constructor(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[])
-{
-    int i,j;
-    for(i=0;i<no_of_molecules;i++)
-    {
-        adjacency_list[i].top=NULL;
-        adjacency_list[i].length=0;
-    }
-    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    for(i=0;i<no_of_molecules-1;i++)
-    {
-        //#pragma omp parallel for
-        for(j=i+1;j<no_of_molecules;j++)
-        {
-            if(strongly_connected_molecules(&molecules[i],&molecules[j],boxlength))
-            {
-                add_node_given_value(&adjacency_list[i],j);
-                add_node_given_value(&adjacency_list[j],i);
-            }
-        }
-    }
-}
-
-void strongly_adjacency_list_constructor_verbose(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[])
-{
-    int i,j;
-    for(i=0;i<no_of_molecules;i++)
-    {
-        adjacency_list[i].top=NULL;
-        adjacency_list[i].length=0;
-    }
-    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    for(i=0;i<no_of_molecules-1;i++)
-    {
-        //#pragma omp parallel for
-        for(j=i+1;j<no_of_molecules;j++)
-        {
-            if(strongly_connected_molecules(&molecules[i],&molecules[j],boxlength))
-            {
-                add_node_given_value(&adjacency_list[i],j);
-                add_node_given_value(&adjacency_list[j],i);
-
-                //Shows which molecules are connected
-                printf("Nodes %d and %d are connected\n",i,j);
-                //print_stack(&adjacency_list[i]);
-                //print_stack(&adjacency_list[j]);
-            }
-        }
-    }
-}
-
 void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters)
 {
     int i;
@@ -123,40 +20,39 @@ void calculate_cluster_coordination_number(stack cluster[],int coordination_no[]
     }
 }
 
-double strong_connection_ratio(HPO molecules[],coordinates boxlength,int no_of_molecules)
+double strong_connection_ratio(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],int no_of_molecules)
 {
+    //We are comparing on the ration of strong connections on the directed graph.
+    //Doing it on our undirected graph leads to inflated numbers
     int i,j;
-    double strong=0,all=0;
-    int connection_status=0;
-    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    int strong=0,all=0;
+    //Enabling parallellism seems to be messing with count due to race conditions
+    //#pragma omp parallel for schedule(static, 1) private(j)  if (parallelism_enabled)
     for(i=0;i<no_of_molecules-1;i++)
     {
-        //#pragma omp parallel for
         for(j=i+1;j<no_of_molecules;j++)
         {
-            connected_molecules(&molecules[i],&molecules[j],boxlength,&connection_status);
-            if(connection_status==2)
+            //strong connection
+            if(adjacency_matrix[DIRECTED_GRAPH][i][j]==2)
             {
                 strong++;
                 all++;
             }
-            else if(connection_status==1)
+            else if(adjacency_matrix[DIRECTED_GRAPH][i][j]==1)//weak connection
                 all++;
         }
     }
-    return strong/all;
+    //printf("Strong: %5d | All: %5d\n",strong,all);
+    return (double)strong/all;
 }
 
 void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag){
     int i,j;
+    #pragma omp parallel for
     for(i=0;i<no_of_molecules;i++)
     {
         adjacency_list[i].top=NULL;
         adjacency_list[i].length=0;
-        // for (j = 0; i < no_of_molecules; j++){
-        //     adjacency_matrix[0][i][j]=0;
-        //     adjacency_matrix[1][i][j]=0;
-        // }
         
     }
     if(strong_flag)
@@ -164,7 +60,6 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
         #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
         for(i=0;i<no_of_molecules-1;i++)
         {
-            //#pragma omp parallel for
             for(j=i+1;j<no_of_molecules;j++)
             {
                 if(strongly_connected_molecules(&molecules[i],&molecules[j],boxlength))
@@ -182,7 +77,6 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
         #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
         for(i=0;i<no_of_molecules-1;i++)
         {
-            //#pragma omp parallel for
             for(j=i+1;j<no_of_molecules;j++)
             {
                 if(connected_molecules(&molecules[i],&molecules[j],boxlength))
@@ -193,6 +87,71 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
                         printf("Nodes %d and %d are connected\n",i,j);
                 }
             }
+        }
+    }
+}
+
+//Constructs adjacency matrix from the array of molecules by checking connectednes between molecules
+void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag){
+    //We are using the undirected graph to create the the adjacency lists so that the direction of the connection is ignored
+    //We are only focusssing on the existence of the connection
+    //int i,j;
+    #pragma omp parallel for
+    for(int i=0;i<no_of_molecules;i++)
+    {
+        adjacency_list[i].top=NULL;
+        adjacency_list[i].length=0;        
+    }
+    int strong_level=1;
+    if(strong_flag)
+        strong_level=2;
+
+    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    for(int i=0;i<no_of_molecules;i++)
+    {
+        for(int j=0;j<no_of_molecules;j++)
+        {
+            if(adjacency_matrix[UNDIRECTED_GRAPH][i][j]>=strong_level)
+            {
+                add_node_given_value(&adjacency_list[i],j);
+                if(verbose_flag)
+                    printf("Nodes %d and %d are strongly connected\n",i,j);
+            }
+        }
+    }
+
+}
+
+//Constructs adjacency matrix from the array of molecules by checking connectednes between molecules
+void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES]){
+    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    for(int i=0;i<no_of_molecules;i++)
+    {
+        for(int j=0;j<no_of_molecules;j++)
+        {
+            if(i!=j)
+                adjacency_matrix[DIRECTED_GRAPH][i][j]=connected_molecules(&molecules[i],&molecules[j],boxlength);
+        }
+    }
+
+    //Creating the undirected graph.
+    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    for(int i=0;i<no_of_molecules-1;i++)
+    {
+        for(int j=0;j<no_of_molecules;j++)
+        {
+            if(adjacency_matrix[DIRECTED_GRAPH][i][j]>adjacency_matrix[DIRECTED_GRAPH][j][i]){
+                adjacency_matrix[UNDIRECTED_GRAPH][i][j]=adjacency_matrix[DIRECTED_GRAPH][i][j];
+                adjacency_matrix[UNDIRECTED_GRAPH][j][i]=adjacency_matrix[DIRECTED_GRAPH][i][j];
+            }
+            else{
+                adjacency_matrix[UNDIRECTED_GRAPH][i][j]=adjacency_matrix[DIRECTED_GRAPH][j][i];
+                adjacency_matrix[UNDIRECTED_GRAPH][j][i]=adjacency_matrix[DIRECTED_GRAPH][j][i];
+            }
+                
         }
     }
 

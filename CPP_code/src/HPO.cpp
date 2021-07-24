@@ -48,20 +48,19 @@ int connected_or_not(coordinates point1, coordinates point2, coordinates boxleng
 
 //Defining conditions of being connected
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom
+// int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
+// {
+//     return      (strongly_connected_molecules(mol1,mol2,boxlength)||weakly_connected_molecules(mol1,mol2,boxlength));
+// }
+
 int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
 {
-    return      (strongly_connected_molecules(mol1,mol2,boxlength)||weakly_connected_molecules(mol1,mol2,boxlength));
-}
-
-int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int* connection_strength)
-{
-    *connection_strength=0;
-    if(strongly_connected_molecules(mol1,mol2,boxlength)){
-            *connection_strength=1;
-    }else if(weakly_connected_molecules(mol1,mol2,boxlength)) {
-            *connection_strength=2;
-    }
-    return(*connection_strength>0);
+    //weak connection = 1 | strong connection = 2
+    if(strongly_connected_molecules(mol1,mol2,boxlength))
+            return 2;
+    if(weakly_connected_molecules(mol1,mol2,boxlength))
+            return 1;
+    return 0;
 }
 
 int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
