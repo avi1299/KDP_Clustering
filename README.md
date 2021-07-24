@@ -1,5 +1,11 @@
 # KDP Clustering
 
+To enable multithreading in certain functions, execute the below command on your terminal. Rerun this everytime you start a new terminal
+
+`$ export OMP_NUM_THREADS = <NUMBER OF THREADS>`
+
+For consumer CPUs, you can give upto half the threads in your system, after which performance may drop.
+
 To compile the program use the makefile as:
 
 `$ make test`
