@@ -4,8 +4,9 @@
 #include "input.h"
 #include "output.h"
 #include "graph.h"
-#include "cluster.h"
+//#include "cluster.h"
 #include "constants.h"
+#include "charge.h"
 #include <omp.h>
 #include <string.h>
 #include "gromacs/fileio/xtcio.h"
@@ -19,7 +20,8 @@ int main(int argc,char *argv[])
     struct timespec start, finish;
     double elapsed;
     clock_gettime(CLOCK_MONOTONIC, &start);
-    double overall_cluster_size=0,overall_percentage_clustered=0,overall_percentage_strong=0;
+    double overall_cluster_size=0,overall_percentage_clustered=0,overall_percentage_strong=0,overall_cluster_charge=0;
+    int cluster_charge;
     double percent_clustered_molecules,strong_ratio;
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
     real time_to_start=0.0;
@@ -143,8 +145,9 @@ int main(int argc,char *argv[])
     static K Kmolecules[MAX_M];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     coordinates boxlength;//, coordinate;
-    int conf_number,conf;
+    int conf_number,conf,number_of_K_molecules_in_cluster;
     HPO* mol_start=NULL;
+    K* Kmol_start=NULL;
     /*-------------------------START: read the file --------------------------*/
     if(XTC_in_flag==1)
     {
@@ -195,6 +198,7 @@ int main(int argc,char *argv[])
         if (verbose_level>=1)
             printf("Configuration number : %d\n\n",conf+1);
         mol_start=&molecules[conf*no_of_molecules];
+        Kmol_start=&Kmolecules[conf*no_of_molecules];
         
         
         //Check if strictness matters
@@ -380,7 +384,8 @@ int main(int argc,char *argv[])
             threshold=cluster_max_size;
         if(fp_out!=NULL)
         {
-            fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag);
+            number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,mol_start,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag,boxlength);
+            fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
         }
 
         /*-----------------------END: Output PDB------------------*/
@@ -404,18 +409,21 @@ int main(int argc,char *argv[])
         overall_percentage_clustered+=percent_clustered_molecules;
         strong_ratio=strong_connection_ratio(adjacency_matrix,no_of_molecules)*100;
         overall_percentage_strong+=strong_ratio;
+        cluster_charge=-cluster_max_size*cluster_size[cluster_max_size]+number_of_K_molecules_in_cluster;
+        overall_cluster_charge+=cluster_charge;
 
         if((verbose_level==0)&&(conf%print_every_x_confs==0))
         {
             //double percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
-            printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio);
+            printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %3d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge);
         }
 
     }
     overall_cluster_size/=conf_number;
     overall_percentage_clustered/=conf_number;
     overall_percentage_strong/=conf_number;
-    printf("\nOverall | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong);
+    overall_cluster_charge/=conf_number;
+    printf("\nOverall | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
 
     if(fp_out!=NULL)
         fclose(fp_out);

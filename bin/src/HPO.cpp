@@ -96,6 +96,13 @@ int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength)
                 mindist_square(mol1->HOL_2,mol2->OHL_2,boxlength)<CUTOFF&&mindist_square(mol1->OHL_2,mol2->OHL_2,boxlength)<CUTOFF_STRICT;
 }
 
+int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength)
+{
+        return  mindist_square(Kmol->posn,HPOmol->O2L_1,boxlength)<CUTOFF_K_O2L||
+                mindist_square(Kmol->posn,HPOmol->O2L_2,boxlength)<CUTOFF_K_O2L;
+
+}
+
 
 //Funtion to print the details of the HPO molecule
 void print_HPO(HPO *mol)

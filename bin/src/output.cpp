@@ -32,10 +32,10 @@ void fprintf_cluster_PDB(FILE* fp_out,HPO molecules[],stack* cluster,int *mol_no
 
 }
 
-void fprintf_conf_PDB(FILE* fp_out,HPO molecules[],stack clusters[],int number_of_clusters, int threshold, int greater_than_flag)
+void fprintf_conf_PDB(FILE* fp_out,HPO molecules[],stack clusters[],int number_of_clusters, int threshold, int greater_than_flag, int HPO_start_no)
 {
-        int mol_no=0;
-        int atom_no=0;
+        int mol_no=HPO_start_no-1;
+        int atom_no=HPO_start_no-1;
         int i;
         if(greater_than_flag==1)
         {

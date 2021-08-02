@@ -10,10 +10,10 @@ LD_LIBRARY_PATH=$(MKFILE_DIR)lib
 
 LIBS=-lgromacs  -lm
 
-_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h cluster.h constants.h
+_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h constants.h charge.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o test.o
+_OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o charge.o test.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
@@ -44,6 +44,9 @@ xtc_1001_silent_strong: test
 
 run_silent: test
 	./test -f ../ExampleData/M1A_S2_16.pdb -o ../ExampleData/test_out.pdb
+
+test_out: test
+	./test -f ../ExampleData/m1_tetra_102.xtc -t ../ExampleData/model1.top -o ../ExampleData/test_out102.pdb -m 10
 
 gmon.out: xtc_1001_silent
 

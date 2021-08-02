@@ -8,6 +8,7 @@
 
 #define CUTOFF 6.25//Cutoff is 2.5 nm but we are squaring it to save on computation
 #define CUTOFF_STRICT 12.25//Cutoff for strict method is 3.5nm. Squaring it to save on computation
+#define CUTOFF_K_O2L 10.24//Cutoff for K-O2L interaction 3.2nm
 #define MAX_CONNECTIONS 6
 #define SQR(x) (x)*(x)
 
@@ -44,12 +45,11 @@ enum atom_order {
 
 
 //Structure for cluster
-typedef struct
-{
-        int yes_or_no;
-        int nodeid[1000];
-        int node_number;
-} cluster_mt;
+// typedef struct
+// {
+//         stack HPOcluster;
+//         stack KMoleculesAroundCluster;
+// } clusterStruct;
 
 //Check the minimum distance between 2 points keeping in mind the opposite boundaries of the box are connected
 double mindist(coordinates point1, coordinates point2, coordinates boxlength);
@@ -74,6 +74,9 @@ int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength);
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom. Also the OHL atom of the first molecule
 //connected to the above HOL is 3.5 nm away from the corresponding O2L or OHL from the above second molecule. 
 int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength);
+
+//Here the K molecule must be in 3.2 nm of one of the HPO molecule's O2L atom
+int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength);
 
 
 //Funtion to print the details of the HPO molecule
