@@ -3,32 +3,27 @@ using namespace std;
 
 //int parallelism_enabled=1;
 
-int fprintf_K_ions_in_cluster(FILE* fp_out, HPO molecules[], K Kmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int threshold, int greater_than_flag, coordinates boxlength){
+int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , K Kmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int threshold, int greater_than_flag){
     int i,j;
-    int HPO_mols_of_interest[no_of_molecules]={0},K_mols_of_interest[no_of_molecules]={0};
-    if(greater_than_flag==1)
+    int K_mols_of_interest[no_of_molecules]={0};
+
+    node * temp=NULL;
+    for(i=0;i<number_of_clusters;i++)
     {
-            for(i=0; i<number_of_clusters; i++)
-                    if(clusters[i].length>=threshold)
-                            set_mols_of_interest(HPO_mols_of_interest,&clusters[i]);
-    }
-    else
-            for(i=0; i<number_of_clusters; i++)
-                    if(clusters[i].length==threshold)
-                            set_mols_of_interest(HPO_mols_of_interest,&clusters[i]);
-    
-    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    for(i=0;i<no_of_molecules;i++)
-    {
-        if(HPO_mols_of_interest[i])
+        if(((greater_than_flag)&&(clusters[i].length>=threshold))||((!greater_than_flag)&&(clusters[i].length==threshold)))
         {
-            for(j=0;j<no_of_molecules;j++)
+            temp=clusters[i].top;
+            while(temp!=NULL)
             {
-                if(connected_K_HPO(&Kmolecules[j],&molecules[i],boxlength))
-                    K_mols_of_interest[j]=1;
+                for(j=0;j<no_of_molecules;j++)
+                {
+                    K_mols_of_interest[j]=K_mols_of_interest[j]||Kadjacency_matrix[j][temp->data];
+                }
+                temp=temp->next;
             }
         }
     }
+
     j=1;
     for(i=0;i<no_of_molecules;i++)
     {

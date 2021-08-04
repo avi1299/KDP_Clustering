@@ -144,6 +144,7 @@ int main(int argc,char *argv[])
     static HPO molecules[MAX_M];
     static K Kmolecules[MAX_M];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
+    static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
     coordinates boxlength;//, coordinate;
     int conf_number,conf,number_of_K_molecules_in_cluster;
     HPO* mol_start=NULL;
@@ -225,6 +226,7 @@ int main(int argc,char *argv[])
         //Useful when you dont want to claculate the strong ratio
         //adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
         adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix);
+        Kadjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
     
         //Printing the adjacency list and connectedness
@@ -384,7 +386,7 @@ int main(int argc,char *argv[])
             threshold=cluster_max_size;
         if(fp_out!=NULL)
         {
-            number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,mol_start,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag,boxlength);
+            number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,Kadjacency_matrix,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag);
             fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
         }
 
@@ -409,7 +411,19 @@ int main(int argc,char *argv[])
         overall_percentage_clustered+=percent_clustered_molecules;
         strong_ratio=strong_connection_ratio(adjacency_matrix,no_of_molecules)*100;
         overall_percentage_strong+=strong_ratio;
-        cluster_charge=-cluster_max_size*cluster_size[cluster_max_size]+number_of_K_molecules_in_cluster;
+        
+        if(greater_than_flag)
+        {
+            cluster_charge=0;
+            for(i=threshold;i<=cluster_max_size;i++)
+            {
+                cluster_charge-=i*cluster_size[i];
+            }
+        }
+        else
+            cluster_charge=-threshold*cluster_size[threshold];
+            
+        cluster_charge+=number_of_K_molecules_in_cluster;
         overall_cluster_charge+=cluster_charge;
 
         if((verbose_level==0)&&(conf%print_every_x_confs==0))
@@ -423,7 +437,7 @@ int main(int argc,char *argv[])
     overall_percentage_clustered/=conf_number;
     overall_percentage_strong/=conf_number;
     overall_cluster_charge/=conf_number;
-    printf("\nOverall | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
+    printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
 
     if(fp_out!=NULL)
         fclose(fp_out);

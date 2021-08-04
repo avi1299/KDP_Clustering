@@ -50,7 +50,7 @@ void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].P[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[PL][i]=coordinate[i];
                 //Increasing the count of HPO molecules
                 //(*no_of_molecules)++;
             }
@@ -58,42 +58,42 @@ void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].OHL_1[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[OHL_1][i]=coordinate[i];
                 OHL_read=1;
             }
             else if (!(HOL_read)&&(strcmp(atom_name,"HOL")==0))//For the HOL_1 atom
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].HOL_1[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[HOL_1][i]=coordinate[i];
                 HOL_read=1;
             }
             else if ((OHL_read)&&(strcmp(atom_name,"OHL")==0))//For the OHL_2 atom
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].OHL_2[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[OHL_2][i]=coordinate[i];
                 OHL_read=0;
             }
             else if ((HOL_read)&&(strcmp(atom_name,"HOL")==0))//For the HOL_2 atom
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].HOL_2[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[HOL_2][i]=coordinate[i];
                 HOL_read=0;
             }
             else if (!(O2L_read)&&(strcmp(atom_name,"O2L")==0))//For the O2L_1 atom
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].O2L_1[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[O2L_1][i]=coordinate[i];
                 O2L_read=1;
             }
             else if ((O2L_read)&&(strcmp(atom_name,"O2L")==0))//For the O2L_2 atom
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
-                    molecules[*no_of_molecules].O2L_2[i]=coordinate[i];
+                    molecules[*no_of_molecules].posn[O2L_2][i]=coordinate[i];
                 O2L_read=0;
             }
         
@@ -104,7 +104,8 @@ void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength
     fclose(fp_in);
 }
 
-void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,char ** atom_name_list, int no_of_molecules)
+
+void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,int * atom_index, int no_of_molecules)
 {
     int i,j,k;
     //Input K molecules
@@ -115,78 +116,21 @@ void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,char ** atom_name_lis
     }
     int atom_no=no_of_molecules;
     int index=0;
-    int OHL_read=0,O2L_read=0,HOL_read=0;
     //Input HPO molecules
     for(j=0;j<no_of_molecules;j++)
     {
         //printf("molecule %d\n",j);
-        for(k=0;k<7;k++)
+        for(k=0;k<HPO_ATOM_COUNT;k++)
         {
-            if (strcmp(atom_name_list[index%7],"PL")==0)             //For the P atom
-            {
-                //printf("inside pl\n");
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].P[i]=x[atom_no][i]*10;
-                index++;
-                atom_no++;
-                //Increasing the count of HPO molecules
-                //(*no_of_molecules)++;
-            }
-            else if (!(OHL_read)&&(strcmp(atom_name_list[index%7],"OHL")==0))//For the OHL_1 atom
-            {
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].OHL_1[i]=x[atom_no][i]*10;
-                OHL_read=1;
-                index++;
-                atom_no++;
-            }
-            else if (!(HOL_read)&&(strcmp(atom_name_list[index%7],"HOL")==0))//For the HOL_1 atom
-            {
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].HOL_1[i]=x[atom_no][i]*10;
-                HOL_read=1;
-                index++;
-                atom_no++;
-            }
-            else if ((OHL_read)&&(strcmp(atom_name_list[index%7],"OHL")==0))//For the OHL_2 atom
-            {
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].OHL_2[i]=x[atom_no][i]*10;
-                OHL_read=0;
-                index++;
-                atom_no++;
-            }
-            else if ((HOL_read)&&(strcmp(atom_name_list[index%7],"HOL")==0))//For the HOL_2 atom
-            {
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].HOL_2[i]=x[atom_no][i]*10;
-                HOL_read=0;
-                index++;
-                atom_no++;
-            }
-            else if (!(O2L_read)&&(strcmp(atom_name_list[index%7],"O2L")==0))//For the O2L_1 atom
-            {
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].O2L_1[i]=x[atom_no][i]*10;
-                O2L_read=1;
-                index++;
-                atom_no++;
-            }
-            else if ((O2L_read)&&(strcmp(atom_name_list[index%7],"O2L")==0))//For the O2L_2 atom
-            {
-                //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
-                for(i=0;i<3;i++)
-                    molecules[j].O2L_2[i]=x[atom_no][i]*10;
-                O2L_read=0;
-                index++;
-                atom_no++;
-            }
+
+            //printf("inside pl\n");
+            //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
+            for(i=0;i<DIM;i++)
+                molecules[j].posn[atom_index[index%HPO_ATOM_COUNT]][i]=x[atom_no][i]*10;
+            index++;
+            atom_no++;
+            //Increasing the count of HPO molecules
+            //(*no_of_molecules)++;
         }
 
     }
@@ -195,8 +139,10 @@ void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,char ** atom_name_lis
 void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
 {
         char **atom_name_list;
-        atom_name_list=(char **)malloc(sizeof(char *)*7);
+        atom_name_list=(char **)malloc(sizeof(char *)*HPO_ATOM_COUNT);
         TOP_reader(fp_top,no_of_molecules,"HPO",atom_name_list);
+        int atom_index[HPO_ATOM_COUNT];
+        atom_name_to_index(atom_name_list, atom_index);
         int natoms,i,j;
         int64_t step;
         real time,prec;
@@ -214,7 +160,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],K Kmolecules[]
         {
             if(time>=time_to_start)
             {
-                molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],&Kmolecules[(*no_of_molecules)*(*conf_number)],x,atom_name_list,*no_of_molecules);
+                molecule_entry(&molecules[(*no_of_molecules)*(*conf_number)],&Kmolecules[(*no_of_molecules)*(*conf_number)],x,atom_index,*no_of_molecules);
                 (*conf_number)++;
             }
 
@@ -317,4 +263,45 @@ void TOP_reader(FILE* fp_top,int *no_of_molecules,char *molecule_to_search,char 
         //printf("%s",tag);
     }
     fclose(fp_top);
+}
+
+void atom_name_to_index(char ** atom_name_list, int* atom_index)
+{
+    int i;
+    int OHL_read=0,O2L_read=0,HOL_read=0;
+    for(i=0;i<HPO_ATOM_COUNT;i++)
+    {
+        if(strcmp(atom_name_list[i],"PL")==0)
+            atom_index[i]=PL;
+        else if(strcmp(atom_name_list[i],"OHL")==0)
+        {
+            if(!OHL_read)
+            {
+                OHL_read=1;
+                atom_index[i]=OHL_1;
+            }
+            else
+                atom_index[i]=OHL_2;
+        }
+        else if(strcmp(atom_name_list[i],"HOL")==0)
+        {
+            if(!HOL_read)
+            {
+                HOL_read=1;
+                atom_index[i]=HOL_1;
+            }
+            else
+                atom_index[i]=HOL_2;
+        }
+        else if(strcmp(atom_name_list[i],"O2L")==0)
+        {
+            if(!O2L_read)
+            {
+                O2L_read=1;
+                atom_index[i]=O2L_1;
+            }
+            else
+                atom_index[i]=O2L_2;
+        }
+    }
 }

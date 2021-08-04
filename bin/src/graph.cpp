@@ -168,3 +168,15 @@ void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_
     }
 
 }
+
+void Kadjacency_matrix_populator(HPO molecules[], K Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES]){
+    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    for(int i=0;i<no_of_molecules;i++)
+    {
+        for(int j=0;j<no_of_molecules;j++)
+        {
+            Kadjacency_matrix[i][j]=connected_K_HPO(&Kmolecules[i],&molecules[j],boxlength); 
+        }
+    }
+}

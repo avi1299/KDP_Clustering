@@ -16,32 +16,37 @@
 typedef double coordinates[3];
 
 //Structure of the HPO molecule
+// typedef struct
+// {
+//         coordinates P;
+//         coordinates OHL_1;
+//         coordinates HOL_1;
+//         coordinates OHL_2;
+//         coordinates HOL_2;
+//         coordinates O2L_1;
+//         coordinates O2L_2;
+// } HPO;
+
+#define HPO_ATOM_COUNT 7
+
 typedef struct
 {
-        coordinates P;
-        coordinates OHL_1;
-        coordinates HOL_1;
-        coordinates OHL_2;
-        coordinates HOL_2;
-        coordinates O2L_1;
-        coordinates O2L_2;
+        coordinates posn[HPO_ATOM_COUNT];
 } HPO;
+
+#define PL 0
+#define OHL_1 1
+#define HOL_1 2
+#define OHL_2 3
+#define HOL_2 4
+#define O2L_1 5
+#define O2L_2 6
 
 typedef struct
 {
         coordinates posn;
 } K;
 
-
-enum atom_order {
- P,
- OHL_1,
- HOL_1,
- OHL_2,
- HOL_2,
- O2L_1,
- O2L_2
-};
 
 
 //Structure for cluster

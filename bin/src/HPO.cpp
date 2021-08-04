@@ -68,38 +68,38 @@ int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
 
 int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
 {
-    return      mindist_square(mol1->HOL_1,mol2->O2L_1,boxlength)<CUTOFF||
-                mindist_square(mol1->HOL_1,mol2->O2L_2,boxlength)<CUTOFF||
-                mindist_square(mol1->HOL_2,mol2->O2L_1,boxlength)<CUTOFF||
-                mindist_square(mol1->HOL_2,mol2->O2L_2,boxlength)<CUTOFF;
+    return      mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF||
+                mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_2],boxlength)<CUTOFF||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_1],boxlength)<CUTOFF||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_2],boxlength)<CUTOFF;
 }
 
 int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
 {
-    return      mindist_square(mol1->HOL_1,mol2->OHL_1,boxlength)<CUTOFF||
-                mindist_square(mol1->HOL_1,mol2->OHL_2,boxlength)<CUTOFF||
-                mindist_square(mol1->HOL_2,mol2->OHL_1,boxlength)<CUTOFF||
-                mindist_square(mol1->HOL_2,mol2->OHL_2,boxlength)<CUTOFF;
+    return      mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF||
+                mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_2],boxlength)<CUTOFF||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_1],boxlength)<CUTOFF||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_2],boxlength)<CUTOFF;
 }
 
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom. Also the OHL atom of the first molecule
 //connected to the above HOL is 3.5 nm away from the corresponding O2L or OHL from the above second molecule. 
 int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength)
 {
-    return      mindist_square(mol1->HOL_1,mol2->O2L_1,boxlength)<CUTOFF&&mindist_square(mol1->OHL_1,mol2->O2L_1,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_1,mol2->O2L_2,boxlength)<CUTOFF&&mindist_square(mol1->OHL_1,mol2->O2L_2,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_1,mol2->OHL_1,boxlength)<CUTOFF&&mindist_square(mol1->OHL_1,mol2->OHL_1,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_1,mol2->OHL_2,boxlength)<CUTOFF&&mindist_square(mol1->OHL_1,mol2->OHL_2,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_2,mol2->O2L_1,boxlength)<CUTOFF&&mindist_square(mol1->OHL_2,mol2->O2L_1,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_2,mol2->O2L_2,boxlength)<CUTOFF&&mindist_square(mol1->OHL_2,mol2->O2L_2,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_2,mol2->OHL_1,boxlength)<CUTOFF&&mindist_square(mol1->OHL_2,mol2->OHL_1,boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->HOL_2,mol2->OHL_2,boxlength)<CUTOFF&&mindist_square(mol1->OHL_2,mol2->OHL_2,boxlength)<CUTOFF_STRICT;
+    return      mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[O2L_2],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[OHL_1],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[OHL_2],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[O2L_2],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[OHL_1],boxlength)<CUTOFF_STRICT||
+                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[OHL_2],boxlength)<CUTOFF_STRICT;
 }
 
 int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength)
 {
-        return  mindist_square(Kmol->posn,HPOmol->O2L_1,boxlength)<CUTOFF_K_O2L||
-                mindist_square(Kmol->posn,HPOmol->O2L_2,boxlength)<CUTOFF_K_O2L;
+        return  mindist_square(Kmol->posn,HPOmol->posn[O2L_1],boxlength)<CUTOFF_K_O2L||
+                mindist_square(Kmol->posn,HPOmol->posn[O2L_2],boxlength)<CUTOFF_K_O2L;
 
 }
 
@@ -108,13 +108,13 @@ int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength)
 void print_HPO(HPO *mol)
 {
         printf("HPO Molecule:\nP  : [%lf,%lf,%lf]\nOHL: [%lf,%lf,%lf]\nHOL: [%lf,%lf,%lf]\nOHL: [%lf,%lf,%lf]\nHOL: [%lf,%lf,%lf]\nO2L: [%lf,%lf,%lf]\nO2L: [%lf,%lf,%lf]\n",
-                mol->P[0],mol->P[1],mol->P[2],
-                mol->OHL_1[0],mol->OHL_1[1],mol->OHL_1[2],
-                mol->HOL_1[0],mol->HOL_1[1],mol->HOL_1[2],
-                mol->OHL_2[0],mol->OHL_2[1],mol->OHL_2[2],
-                mol->HOL_2[0],mol->HOL_2[1],mol->HOL_2[2],
-                mol->O2L_1[0],mol->O2L_1[1],mol->O2L_1[2],
-                mol->O2L_2[0],mol->O2L_2[1],mol->O2L_2[2]);
+                mol->posn[PL][0],mol->posn[PL][1],mol->posn[PL][2],
+                mol->posn[OHL_1][0],mol->posn[OHL_1][1],mol->posn[OHL_1][2],
+                mol->posn[HOL_1][0],mol->posn[HOL_1][1],mol->posn[HOL_1][2],
+                mol->posn[OHL_2][0],mol->posn[OHL_2][1],mol->posn[OHL_2][2],
+                mol->posn[HOL_2][0],mol->posn[HOL_2][1],mol->posn[HOL_2][2],
+                mol->posn[O2L_1][0],mol->posn[O2L_1][1],mol->posn[O2L_1][2],
+                mol->posn[O2L_2][0],mol->posn[O2L_2][1],mol->posn[O2L_2][2]);
 }
 
 //Checks and reports whether the strict definition of connectedness results in the same or lesser connections
