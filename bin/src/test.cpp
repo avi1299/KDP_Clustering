@@ -4,6 +4,7 @@
 #include "input.h"
 #include "output.h"
 #include "graph.h"
+#include "ring.h"
 //#include "cluster.h"
 #include "constants.h"
 #include "charge.h"
@@ -20,12 +21,19 @@ int main(int argc,char *argv[])
     struct timespec start, finish;
     double elapsed;
     clock_gettime(CLOCK_MONOTONIC, &start);
-    double overall_cluster_size=0,overall_percentage_clustered=0,overall_percentage_strong=0,overall_cluster_charge=0;
+
+    double overall_cluster_size=0;
+    double overall_percentage_clustered=0;
+    double overall_percentage_strong=0;
+    double overall_cluster_charge=0;
+    double overall_ring_count=0;
+    double overall_ring_size=0;
+
     int cluster_charge;
     double percent_clustered_molecules,strong_ratio;
     FILE *fp_in = NULL, *fp_out=NULL, *fp_top=NULL;
     real time_to_start=0.0;
-    int print_every_x_confs=10;
+    int print_every_x_confs=1;
     struct t_fileio* fio = NULL;
     static int verbose_level=0;
     static int check_strict_flag=0;
@@ -35,12 +43,13 @@ int main(int argc,char *argv[])
     static int threshold_flag=0;
     static int probability_flag=0;
     static int XTC_in_flag=0;
+    static int ring_flag=0;
     const char *ext = ".xtc";
     int xlen = strlen(ext);
     int slen;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:r")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:nr")) != -1 )
     {
         switch(c)
         {
@@ -55,8 +64,9 @@ int main(int argc,char *argv[])
                 printf("  -s <int>\t: Specify size of clusters to be outputted in PDB format\n");
                 printf("  -g \t\t: Used with -s to include clusters having size greater than or equal to the argument for -s\n");
                 printf("  -p \t\t: Prints the percentage of molecule belonging to a cluster rather than the number of molecules\n");
-                printf("  -m <int>\t: Prints statisitics every argument number of configurations. Needs verbose levle to be 0\n");
-                printf("  -r \t\t: Uses only strong bonds to perform clustering\n");
+                printf("  -m <int>\t: Prints statisitics every argument number of configurations(default=1). Needs verbose flag to be disabled\n");
+                printf("  -n \t\t: Uses only strong bonds to perform clustering\n");
+                printf("  -r \t\t: Performs ring analysis and outputs rings instead\n");
                 exit(0);
             case 'f':
                 slen = strlen(optarg);
@@ -100,8 +110,11 @@ int main(int argc,char *argv[])
             case 'c':
                 check_strict_flag=1;
                 break;
-            case 'r':
+            case 'n':
                 strong_connections_flag=1;
+                break;
+            case 'r':
+                ring_flag=1;
                 break;
             case 'p':
                 probability_flag=1;
@@ -135,6 +148,7 @@ int main(int argc,char *argv[])
     }
 
     FILE *fp_stats=fopen("cluster_statistics.dat","w");
+    FILE *fp_ring=fopen("ring_statistics.dat","w");
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
@@ -145,6 +159,15 @@ int main(int argc,char *argv[])
     static K Kmolecules[MAX_M];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
+
+    //Ring analysis
+    static int D[MAX_MOLECULES][MAX_MOLECULES];
+    static pathArray *P[MAX_MOLECULES][MAX_MOLECULES];
+    static pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES];
+    vector<ringCandidate> CSet; 
+    pathArray CSSSR;
+
+
     coordinates boxlength;//, coordinate;
     int conf_number,conf,number_of_K_molecules_in_cluster;
     HPO* mol_start=NULL;
@@ -184,6 +207,13 @@ int main(int argc,char *argv[])
     int cluster_max_size=0;
     int cluster_size[no_of_molecules+1];
     double cluster_coordination_statistic[no_of_molecules+1];
+
+    vector<ringElements> CSSSR_Elements;
+    int number_of_rings;
+    int ring_size[no_of_molecules+1];
+    int ring_max_size=0;
+
+
 
     //Printing the start of the PDB file
     if(fp_out!=NULL)
@@ -228,7 +258,49 @@ int main(int argc,char *argv[])
         adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix);
         Kadjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
-    
+
+        //Ring Analysis
+        if(ring_flag)
+        {
+            makePIDmatrix(adjacency_matrix, no_of_molecules, D, P, P_dash,(verbose_level>=0));
+            ringCandidateSearch(&CSet, no_of_molecules, D,P,P_dash);
+            findSSSR(&CSSSR,&CSet);
+            // for(auto x: CSet)
+            //     printf("CNum:%5d | P:%5ld | P_Dash:%5ld\n",x.CNum,x.P->size(),x.P_dash->size());
+            ringElements* temp;
+            for(auto x: CSSSR)
+            {
+                temp=ringToElements(&x);
+                CSSSR_Elements.push_back(*temp);
+                //printRingElements(temp);
+                delete temp;
+            }
+            if(verbose_level>=1)
+                printRingElementsArray(&CSSSR_Elements);
+            if(verbose_level>=2)
+                printPathArray(&CSSSR);
+
+            number_of_rings=CSSSR_Elements.size();
+            for(i=0;i<=no_of_molecules;i++)
+                ring_size[i]=0;
+            for(i=0;i<number_of_rings;i++)
+                ring_size[CSSSR_Elements[i].size()]++;
+            //smallest ring size is 3
+            for(i=3;i<=no_of_molecules;i++)
+                fprintf(fp_ring,"%d ",ring_size[i]);
+            fprintf(fp_ring,"\n");
+            overall_ring_count+=number_of_rings;
+            if(number_of_rings!=0)
+                ring_max_size=CSSSR_Elements[CSSSR_Elements.size()-1].size();
+            else
+                ring_max_size=0;
+            overall_ring_size+=ring_max_size;
+
+            //CSet.clear();
+            //CSSSR.clear();
+        }
+
+
         //Printing the adjacency list and connectedness
         if(verbose_level>=3)
         {
@@ -241,8 +313,8 @@ int main(int argc,char *argv[])
         }
 
         for(i=0;i<=MAX_CONNECTIONS;i++)
-            connectedness[i]=0;    FILE *fp_stats=fopen("cluster_statistics.dat","w");
-        FILE *fp_cms=fopen("cluster_max_size.dat","w");
+            connectedness[i]=0;    
+
         for(i=0;i<no_of_molecules;i++)
         {
             connectedness[adjacency_list[i].length]++;
@@ -401,10 +473,7 @@ int main(int argc,char *argv[])
         // }
 
         /*-----------------------END: Print Stats------------------*/
-        for(i=0;i<number_of_clusters;i++)
-        {
-            empty_stack(&cluster[i]);
-        }
+
 
         overall_cluster_size+=cluster_max_size;
         percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
@@ -429,21 +498,50 @@ int main(int argc,char *argv[])
         if((verbose_level==0)&&(conf%print_every_x_confs==0))
         {
             //double percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
-            printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %3d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge);
+            if(ring_flag)
+                printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5d | MaxRingSize : %5d | RingCount : %5d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge,ring_max_size,number_of_rings);
+            else
+                printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %3d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge);
         }
+
+        /*-----------------------START: Cleanup------------------*/
+        if(ring_flag)
+        {
+            for(i=0;i<no_of_molecules;i++)
+                for(j=0;j<no_of_molecules;j++)
+                {
+                    delete P[i][j];
+                    delete P_dash[i][j];
+                }
+        }
+
+        for(i=0;i<number_of_clusters;i++)
+        {
+            empty_stack(&cluster[i]);
+        }
+
+        CSSSR_Elements.clear();
+
+        /*-----------------------END: Cleanup------------------*/
+
 
     }
     overall_cluster_size/=conf_number;
     overall_percentage_clustered/=conf_number;
     overall_percentage_strong/=conf_number;
     overall_cluster_charge/=conf_number;
-    printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
-
+    overall_ring_count/=conf_number;
+    overall_ring_size/=conf_number;
+    if(!ring_flag)
+        printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
+    else
+        printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf | MaxRingSize : %5.2lf | RingCount : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge,overall_ring_size,overall_ring_count);
     if(fp_out!=NULL)
         fclose(fp_out);
 
     fclose(fp_stats);
     fclose(fp_cms);
+    fclose(fp_ring);
 
     clock_gettime(CLOCK_MONOTONIC, &finish);
 

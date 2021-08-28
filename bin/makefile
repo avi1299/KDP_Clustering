@@ -10,10 +10,10 @@ LD_LIBRARY_PATH=$(MKFILE_DIR)lib
 
 LIBS=-lgromacs  -lm
 
-_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h constants.h charge.h
+_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h constants.h charge.h ring.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o charge.o test.o
+_OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o charge.o ring.o test.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
@@ -26,6 +26,9 @@ test:$(OBJ)
 
 run: test
 	./test -f ../ExampleData/M1A_S2_16.pdb -o ../ExampleData/test_out.pdb -v1
+
+small: test
+	./test -f ../ExampleData/M1A_S1_Avi.xtc -t ../ExampleData/M1A_S1.top -o ../ExampleData/test_out.pdb -m 100
 
 #xtc_1: test
 #	./test -f ../ExampleData/M2A_S3_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -v2
@@ -50,6 +53,9 @@ test_out: test
 
 gmon.out: xtc_1001_silent
 
+multithread:
+	export OMP_NUM_THREADS=4
+
 perf: gmon.out test
 	gprof test gmon.out > perf_analysis.txt
 
@@ -62,3 +68,4 @@ clean:
 	rm -f ../ExampleData/test_out.pdb
 	rm -f cluster_max_size.dat
 	rm -f cluster_statistics.dat
+	rm -f ring_statistics.dat

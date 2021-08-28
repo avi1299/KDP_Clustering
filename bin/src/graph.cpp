@@ -1,6 +1,6 @@
 #include "graph.h"
 
-int parallelism_enabled=1;
+//int parallelism_enabled=1;
 
 void calculate_cluster_coordination_number(stack cluster[],int coordination_no[],double cluster_coordination_no[],int number_of_clusters)
 {
@@ -28,7 +28,7 @@ double strong_connection_ratio(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECU
     int strong[no_of_molecules]={0},all[no_of_molecules]={0};
     //Enabling parallellism seems to be messing with count due to race conditions
     //#pragma omp parallel for schedule(static, 1) private(j)  if (parallelism_enabled)
-    #pragma omp parallel for if (parallelism_enabled)
+    #pragma omp parallel for //if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
     {
         for(int j=0;j<no_of_molecules;j++)
@@ -63,7 +63,7 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
     }
     if(strong_flag)
     {
-        #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+        #pragma omp parallel for schedule(static, 1) private(j) //if (parallelism_enabled)
         for(i=0;i<no_of_molecules-1;i++)
         {
             for(j=i+1;j<no_of_molecules;j++)
@@ -81,7 +81,7 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
     }
     else
     {
-        #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+        #pragma omp parallel for schedule(static, 1) private(j) //if (parallelism_enabled)
         for(i=0;i<no_of_molecules-1;i++)
         {
             for(j=i+1;j<no_of_molecules;j++)
@@ -115,7 +115,7 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
         strong_level=STRONG;
 
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
     {
         for(int j=0;j<no_of_molecules;j++)
@@ -133,7 +133,7 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
 
 //Constructs adjacency matrix from the array of molecules by checking connectednes between molecules
 void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES]){
-    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
     {
@@ -150,7 +150,7 @@ void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_
     //Creating the undirected graph.
     int i,j;
     //#pragma omp parallel for collapse(2) if (parallelism_enabled)
-    #pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    #pragma omp parallel for schedule(static, 1) private(j) //if (parallelism_enabled)
     for(i=0;i<no_of_molecules-1;i++)
     {
         for(j=i+1;j<no_of_molecules;j++)
@@ -170,7 +170,7 @@ void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_
 }
 
 void Kadjacency_matrix_populator(HPO molecules[], K Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES]){
-    #pragma omp parallel for collapse(2) if (parallelism_enabled)
+    #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
     {

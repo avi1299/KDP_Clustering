@@ -5,9 +5,9 @@
 
 typedef struct
 {
-    stack list_of_molecules;
-    double RoG;
+    stack elements;
+    int charge;
     double avg_coordination_number;
-}cluster_wrapper;
+}cluster_wrap;
 
 #endif

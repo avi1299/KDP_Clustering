@@ -25,6 +25,7 @@ int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES]
     }
 
     j=1;
+    //Printing the K molecules
     for(i=0;i<no_of_molecules;i++)
     {
         if(K_mols_of_interest[i])
