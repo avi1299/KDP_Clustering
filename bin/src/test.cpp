@@ -186,6 +186,7 @@ int main(int argc,char *argv[])
     else
         PDB_reader(fp_in,molecules,Kmolecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
 
+    int conf_true=conf_number;
     if(verbose_level>=1)
     {
         printf("Number of configurations: %d\n\n",conf_number);
@@ -223,8 +224,10 @@ int main(int argc,char *argv[])
         // printf("CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
         //         boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);     
     }
+
+    //conf_number=1;
     
-    for(conf=0;conf<conf_number;conf++)
+    for(conf=0;conf<conf_true;conf++)
     {
         if (verbose_level>=1)
             printf("Configuration number : %d\n\n",conf+1);
@@ -519,19 +522,24 @@ int main(int argc,char *argv[])
         {
             empty_stack(&cluster[i]);
         }
-
+        
         CSSSR_Elements.clear();
+        CSet.clear();
+        CSSSR.clear();
+        //break;
 
         /*-----------------------END: Cleanup------------------*/
 
-
+    //printf("hi %d %d \n",conf_number, conf_true);
     }
-    overall_cluster_size/=conf_number;
-    overall_percentage_clustered/=conf_number;
-    overall_percentage_strong/=conf_number;
-    overall_cluster_charge/=conf_number;
-    overall_ring_count/=conf_number;
-    overall_ring_size/=conf_number;
+    printf("Exited loop\n");
+    overall_cluster_size/=conf_true;
+    overall_percentage_clustered/=conf_true;
+    overall_percentage_strong/=conf_true;
+    overall_cluster_charge/=conf_true;
+    overall_ring_count/=conf_true;
+    overall_ring_size/=conf_true;
+
     if(!ring_flag)
         printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
     else

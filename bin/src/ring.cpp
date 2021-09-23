@@ -81,7 +81,7 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],
     //     }
 
 
-
+//printf("Made PID\n");
 }
 
 void ringCandidateSearch(vector<ringCandidate> *CSet, int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],

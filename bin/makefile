@@ -3,17 +3,17 @@ SDIR =./src
 ODIR=./obj
 LDIR =./lib
 CC=g++
-CFLAGS=-I$(IDIR) -DGMX_DOUBLE=0 -fopenmp -mcmodel=medium #-pg -g
+CFLAGS=-I$(IDIR) -DGMX_DOUBLE=0 -fopenmp -mcmodel=medium #-fno-stack-protector#-pg -g
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MKFILE_DIR := $(dir $(MKFILE_PATH))
 LD_LIBRARY_PATH=$(MKFILE_DIR)lib
 
 LIBS=-lgromacs  -lm
 
-_DEPS = DFS_clustering.h HPO.h input.h stack.h output.h graph.h constants.h charge.h ring.h
+_DEPS = DFS_clustering.h HPO.h input.h stack.h data_manip.h output.h graph.h constants.h charge.h ring.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = HPO.o stack.o DFS_clustering.o  input.o  output.o graph.o charge.o ring.o test.o
+_OBJ = HPO.o stack.o DFS_clustering.o input.o data_manip.o output.o graph.o charge.o ring.o test.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
@@ -42,14 +42,14 @@ xtc_1001: test
 xtc_1001_silent: test
 	./test -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -m 10
 
-xtc_1001_silent_strong: test
+xtc_1001_ring: test
 	./test -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -m 10 -r
 
 run_silent: test
 	./test -f ../ExampleData/M1A_S2_16.pdb -o ../ExampleData/test_out.pdb
 
 test_out: test
-	./test -f ../ExampleData/m1_tetra_102.xtc -t ../ExampleData/model1.top -o ../ExampleData/test_out102.pdb -m 10
+	./test -f ../ExampleData/m1_tetra_102.xtc -t ../ExampleData/run.top -o ../ExampleData/test_out102.pdb -m 10
 
 gmon.out: xtc_1001_silent
 
