@@ -10,10 +10,10 @@ LD_LIBRARY_PATH=$(MKFILE_DIR)lib
 
 LIBS=-lgromacs  -lm
 
-_DEPS = DFS_clustering.h HPO.h input.h stack.h data_manip.h output.h graph.h constants.h charge.h ring.h
+_DEPS = DFS_clustering.h HPO.h input.h stack.h data_manip.h output.h graph.h constants.h charge.h bounding_box.h ring.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = HPO.o stack.o DFS_clustering.o input.o data_manip.o output.o graph.o charge.o ring.o test.o
+_OBJ = HPO.o stack.o DFS_clustering.o input.o data_manip.o output.o graph.o charge.o bounding_box.o ring.o test.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

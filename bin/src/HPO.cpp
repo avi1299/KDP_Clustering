@@ -1,5 +1,7 @@
 #include "HPO.h"
 
+/*
+
 //Check the minimum distance between 2 points keeping in mind the opposite boundaries of the box are connected
 double mindist(coordinates point1, coordinates point2, coordinates boxlength)
 {
@@ -45,6 +47,7 @@ int connected_or_not(coordinates point1, coordinates point2, coordinates boxleng
                         point3[i]=point1[i];
         return (SQR(point2[0]-point3[0])+SQR(point2[1]-point3[1])+SQR(point2[2]-point3[2]))<CUTOFF;
 }
+*/
 
 //Defining conditions of being connected
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom
