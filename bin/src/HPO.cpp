@@ -3,7 +3,7 @@
 /*
 
 //Check the minimum distance between 2 points keeping in mind the opposite boundaries of the box are connected
-double mindist(coordinates point1, coordinates point2, coordinates boxlength)
+double periodicBoundaryMindist(coordinates point1, coordinates point2, coordinates boxlength)
 {
         int i, j;
         coordinates point3;
@@ -18,7 +18,7 @@ double mindist(coordinates point1, coordinates point2, coordinates boxlength)
 }
 
 //Return square of the above distace. Saves on computation of sqrt.
-double mindist_square(coordinates point1, coordinates point2, coordinates boxlength)
+double periodicBoundaryMindistSquare(coordinates point1, coordinates point2, coordinates boxlength)
 {
         int i, j;
         coordinates point3;
@@ -56,53 +56,82 @@ int connected_or_not(coordinates point1, coordinates point2, coordinates boxleng
 //     return      (strongly_connected_molecules(mol1,mol2,boxlength)||weakly_connected_molecules(mol1,mol2,boxlength));
 // }
 
-int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
+int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
 {
     //If we are comparing the same molecules there is no connection
     if(mol1==mol2)
         return 0;
         //weak connection = 1 | strong connection = 2
-    if(strongly_connected_molecules(mol1,mol2,boxlength))
+    if(strongly_connected_molecules(mol1,mol2,boxlength,PBC_flag))
             return 2;
-    if(weakly_connected_molecules(mol1,mol2,boxlength))
+    if(weakly_connected_molecules(mol1,mol2,boxlength,PBC_flag))
             return 1;
     return 0;
 }
 
-int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
+
+
+int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
 {
-    return      mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF||
-                mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_2],boxlength)<CUTOFF||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_1],boxlength)<CUTOFF||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_2],boxlength)<CUTOFF;
+    if(PBC_flag)
+    return      periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[O2L_2],boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[O2L_1],boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[O2L_2],boxlength)<CUTOFF;
+    else
+    return      euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[O2L_1])<CUTOFF||
+                euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[O2L_2])<CUTOFF||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[O2L_1])<CUTOFF||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[O2L_2])<CUTOFF;   
+
 }
 
-int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
+int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
 {
-    return      mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF||
-                mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_2],boxlength)<CUTOFF||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_1],boxlength)<CUTOFF||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_2],boxlength)<CUTOFF;
+    if(PBC_flag)
+    return      periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[OHL_2],boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[OHL_1],boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[OHL_2],boxlength)<CUTOFF;
+    else
+    return      euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[OHL_1])<CUTOFF||
+                euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[OHL_2])<CUTOFF||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[OHL_1])<CUTOFF||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[OHL_2])<CUTOFF;
 }
 
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom. Also the OHL atom of the first molecule
 //connected to the above HOL is 3.5 nm away from the corresponding O2L or OHL from the above second molecule. 
-int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength)
+int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
 {
-    return      mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_1],mol2->posn[O2L_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[O2L_2],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[OHL_1],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_1],mol2->posn[OHL_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_1],mol2->posn[OHL_2],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[O2L_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[O2L_2],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_1],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[OHL_1],boxlength)<CUTOFF_STRICT||
-                mindist_square(mol1->posn[HOL_2],mol2->posn[OHL_2],boxlength)<CUTOFF&&mindist_square(mol1->posn[OHL_2],mol2->posn[OHL_2],boxlength)<CUTOFF_STRICT;
+    if(PBC_flag)
+    return      periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_1],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[O2L_2],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_1],mol2->posn[O2L_2],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_1],mol2->posn[OHL_1],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[OHL_2],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_1],mol2->posn[OHL_2],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[O2L_1],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_2],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[O2L_2],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_2],mol2->posn[O2L_2],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[OHL_1],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_2],mol2->posn[OHL_1],boxlength)<CUTOFF_STRICT||
+                periodicBoundaryMindistSquare(mol1->posn[HOL_2],mol2->posn[OHL_2],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_2],mol2->posn[OHL_2],boxlength)<CUTOFF_STRICT;
+    else
+    return      euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[O2L_1])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_1],mol2->posn[O2L_1])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[O2L_2])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_1],mol2->posn[O2L_2])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[OHL_1])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_1],mol2->posn[OHL_1])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_1],mol2->posn[OHL_2])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_1],mol2->posn[OHL_2])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[O2L_1])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_2],mol2->posn[O2L_1])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[O2L_2])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_2],mol2->posn[O2L_2])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[OHL_1])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_2],mol2->posn[OHL_1])<CUTOFF_STRICT||
+                euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[OHL_2])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_2],mol2->posn[OHL_2])<CUTOFF_STRICT;
 }
 
-int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength)
+int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength, int PBC_flag)
 {
-        return  mindist_square(Kmol->posn,HPOmol->posn[O2L_1],boxlength)<CUTOFF_K_O2L||
-                mindist_square(Kmol->posn,HPOmol->posn[O2L_2],boxlength)<CUTOFF_K_O2L;
+        if(PBC_flag)
+        return  periodicBoundaryMindistSquare(Kmol->posn,HPOmol->posn[O2L_1],boxlength)<CUTOFF_K_O2L||
+                periodicBoundaryMindistSquare(Kmol->posn,HPOmol->posn[O2L_2],boxlength)<CUTOFF_K_O2L;
+        else
+        return  euclideanDistanceSquare(Kmol->posn,HPOmol->posn[O2L_1])<CUTOFF_K_O2L||
+                euclideanDistanceSquare(Kmol->posn,HPOmol->posn[O2L_2])<CUTOFF_K_O2L;
 
 }
 
@@ -121,7 +150,7 @@ void print_HPO(HPO *mol)
 }
 
 //Checks and reports whether the strict definition of connectedness results in the same or lesser connections
-void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules)
+void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules, int PBC_flag)
 {
     int i,j;
     int strict=0,not_strict=0;
@@ -129,8 +158,8 @@ void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules
         for(j=i+1;j<no_of_molecules;j++)
         {
             //printf("Are molecules %d and %d connected: %d\n",i,j,connected_molecules(molecules[i],molecules[j],boxlength));
-            strict+=connected_molecules_strict(&molecules[i],&molecules[j],boxlength);
-            not_strict+=connected_molecules(&molecules[i],&molecules[j],boxlength);
+            strict+=connected_molecules_strict(&molecules[i],&molecules[j],boxlength, PBC_flag);
+            not_strict+=connected_molecules(&molecules[i],&molecules[j],boxlength,PBC_flag);
         }
     printf("Strict : %d  Not Strict: %d\n",strict,not_strict);
 }

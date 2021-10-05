@@ -44,12 +44,13 @@ int main(int argc,char *argv[])
     static int probability_flag=0;
     static int XTC_in_flag=0;
     static int ring_flag=0;
+    static int periodicBoundary_flag=1;
     const char *ext = ".xtc";
     int xlen = strlen(ext);
     int slen;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:nr")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:nra")) != -1 )
     {
         switch(c)
         {
@@ -59,7 +60,7 @@ int main(int argc,char *argv[])
                 printf("  -f <file>\t: Specify the input file\n");
                 printf("  -t <file>\t: Specify the .top file in case of XTC input\n");
                 printf("  -o <file>\t: Specify the output file\n");
-                printf("  -v <int>\t: Specify the verbose level among {1,2,3,4}\n");
+                printf("  -v <int>\t: Specify the verbose level among {1,2,3,4}.\n");
                 printf("  -c \t\t: Enables checking if stricter connectedness conditions affects number of connections in each configuration\n");
                 printf("  -s <int>\t: Specify size of clusters to be outputted in PDB format\n");
                 printf("  -g \t\t: Used with -s to include clusters having size greater than or equal to the argument for -s\n");
@@ -67,6 +68,7 @@ int main(int argc,char *argv[])
                 printf("  -m <int>\t: Prints statisitics every argument number of configurations(default=1). Needs verbose flag to be disabled\n");
                 printf("  -n \t\t: Uses only strong bonds to perform clustering\n");
                 printf("  -r \t\t: Performs ring analysis and outputs rings instead\n");
+                printf("  -a \t\t: Specifies that the input file is that of a supercell and therefore Periodic Boundary Condition will not applied\n");
                 exit(0);
             case 'f':
                 slen = strlen(optarg);
@@ -133,6 +135,9 @@ int main(int argc,char *argv[])
                     printf("Please set argument for -m as in int greater than 0\n");
                     exit(0);
                 }
+                break;
+            case 'a':
+                periodicBoundary_flag=0;
                 break;
             case '?':
                 if (optopt=='v')
@@ -238,7 +243,7 @@ int main(int argc,char *argv[])
         //Check if strictness matters
         if(check_strict_flag)
         {
-            strict_vs_relaxed(mol_start,boxlength,no_of_molecules);
+            strict_vs_relaxed(mol_start,boxlength,no_of_molecules, periodicBoundary_flag);
             printf("\n");
         }
         
@@ -258,8 +263,8 @@ int main(int argc,char *argv[])
         /*This part is parallelized */
         //Useful when you dont want to claculate the strong ratio
         //adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
-        adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix);
-        Kadjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix);
+        adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix,periodicBoundary_flag);
+        Kadjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
 
         //Ring Analysis
@@ -461,7 +466,9 @@ int main(int argc,char *argv[])
             threshold=cluster_max_size;
         if(fp_out!=NULL)
         {
+            //number_of_K_molecules_in_cluster=0;
             number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,Kadjacency_matrix,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag);
+            //printf("No of K mols in cluster =%d\n",number_of_K_molecules_in_cluster);
             fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
         }
 

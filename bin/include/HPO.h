@@ -8,7 +8,7 @@
 
 #include "bounding_box.h"
 
-//#define CUTOFF 6.25//Cutoff is 2.5 nm but we are squaring it to save on computation
+#define CUTOFF 6.25//Cutoff is 2.5 nm but we are squaring it to save on computation
 #define CUTOFF_STRICT 12.25//Cutoff for strict method is 3.5nm. Squaring it to save on computation
 #define CUTOFF_K_O2L 10.24//Cutoff for K-O2L interaction 3.2nm
 #define MAX_CONNECTIONS 6
@@ -16,18 +16,6 @@
 
 //coordinates is a typedef that represents the X,Y,Z values of a point in space
 typedef double coordinates[3];
-
-//Structure of the HPO molecule
-// typedef struct
-// {
-//         coordinates P;
-//         coordinates OHL_1;
-//         coordinates HOL_1;
-//         coordinates OHL_2;
-//         coordinates HOL_2;
-//         coordinates O2L_1;
-//         coordinates O2L_2;
-// } HPO;
 
 #define HPO_ATOM_COUNT 7
 
@@ -58,40 +46,84 @@ typedef struct
 //         stack KMoleculesAroundCluster;
 // } clusterStruct;
 
-/*
-//Check the minimum distance between 2 points keeping in mind the opposite boundaries of the box are connected
-double mindist(coordinates point1, coordinates point2, coordinates boxlength);
-
-//Return square of the above distace. Saves on computation of sqrt.
-double mindist_square(coordinates point1, coordinates point2, coordinates boxlength);
-
-//Return whether the two atoms are within the cutoff distance i.e. 2.5nm
-int connected_or_not(coordinates point1, coordinates point2, coordinates boxlength);
-
-*/
 //Defining conditions of being connected
-//Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom
-int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength);
-//int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int* connection_strength);
+/**
+ * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of the other molecule's O2L or OHL atom. 
+ * Returns 0 for no bond, 1 for weak bond and 2 for strong bond
+ * 
+ * @param mol1 HPO*
+ * @param mol2 HPO*
+ * @param boxlength coordinates
+ * @param PBC_flag int
+ * @return int 
+ */
+int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
 
 
-//Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L atom
-int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength);
-int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength);
+
+/**
+ * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's O2L atom.
+ * 
+ * @param mol1 HPO*
+ * @param mol2 HPO*
+ * @param boxlength coordinates
+ * @param PBC_flag int
+ * @return int 
+ */
+int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
 
 
-//Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom. Also the OHL atom of the first molecule
-//connected to the above HOL is 3.5 nm away from the corresponding O2L or OHL from the above second molecule. 
-int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength);
+/**
+ * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's OHL atom.
+ * 
+ * @param mol1 HPO*
+ * @param mol2 HPO*
+ * @param boxlength coordinates
+ * @param PBC_flag int
+ * @return int 
+ */
+int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
 
-//Here the K molecule must be in 3.2 nm of one of the HPO molecule's O2L atom
-int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength);
+
+/**
+ * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of the other molecule's O2L or OHL atom. 
+ * Also performs a stricter check if the OHL connected to the HOL of the first molecule is within 3.5 nm of the corresponding O2L or OHL from the second molecule.
+ * 
+ * @param mol1 HPO*
+ * @param mol2 HPO*
+ * @param boxlength coordinates
+ * @param PBC_flag int
+ * @return int 
+ */
+int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
+
+/**
+ * @brief Checks if the K atom is within 3.2 nm of one of the HPO molecule's O2L atom
+ * 
+ * @param Kmol K*
+ * @param HPOmol HPO*
+ * @param boxlength coordinates
+ * @param PBC_flag int
+ * @return int 
+ */
+int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength, int PBC_flag);
 
 
-//Funtion to print the details of the HPO molecule
+/**
+ * @brief Print the positions of the atoms of the HPO molecule
+ * 
+ * @param mol HPO*
+ */
 void print_HPO(HPO *mol);
 
-//Checks and reports whether the strict definition of connectedness results in the same or lesser connections
-void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules);
+/**
+ * @brief Checks and prints whether the strict definition of connectedness results in the same number of connections
+ * 
+ * @param molecules HPO*
+ * @param boxlength coordinates
+ * @param no_of_molecules int
+ * @param PBC_flag int
+ */
+void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules, int PBC_flag);
 
 #endif

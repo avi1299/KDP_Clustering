@@ -18,31 +18,83 @@ typedef struct
     int length;
 }stack;
 
+/**
+ * @brief Prints the node
+ * 
+ * @param a node
+ */
 void print_node(node a);
 
+/**
+ * @brief Prints the stack
+ * 
+ * @param a stack*
+ */
 void print_stack(stack *a);
 
+/**
+ * @brief Prints the stack elemets without the NULL or arrows
+ * 
+ * @param a stack*
+ */
 void print_stack_elements(stack* a);
 
-//Creates a node and adds it to stack. Its value is provided as an argument
+/**
+ * @brief Creates a node and adds it to stack. Its value is provided as an argument
+ * 
+ * @param existing_stack stack*
+ * @param val int
+ */
 void add_node_given_value(stack *existing_stack, int val);
 
-//Adds a node to the stack. The pointer to the node is provided as an argument
+/**
+ * @brief Adds a node to the stack. The pointer to the node is provided as an argument
+ * 
+ * @param existing_stack stack*
+ * @param p node*
+ */
 void add_node(stack *existing_stack, node* p);
 
-//Pops node from the top of stack, frees the node and returns the value of interger
+/**
+ * @brief Pops node from the top of stack, frees the node and returns the value of interger
+ * 
+ * @param existing_stack stack *
+ * @return int 
+ */
 int pop_and_return_value(stack *existing_stack);
 
-//Pops node from top of stack and returns pointer to node
+/**
+ * @brief Pops node from top of stack and returns pointer to node
+ * 
+ * @param existing_stack stack* 
+ * @return node* 
+ */
 node* pop_and_return_node(stack *existing_stack);
 
-//Pops elements from stack A and pushes them onto stack B until stack A is empty
+/**
+ * @brief Pops elements from stack A and pushes them onto stack B until stack A is empty
+
+ * 
+ * @param a stack* 
+ * @param b stack* 
+ */
 void pop_from_a_into_b(stack *a,stack *b);
 
-//Pops elements from stack A and pushes them onto stack B until stack A is empty. Checks if the elements have been visited or not
+/**
+ * @brief Pops elements from stack A and pushes them onto stack B until stack A is empty.
+ * Checks if the elements have been visited or not
+ * 
+ * @param a stack*
+ * @param b stack*
+ * @param visited int*
+ */
 void pop_after_checking_visited(stack *a,stack *b,int visited[]);
 
-//Pops all elements of the stack and return nothing
+/**
+ * @brief Pops all elements of the stack and return nothing
+ * 
+ * @param a stack*
+ */
 void empty_stack(stack *a);
 
 #endif

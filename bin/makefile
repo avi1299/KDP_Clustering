@@ -48,8 +48,8 @@ xtc_1001_ring: test
 run_silent: test
 	./test -f ../ExampleData/M1A_S2_16.pdb -o ../ExampleData/test_out.pdb
 
-test_out: test
-	./test -f ../ExampleData/m1_tetra_102.xtc -t ../ExampleData/run.top -o ../ExampleData/test_out102.pdb -m 10
+supercell: test
+	./test -f ../ExampleData/m1_tetra_102.xtc -t ../ExampleData/run1.top -o ../ExampleData/supercell.pdb -a
 
 gmon.out: xtc_1001_silent
 

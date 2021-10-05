@@ -52,7 +52,7 @@ double strong_connection_ratio(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECU
     return (double)strong[0]/all[0];
 }
 
-void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag){
+void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag, int PCB_flag){
     int i,j;
     #pragma omp parallel for
     for(i=0;i<no_of_molecules;i++)
@@ -69,7 +69,7 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
             for(j=i+1;j<no_of_molecules;j++)
             {
                 //if(strongly_connected_molecules(&molecules[i],&molecules[j],boxlength)||)
-                if(strongly_connected_molecules(&molecules[i],&molecules[j],boxlength)||strongly_connected_molecules(&molecules[j],&molecules[i],boxlength))
+                if(strongly_connected_molecules(&molecules[i],&molecules[j],boxlength, PCB_flag)||strongly_connected_molecules(&molecules[j],&molecules[i],boxlength, PCB_flag))
                 {
                     add_node_given_value(&adjacency_list[i],j);
                     add_node_given_value(&adjacency_list[j],i);
@@ -87,7 +87,7 @@ void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecule
             for(j=i+1;j<no_of_molecules;j++)
             {
                 //if(connected_molecules(&molecules[i],&molecules[j],boxlength))
-                if(connected_molecules(&molecules[i],&molecules[j],boxlength)||connected_molecules(&molecules[j],&molecules[i],boxlength))
+                if(connected_molecules(&molecules[i],&molecules[j],boxlength, PCB_flag)||connected_molecules(&molecules[j],&molecules[i],boxlength, PCB_flag))
                 {
                     add_node_given_value(&adjacency_list[i],j);
                     add_node_given_value(&adjacency_list[j],i);
@@ -132,7 +132,7 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
 }
 
 //Constructs adjacency matrix from the array of molecules by checking connectednes between molecules
-void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES]){
+void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
     #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
@@ -143,7 +143,7 @@ void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_
             //     adjacency_matrix[DIRECTED_GRAPH][i][j]=connected_molecules(&molecules[i],&molecules[j],boxlength);    
             // else
             //     adjacency_matrix[DIRECTED_GRAPH][i][j]=0;
-            adjacency_matrix[DIRECTED_GRAPH][i][j]=connected_molecules(&molecules[i],&molecules[j],boxlength); 
+            adjacency_matrix[DIRECTED_GRAPH][i][j]=connected_molecules(&molecules[i],&molecules[j],boxlength,PBC_flag); 
         }
     }
 
@@ -169,14 +169,14 @@ void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_
 
 }
 
-void Kadjacency_matrix_populator(HPO molecules[], K Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES]){
+void Kadjacency_matrix_populator(HPO molecules[], K Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
     #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
     {
         for(int j=0;j<no_of_molecules;j++)
         {
-            Kadjacency_matrix[i][j]=connected_K_HPO(&Kmolecules[i],&molecules[j],boxlength); 
+            Kadjacency_matrix[i][j]=connected_K_HPO(&Kmolecules[i],&molecules[j],boxlength,PBC_flag); 
         }
     }
 }
