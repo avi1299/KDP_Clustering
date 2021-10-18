@@ -3,7 +3,7 @@ using namespace std;
 
 //int parallelism_enabled=1;
 
-int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , K Kmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int threshold, int greater_than_flag){
+int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , COUNTERION Kmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int threshold, int greater_than_flag){
     int i,j;
     int K_mols_of_interest[no_of_molecules]={0};
 
@@ -25,7 +25,7 @@ int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES]
     }
 
     j=1;
-    //Printing the K molecules
+    //Printing the COUNTERION molecules
     for(i=0;i<no_of_molecules;i++)
     {
         if(K_mols_of_interest[i])

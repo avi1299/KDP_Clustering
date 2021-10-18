@@ -3,7 +3,7 @@
 
 //Assumption all the molecules are listed together and though order of molecules doesn't matter, all the 7 atoms corresponding to a molecule should be together
 //i.e. one after the other.
-void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
+void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
 {
     int i,atom_no,mol_no,old_mol_no=-1;;
     char line[LLEN],atom_name[LLEN],mol_name[LLEN],tag[LLEN];
@@ -105,7 +105,7 @@ void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength
 }
 
 
-void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,int * atom_index, int no_of_molecules)
+void molecule_entry(ION molecules[],COUNTERION Kmolecules[],rvec* x,int * atom_index, int no_of_molecules)
 {
     int i,j,k;
     //Input K molecules
@@ -136,7 +136,7 @@ void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,int * atom_index, int
     }
 }
 
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
 {
         char **atom_name_list;
         atom_name_list=(char **)malloc(sizeof(char *)*HPO_ATOM_COUNT);
@@ -250,7 +250,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],K Kmolecules[]
         while(read_next_xtc(fio,natoms,&step,&time,box,x,&prec,&bOK));
         *start_mol_no=*no_of_molecules;
         // for(int i=0;i<*no_of_molecules;i++)
-        //     print_HPO(&(molecules[i]));
+        //     print_ION(&(molecules[i]));
         // for(int i=0;i<*no_of_molecules;i++)
         //    printf("%lf %lf %lf\n",Kmolecules[i].posn[0],Kmolecules[i].posn[1],Kmolecules[i].posn[2]);
         //printf("%ld %ld %ld\n",count, Kcount, xcount);

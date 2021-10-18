@@ -160,8 +160,8 @@ int main(int argc,char *argv[])
     int no_of_molecules=0;
     int i,j;
 
-    static HPO molecules[MAX_M];
-    static K Kmolecules[MAX_M];
+    static ION molecules[MAX_M];
+    static COUNTERION Kmolecules[MAX_M];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
 
@@ -175,8 +175,8 @@ int main(int argc,char *argv[])
 
     coordinates boxlength;//, coordinate;
     int conf_number,conf,number_of_K_molecules_in_cluster;
-    HPO* mol_start=NULL;
-    K* Kmol_start=NULL;
+    ION* mol_start=NULL;
+    COUNTERION* Kmol_start=NULL;
     /*-------------------------START: read the file --------------------------*/
     if(XTC_in_flag==1)
     {
@@ -253,7 +253,7 @@ int main(int argc,char *argv[])
             //Prints all the molecules
             
             for(i=0;i<no_of_molecules;i++)
-                print_HPO(&mol_start[i]);
+                print_ION(&mol_start[i]);
             printf("\n");
         }
 
@@ -264,7 +264,7 @@ int main(int argc,char *argv[])
         //Useful when you dont want to claculate the strong ratio
         //adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
         adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix,periodicBoundary_flag);
-        Kadjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
+        counterion_adjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
 
         //Ring Analysis

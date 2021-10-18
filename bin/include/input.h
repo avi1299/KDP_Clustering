@@ -45,31 +45,31 @@ typedef vector<moleculeInfo> moleculeInfoList;
  * 
  * @param fio FILE*
  * @param fp_top FILE*
- * @param molecules HPO*
- * @param Kmolecules K*
+ * @param molecules ION*
+ * @param Kmolecules COUNTERION*
  * @param boxlength coordinates
  * @param no_of_molecules int*
  * @param start_mol_no int*
  * @param conf_number int*
  * @param time_to_start real
  */
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
 
 /**
  * @brief Reads the PDB file and stores the positions of the molecules
  * 
  * @param fp_in FILE*
- * @param molecules HPO*
- * @param Kmolecules K*
+ * @param molecules ION*
+ * @param Kmolecules COUNTERION*
  * @param boxlength coordinates
  * @param no_of_molecules int*
  * @param start_mol_no int*
  * @param conf_number int*
  */
-void PDB_reader(FILE* fp_in,HPO molecules[],K Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
+void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
 
 /**
- * @brief [Depreceated] Reads the TOP file and stores the number of HPO and K molecules
+ * @brief [Depreceated] Reads the TOP file and stores the number of ION and COUNTERION molecules
  * 
  * @param fp_top FILE*
  * @param no_of_molecules int*
@@ -103,18 +103,18 @@ void read_mol_order(FILE *fp_top,char *line,char** atom_list);
  * @param line char*
  */
 void skip_comments(FILE *fp_top,char *line);
-//void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,char ** atom_name_list, int no_of_molecules);
+//void molecule_entry(ION molecules[],COUNTERION Kmolecules[],rvec* x,char ** atom_name_list, int no_of_molecules);
 
 /**
  * @brief Reads the data from the XTC file into the arrays storeing the positions of the molecules
  * 
- * @param molecules HPO*
- * @param Kmolecules K*
+ * @param molecules ION*
+ * @param Kmolecules COUNTERION*
  * @param x rvec*
  * @param atom_index int* 
  * @param no_of_molecules int 
  */
-void molecule_entry(HPO molecules[],K Kmolecules[],rvec* x,int * atom_index, int no_of_molecules);
+void molecule_entry(ION molecules[],COUNTERION Kmolecules[],rvec* x,int * atom_index, int no_of_molecules);
 
 /**
  * @brief Converts an array of strings into their corresponding indices

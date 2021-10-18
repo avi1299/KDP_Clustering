@@ -19,6 +19,15 @@ typedef double coordinates[3];
 
 #define HPO_ATOM_COUNT 7
 
+#define ION_ATOM_COUNT HPO_ATOM_COUNT
+
+#define K_ATOM_COUNT 1
+
+#define COUNTERION_ATOM_COUNT K_ATOM_COUNT
+
+
+ /* ------- Defining the molecules that will become the IONS and COUNTERIONS ---------- */
+
 typedef struct
 {
         coordinates posn[HPO_ATOM_COUNT];
@@ -37,7 +46,11 @@ typedef struct
         coordinates posn;
 } K;
 
+/* ----------- Giving the molecules an alias of ION and COUNTERION ----------- */
 
+#define ION HPO
+
+#define COUNTERION K
 
 //Structure for cluster
 // typedef struct
@@ -48,82 +61,87 @@ typedef struct
 
 //Defining conditions of being connected
 /**
- * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of the other molecule's O2L or OHL atom. 
+ * @brief Specifies the requirement for a connection between one ION and another ION :  
+ * Checks if at least 1 HOL atom one molecule is within 2.5 nm of the other molecule's O2L or OHL atom. 
  * Returns 0 for no bond, 1 for weak bond and 2 for strong bond
  * 
- * @param mol1 HPO*
- * @param mol2 HPO*
+ * @param mol1 ION*
+ * @param mol2 ION*
  * @param boxlength coordinates
  * @param PBC_flag int
  * @return int 
  */
-int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
+int connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag);
 
 
 
 /**
- * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's O2L atom.
+ * @brief Specifies the requirement for a strong connection between one ION and another ION : 
+ * Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's O2L atom.
  * 
- * @param mol1 HPO*
- * @param mol2 HPO*
+ * @param mol1 ION*
+ * @param mol2 ION*
  * @param boxlength coordinates
  * @param PBC_flag int
  * @return int 
  */
-int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
+int strongly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag);
 
 
 /**
- * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's OHL atom.
+ * @brief Specifies the requirement for a weak connection between one ION and another ION : 
+ * Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's OHL atom.
  * 
- * @param mol1 HPO*
- * @param mol2 HPO*
+ * @param mol1 ION*
+ * @param mol2 ION*
  * @param boxlength coordinates
  * @param PBC_flag int
  * @return int 
  */
-int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
+int weakly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag);
 
 
 /**
- * @brief Checks if at least 1 HOL atom one molecule is within 2.5 nm of the other molecule's O2L or OHL atom. 
+ * @brief Checks if an ION is connected to another ION using a stricter condition :  
+ * Checks if at least 1 HOL atom one molecule is within 2.5 nm of the other molecule's O2L or OHL atom. 
  * Also performs a stricter check if the OHL connected to the HOL of the first molecule is within 3.5 nm of the corresponding O2L or OHL from the second molecule.
  * 
- * @param mol1 HPO*
- * @param mol2 HPO*
+ * @param mol1 ION*
+ * @param mol2 ION*
  * @param boxlength coordinates
  * @param PBC_flag int
  * @return int 
  */
-int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag);
+int connected_molecules_strict(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag);
 
 /**
- * @brief Checks if the K atom is within 3.2 nm of one of the HPO molecule's O2L atom
+ * @brief Checks if the COUNTERION and ION satisfy the condition for connection:
+ * If the K atom is within 3.2 nm of one of the HPO molecule's O2L atom
  * 
- * @param Kmol K*
- * @param HPOmol HPO*
+ * @param Kmol COUNTERION*
+ * @param HPOmol ION*
  * @param boxlength coordinates
  * @param PBC_flag int
  * @return int 
  */
-int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength, int PBC_flag);
+int connected_K_HPO(COUNTERION *Kmol, ION *HPOmol, coordinates boxlength, int PBC_flag);
 
 
 /**
- * @brief Print the positions of the atoms of the HPO molecule
+ * @brief Print the positions of the atoms of the ION molecule
  * 
- * @param mol HPO*
+ * @param mol ION*
  */
-void print_HPO(HPO *mol);
+void print_ION(ION *mol);
 
 /**
  * @brief Checks and prints whether the strict definition of connectedness results in the same number of connections
  * 
- * @param molecules HPO*
+ * @param molecules ION*
  * @param boxlength coordinates
  * @param no_of_molecules int
  * @param PBC_flag int
  */
-void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules, int PBC_flag);
+void strict_vs_relaxed(ION molecules[],coordinates boxlength,int no_of_molecules, int PBC_flag);
 
 #endif

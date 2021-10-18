@@ -51,12 +51,12 @@ int connected_or_not(coordinates point1, coordinates point2, coordinates boxleng
 
 //Defining conditions of being connected
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom
-// int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength)
+// int connected_molecules(ION *mol1, ION *mol2, coordinates boxlength)
 // {
 //     return      (strongly_connected_molecules(mol1,mol2,boxlength)||weakly_connected_molecules(mol1,mol2,boxlength));
 // }
 
-int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
+int connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag)
 {
     //If we are comparing the same molecules there is no connection
     if(mol1==mol2)
@@ -71,7 +71,7 @@ int connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_fla
 
 
 
-int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
+int strongly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag)
 {
     if(PBC_flag)
     return      periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF||
@@ -86,7 +86,7 @@ int strongly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, in
 
 }
 
-int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
+int weakly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag)
 {
     if(PBC_flag)
     return      periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[OHL_1],boxlength)<CUTOFF||
@@ -102,7 +102,7 @@ int weakly_connected_molecules(HPO *mol1, HPO *mol2, coordinates boxlength, int 
 
 //Here it is at least 1 HOL atom of the first molecule must be in 2.5 nm of one of the second molecule's O2L or OHL atom. Also the OHL atom of the first molecule
 //connected to the above HOL is 3.5 nm away from the corresponding O2L or OHL from the above second molecule. 
-int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength, int PBC_flag)
+int connected_molecules_strict(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag)
 {
     if(PBC_flag)
     return      periodicBoundaryMindistSquare(mol1->posn[HOL_1],mol2->posn[O2L_1],boxlength)<CUTOFF&&periodicBoundaryMindistSquare(mol1->posn[OHL_1],mol2->posn[O2L_1],boxlength)<CUTOFF_STRICT||
@@ -124,7 +124,7 @@ int connected_molecules_strict(HPO *mol1, HPO *mol2, coordinates boxlength, int 
                 euclideanDistanceSquare(mol1->posn[HOL_2],mol2->posn[OHL_2])<CUTOFF&&euclideanDistanceSquare(mol1->posn[OHL_2],mol2->posn[OHL_2])<CUTOFF_STRICT;
 }
 
-int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength, int PBC_flag)
+int connected_K_HPO(K *Kmol, ION *HPOmol, coordinates boxlength, int PBC_flag)
 {
         if(PBC_flag)
         return  periodicBoundaryMindistSquare(Kmol->posn,HPOmol->posn[O2L_1],boxlength)<CUTOFF_K_O2L||
@@ -136,8 +136,8 @@ int connected_K_HPO(K *Kmol, HPO *HPOmol, coordinates boxlength, int PBC_flag)
 }
 
 
-//Funtion to print the details of the HPO molecule
-void print_HPO(HPO *mol)
+//Funtion to print the details of the ION molecule
+void print_ION(ION *mol)
 {
         printf("HPO Molecule:\nP  : [%lf,%lf,%lf]\nOHL: [%lf,%lf,%lf]\nHOL: [%lf,%lf,%lf]\nOHL: [%lf,%lf,%lf]\nHOL: [%lf,%lf,%lf]\nO2L: [%lf,%lf,%lf]\nO2L: [%lf,%lf,%lf]\n",
                 mol->posn[PL][0],mol->posn[PL][1],mol->posn[PL][2],
@@ -150,7 +150,7 @@ void print_HPO(HPO *mol)
 }
 
 //Checks and reports whether the strict definition of connectedness results in the same or lesser connections
-void strict_vs_relaxed(HPO molecules[],coordinates boxlength,int no_of_molecules, int PBC_flag)
+void strict_vs_relaxed(ION molecules[],coordinates boxlength,int no_of_molecules, int PBC_flag)
 {
     int i,j;
     int strict=0,not_strict=0;

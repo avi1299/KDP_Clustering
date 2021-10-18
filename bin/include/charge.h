@@ -11,7 +11,7 @@
  * 
  * @param fp_out FILE* 
  * @param Kadjacency_matrix int [MAX_MOLECULES][MAX_MOLECULES]
- * @param Kmolecules K*
+ * @param Kmolecules COUNTERION*
  * @param clusters stack*
  * @param no_of_molecules int
  * @param number_of_clusters int
@@ -19,7 +19,7 @@
  * @param greater_than_flag int 
  * @return int 
  */
-int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , K Kmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int threshold, int greater_than_flag);
+int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , COUNTERION Kmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int threshold, int greater_than_flag);
 
 /**
  * @brief Set the mols of interest object

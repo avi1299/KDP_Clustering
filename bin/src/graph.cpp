@@ -52,7 +52,7 @@ double strong_connection_ratio(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECU
     return (double)strong[0]/all[0];
 }
 
-void adjacency_complete(HPO molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag, int PCB_flag){
+void adjacency_complete(ION molecules[],coordinates boxlength,int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag, int PCB_flag){
     int i,j;
     #pragma omp parallel for
     for(i=0;i<no_of_molecules;i++)
@@ -132,7 +132,7 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
 }
 
 //Constructs adjacency matrix from the array of molecules by checking connectednes between molecules
-void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
+void adjacency_matrix_populator(ION molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
     #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
@@ -169,7 +169,7 @@ void adjacency_matrix_populator(HPO molecules[],coordinates boxlength,int no_of_
 
 }
 
-void Kadjacency_matrix_populator(HPO molecules[], K Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
+void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
     #pragma omp parallel for collapse(2) //if (parallelism_enabled)
     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
     for(int i=0;i<no_of_molecules;i++)
