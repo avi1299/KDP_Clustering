@@ -34,8 +34,8 @@ void fprintf_cluster_PDB(FILE* fp_out,ION molecules[],stack* cluster,int *mol_no
 
 void fprintf_conf_PDB(FILE* fp_out,ION molecules[],stack clusters[],int number_of_clusters, int threshold, int greater_than_flag, int HPO_start_no)
 {
-        int mol_no=HPO_start_no-1;
-        int atom_no=HPO_start_no-1;
+        int mol_no=HPO_start_no;
+        int atom_no=HPO_start_no;
         int i;
         if(greater_than_flag==1)
         {
