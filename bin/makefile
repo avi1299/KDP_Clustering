@@ -51,6 +51,12 @@ run_silent: test
 supercell: test
 	./test -f ../ExampleData/m1_tetra_102.xtc -t ../ExampleData/run1.top -o ../ExampleData/supercell.pdb -a
 
+minicell_pdb: test
+	./test -f ../ExampleData/avi_M1.pdb -o ../ExampleData/minicell_pdb.pdb
+
+minicell_xtc: test
+	./test -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb
+
 gmon.out: xtc_1001_silent
 
 multithread:
@@ -69,3 +75,4 @@ clean:
 	rm -f cluster_max_size.dat
 	rm -f cluster_statistics.dat
 	rm -f ring_statistics.dat
+	rm -f Kstatistics.dat

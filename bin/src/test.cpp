@@ -155,6 +155,7 @@ int main(int argc,char *argv[])
     FILE *fp_stats=fopen("cluster_statistics.dat","w");
     FILE *fp_ring=fopen("ring_statistics.dat","w");
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
+    FILE *fp_Kstats=fopen("Kstatistics.dat","w");
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
     int no_of_molecules=0;
@@ -266,6 +267,8 @@ int main(int argc,char *argv[])
         adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix,periodicBoundary_flag);
         counterion_adjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
+
+        count_counterion_affinity(fp_Kstats, Kadjacency_matrix, no_of_molecules);
 
         //Ring Analysis
         if(ring_flag)
@@ -557,6 +560,7 @@ int main(int argc,char *argv[])
     fclose(fp_stats);
     fclose(fp_cms);
     fclose(fp_ring);
+    fclose(fp_Kstats);
 
     clock_gettime(CLOCK_MONOTONIC, &finish);
 

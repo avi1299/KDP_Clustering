@@ -49,3 +49,21 @@ void set_mols_of_interest(int mols_of_interest[], stack *cluster){
     }
 }
 
+void count_counterion_affinity(FILE* fp_Kstat, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_molecules){
+    vector<int> count(no_of_molecules+1,0);
+    #pragma omp parallel for
+    for(int i=0;i<no_of_molecules;i++)//Looping over each K
+    {
+        for(int j=0;j<no_of_molecules;j++)
+        {
+            count[i]+=Kadjacency_matrix[i][j];
+        }
+    }
+    vector<int> stats(no_of_molecules+1,0);
+    for(int i=0;i<no_of_molecules+1;i++)
+        stats[count[i]]++;
+    for(int i=0;i<no_of_molecules+1;i++)
+        fprintf(fp_Kstat,"%d ",stats[i]);
+    fprintf(fp_Kstat,"\n");
+}
+
