@@ -26,12 +26,16 @@ int fprintf_K_ions_in_cluster(FILE* fp_out, int Kadjacency_matrix[MAX_MOLECULES]
 
     j=1;
     //Printing the COUNTERION molecules
+    int count;
     for(i=0;i<no_of_molecules;i++)
     {
         if(K_mols_of_interest[i])
         {
-            fprintf(fp_out, "ATOM  %5d  K   K   X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
-                (j), (j),Kmolecules[i].posn[0],Kmolecules[i].posn[1],Kmolecules[i].posn[2]);
+            count=0;
+            for(int k=0;k<no_of_molecules;k++)
+                count+=Kadjacency_matrix[i][k];
+            fprintf(fp_out, "ATOM  %5d  K   K%d  X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                (j),(count), (j),Kmolecules[i].posn[0],Kmolecules[i].posn[1],Kmolecules[i].posn[2]);
             j++;
         }
     }

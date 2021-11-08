@@ -34,12 +34,15 @@ These are the planned features:
 
 ***
 ## Requirements
-We require the GNU C++ compiler `g++` to compile our code into a binary. The included GROMACS library requires the BLAS and LAPACK libraries to run.
+We require the GNU C++ compiler `g++` to compile our code into a binary. The GROMACS library (`libgromacs`) requires the BLAS and LAPACK libraries to run.
 It is suggested you install the below mentioned libraries.
 
 1. `g++ >= 9.3.0`
-2. `libblas-dev >= 3.9.0`
-3. `liblapack-dev >= 3.9.0`
+2. `libgromacs-dev >= 2020.1-1`
+3. `libblas-dev >= 3.9.0`
+4. `liblapack-dev >= 3.9.0`
+
+In case the gromacs libraries are not available through your package manager, you can build the GROMACS library from the source code, and copy the `libgromacs.so*` files found in `/usr/local/gromacs/lib/` directory to the `./bin/lib` directory. Make sure to execute `chmod +x libgromacs.so*` so as to make the shared object files executable.
 ***
 ## Setup
 
