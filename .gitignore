@@ -4,6 +4,8 @@ gromacs_install
 gromacs-2021.1
 .vscode
 Old_code
-ExampleData
+ExampleData/*
 Docs
 .ipynb_checkpoints/Clustering_Metric-checkpoint.ipynb
+
+!ExampleData/colour.pml

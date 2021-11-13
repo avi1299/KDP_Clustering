@@ -57,6 +57,30 @@ minicell_pdb: test
 minicell_xtc: test
 	./test -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb
 
+bs4: test
+	./test -f ../ExampleData/M1B_S4_avi.xtc -t ../ExampleData/run1664.top -o ../ExampleData/M1B_S4_out.pdb -m 10
+
+bs1: test
+	./test -f ../ExampleData/M1B_S1_avi.xtc -t ../ExampleData/run312.top -o ../ExampleData/M1B_S1_out.pdb -m 10
+
+bs3: test
+	./test -f ../ExampleData/M1B_S3_avi.xtc -t ../ExampleData/run1248.top -o ../ExampleData/M1B_S3_out.pdb -m 10
+
+cs4: test
+	./test -f ../ExampleData/M1C_S4_avi.xtc -t ../ExampleData/run1664.top -o ../ExampleData/M1C_S4_out.pdb -m 10
+
+bs2: test
+	./test -f ../ExampleData/M1B_S2_avi.xtc -t ../ExampleData/run624.top -o ../ExampleData/M1B_S2_out.pdb -m 10
+
+bs2pbc: test
+	./test -f ../ExampleData/M1B_S2_pbc_avi.xtc -t ../ExampleData/run624.top -o ../ExampleData/M1B_S2_pbc_out.pdb -m 10
+
+bsh: test
+	./test -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1B_Sh_out.pdb -m 10
+
+csh: test
+	./test -f ../ExampleData/M1C_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1C_Sh_out.pdb -m 10
+
 gmon.out: xtc_1001_silent
 
 multithread:
