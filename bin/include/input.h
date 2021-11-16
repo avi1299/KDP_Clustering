@@ -53,7 +53,7 @@ typedef vector<moleculeInfo> moleculeInfoList;
  * @param conf_number int*
  * @param time_to_start real
  */
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start);
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start, int* no_of_SOL);
 
 /**
  * @brief Reads the PDB file and stores the positions of the molecules
@@ -66,7 +66,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
  * @param start_mol_no int*
  * @param conf_number int*
  */
-void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number);
+void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolecules[], coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number, int* no_of_SOL);
 
 /**
  * @brief [Depreceated] Reads the TOP file and stores the number of ION and COUNTERION molecules

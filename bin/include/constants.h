@@ -5,6 +5,7 @@
 #define NAME 100
 #define MAX_M 30000000
 #define MAX_MOLECULES 3000 
+#define MAX_SOL 15000
 #define DIM 3
 #define DIRECTED_GRAPH 0
 #define UNDIRECTED_GRAPH 1

@@ -25,8 +25,11 @@ typedef double coordinates[3];
 
 #define COUNTERION_ATOM_COUNT K_ATOM_COUNT
 
+#define H2O_ATOM_COUNT 3
 
- /* ------- Defining the molecules that will become the IONS and COUNTERIONS ---------- */
+#define SOL_ATOM_COUNT H2O_ATOM_COUNT
+
+ /* ------- Defining the molecules that will become the IONS, COUNTERIONS and SOL---------- */
 
 typedef struct
 {
@@ -46,11 +49,22 @@ typedef struct
         coordinates posn;
 } K;
 
+typedef struct
+{
+        coordinates posn[SOL_ATOM_COUNT];
+} H20;
+
+#define OW 0
+#define HW1 1
+#define HW2 2
+
 /* ----------- Giving the molecules an alias of ION and COUNTERION ----------- */
 
 #define ION HPO
 
 #define COUNTERION K
+
+#define SOL H20
 
 //Structure for cluster
 // typedef struct
@@ -78,7 +92,8 @@ int connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_fla
 /**
  * @brief Specifies the requirement for a strong connection between one ION and another ION : 
  * Checks if at least 1 HOL atom one molecule is within 2.5 nm of one of the other molecule's O2L atom.
- * 
+ * if(PBC_flag)
+ 
  * @param mol1 ION*
  * @param mol2 ION*
  * @param boxlength coordinates
@@ -99,7 +114,9 @@ int strongly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, in
  * @return int 
  */
 int weakly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag);
-
+#define PL 0
+#define OHL_1 1
+#define HOL_1 2
 
 /**
  * @brief Checks if an ION is connected to another ION using a stricter condition :  
@@ -124,7 +141,19 @@ int connected_molecules_strict(ION *mol1, ION *mol2, coordinates boxlength, int 
  * @param PBC_flag int
  * @return int 
  */
-int connected_K_HPO(COUNTERION *Kmol, ION *HPOmol, coordinates boxlength, int PBC_flag);
+int connected_K_HPO(K *Kmol, ION *HPOmol, coordinates boxlength, int PBC_flag);
+
+/**
+ * @brief Checks if the SOL and ION satisfy the condition for connection:
+ * If either of the H atoms of the H2O molecules is within 2.5 nm of one of the HPO molecule's O2L or OHL atom
+ * 
+ * @param SOLmol SOL*
+ * @param HPOmol ION*
+ * @param boxlength coordinates
+ * @param PBC_flag int
+ * @return int 
+ */
+int connected_SOL_ION(SOL *SOLmol, ION *HPOmol, coordinates boxlength, int PBC_flag);
 
 
 /**

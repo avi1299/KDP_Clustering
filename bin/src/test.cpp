@@ -159,12 +159,15 @@ int main(int argc,char *argv[])
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
     int no_of_molecules=0;
+    int no_of_SOL=0;
     int i,j;
 
     static ION molecules[MAX_M];
     static COUNTERION Kmolecules[MAX_M];
+    static SOL SOLmolecules[MAX_SOL];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
+    static int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES];
 
     //Ring analysis
     static int D[MAX_MOLECULES][MAX_MOLECULES];
@@ -186,11 +189,11 @@ int main(int argc,char *argv[])
             printf("Top file not specified\n");
             exit(0);
         }
-        XTC_reader(fio,fp_top,molecules,Kmolecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number,time_to_start);
+        XTC_reader(fio,fp_top,molecules,Kmolecules,SOLmolecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number,time_to_start,&no_of_SOL);
 
     }
     else
-        PDB_reader(fp_in,molecules,Kmolecules,boxlength,&no_of_molecules,&start_mol_no,&conf_number);
+        PDB_reader(fp_in,molecules,Kmolecules,SOLmolecules, boxlength,&no_of_molecules,&start_mol_no,&conf_number, &no_of_SOL);
 
     int conf_true=conf_number;
     if(verbose_level>=1)

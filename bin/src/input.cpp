@@ -3,7 +3,7 @@
 
 //Assumption all the molecules are listed together and though order of molecules doesn't matter, all the 7 atoms corresponding to a molecule should be together
 //i.e. one after the other.
-void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number)
+void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number, int* no_of_SOL)
 {
     int i,atom_no,mol_no,old_mol_no=-1;;
     char line[LLEN],atom_name[LLEN],mol_name[LLEN],tag[LLEN];
@@ -11,8 +11,12 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates 
     int OHL_read=0;
     int O2L_read=0;
     int k_count=0;
+    int sol_count=0;
+
     *no_of_molecules=-1;
+    *no_of_SOL=0;
     *conf_number=0;
+    sol_count=0;
     coordinates coordinate;
     if(fgets(line, LLEN, fp_in) == NULL)
     {
@@ -29,13 +33,35 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates 
         sscanf(line,"%s %d %s %s X %d %lf %lf %lf %*lf %*lf",tag,&atom_no,atom_name,mol_name,&mol_no,&coordinate[0],&coordinate[1],&coordinate[2]);
         if(strcmp(tag,"END")==0)
             (*conf_number)++;
-        //Executes below when it encounters HPO molecules. It extracts information for every atom in every HPO molecule 
+        //Executes below when it encounters H20 molecules. It extracts information for every atom in every H20 molecule 
+        else if(strcmp(mol_name,"SOL")==0)
+        {
+            if (strcmp(atom_name,"OW")==0)             //For the O atom
+            {
+                for(i=0;i<3;i++)
+                    SOLmolecules[*no_of_SOL+sol_count/SOL_ATOM_COUNT].posn[OW][i]=coordinate[i];
+            }
+            else if (strcmp(atom_name,"HW1")==0)             //For the H atom
+            {
+                for(i=0;i<3;i++)
+                    SOLmolecules[*no_of_SOL+sol_count/SOL_ATOM_COUNT].posn[HW1][i]=coordinate[i];
+            }
+            else if (strcmp(atom_name,"HW2")==0)             //For the H atom
+            {
+                for(i=0;i<3;i++)
+                    SOLmolecules[*no_of_SOL+sol_count/SOL_ATOM_COUNT].posn[HW2][i]=coordinate[i];
+            }
+
+            sol_count++;
+        }
+        //Executes below when it encounters K molecules. It extracts information for every atom in every K molecule 
         else if(strcmp(mol_name,"K")==0)
         {
             for(i=0;i<3;i++)
                     Kmolecules[k_count].posn[i]=coordinate[i];
             k_count++;
         }
+        //Executes below when it encounters HPO molecules. It extracts information for every atom in every HPO molecule 
         else if(strcmp(mol_name,"HPO")==0)
         {
             //Noting where the first HPO molecule was encountered
@@ -54,7 +80,7 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates 
                 //Increasing the count of HPO molecules
                 //(*no_of_molecules)++;
             }
-            else if (!(OHL_read)&&(strcmp(atom_name,"OHL")==0))//For the OHL_1 atom
+            else if (!(OHL_read)&&(strcmp(atom_name,"OHL")==0))//For thsol_count=-1e OHL_1 atom
             {
                 //printf("%d %s %s %d %lf %lf %lf\n",atom_no,atom_name,mol_name,mol_no,coordinate[0],coordinate[1],coordinate[2]);
                 for(i=0;i<3;i++)
@@ -99,6 +125,7 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],coordinates 
         
         }
     }
+    (*no_of_SOL)+=sol_count/SOL_ATOM_COUNT;
     (*no_of_molecules)++;
     (*no_of_molecules)=(*no_of_molecules)/(*conf_number);
     fclose(fp_in);
@@ -136,7 +163,7 @@ void molecule_entry(ION molecules[],COUNTERION Kmolecules[],rvec* x,int * atom_i
     }
 }
 
-void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start)
+void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolecules[],coordinates boxlength,int *no_of_molecules,int *start_mol_no,int *conf_number,real time_to_start, int* no_of_SOL)
 {
         char **atom_name_list;
         atom_name_list=(char **)malloc(sizeof(char *)*HPO_ATOM_COUNT);
@@ -144,6 +171,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
         int molSumCount=0;
         long long count=0;
         long long Kcount=0;
+        long long SOLcount=0;
         long long xcount=0;
         moleculeInfoList molInfo;
         TOP_parser(fp_top,&molInfo,&order);
@@ -234,6 +262,25 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
                         count+=o.quantity;
                         //Kcount+=o.quantity;
                         xcount+=o.quantity*(HPO_ATOM_COUNT);
+                    }
+                    else if(strcmp(o.name.c_str(),"SOL")==0)
+                    {
+                        for(j=0;j<o.quantity;j++)
+                        {
+                            //printf("molecule %d\n",j);
+                            int index=0;
+                            for(k=0;k<SOL_ATOM_COUNT;k++)
+                            {
+                                for(i=0;i<DIM;i++)
+                                    SOLmolecules[SOLcount+j].posn[index%SOL_ATOM_COUNT][i]=x[xcount+j*SOL_ATOM_COUNT+k][i]*10;
+                                index++;
+                            }
+
+                        }
+                        //molSumCount+=o.quantity;
+                        SOLcount+=o.quantity;
+                        //Kcount+=o.quantity;
+                        xcount+=o.quantity*(SOL_ATOM_COUNT);
                     }
                     //else break;
                 }
