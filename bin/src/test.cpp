@@ -17,6 +17,7 @@
 
 int main(int argc,char *argv[])
 {
+    //printf("start\n");
     //Initializing flags, time variables, file pointers and so on
     struct timespec start, finish;
     double elapsed;
@@ -181,6 +182,7 @@ int main(int argc,char *argv[])
     int conf_number,conf,number_of_K_molecules_in_cluster;
     ION* mol_start=NULL;
     COUNTERION* Kmol_start=NULL;
+    SOL* SOLmol_start=NULL;
     /*-------------------------START: read the file --------------------------*/
     if(XTC_in_flag==1)
     {
@@ -242,6 +244,7 @@ int main(int argc,char *argv[])
             printf("Configuration number : %d\n\n",conf+1);
         mol_start=&molecules[conf*no_of_molecules];
         Kmol_start=&Kmolecules[conf*no_of_molecules];
+        SOLmol_start=&SOLmolecules[conf*no_of_SOL];
         
         
         //Check if strictness matters
@@ -269,6 +272,7 @@ int main(int argc,char *argv[])
         //adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
         adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix,periodicBoundary_flag);
         counterion_adjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
+        SOL_adjacency_matrix_populator(mol_start,SOLmol_start, boxlength, no_of_molecules, no_of_SOL, SOL_ION_adjacency_matrix, periodicBoundary_flag);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
 
         count_counterion_affinity(fp_Kstats, Kadjacency_matrix, no_of_molecules);

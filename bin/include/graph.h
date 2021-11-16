@@ -71,5 +71,17 @@ double strong_connection_ratio(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECU
  */
 void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag);
 
+/**
+ * @brief Constructs an adjacency matrix which indicates which SOL molecules are connected to which ION molecules
+ * 
+ * @param molecules ION*
+ * @param SOLmolecules SOL*
+ * @param boxlength coordinates
+ * @param no_of_molecules int
+ * @param no_of_SOL int
+ * @param SOLadjacency_matrix int[MAX_MOLECULES][MAX_MOLECULES]
+ * @param PBC_flag int
+ */
+void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag);
 
 #endif

@@ -180,3 +180,15 @@ void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecule
         }
     }
 }
+
+void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag)
+{
+    #pragma omp parallel for
+    for(int j=0;j<no_of_molecules;j++)
+    {
+        for(int i=0;i<no_of_SOL;i++)
+        {
+            SOLadjacency_matrix[i][j]=connected_SOL_ION(&SOLmolecules[i],&molecules[j],boxlength,PBC_flag); 
+        }
+    }
+}
