@@ -8,4 +8,5 @@ ExampleData/*
 Docs
 .ipynb_checkpoints/Clustering_Metric-checkpoint.ipynb
 
-!ExampleData/colour.pml
+!ExampleData/colour_counterion.pml
+!ExampleData/colour_ion.pml

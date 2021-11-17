@@ -40,7 +40,7 @@ xtc_1001: test
 	./test -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -v2
 
 xtc_1001_silent: test
-	./test -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out_PBC.pdb -m 10
+	./test -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -m 10 -s 5 -g -a
 
 xtc_1001_ring: test
 	./test -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -m 10 -r
@@ -58,7 +58,7 @@ minicell_xtc: test
 	./test -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb
 
 bs4: test
-	./test -f ../ExampleData/M1B_S4_avi.xtc -t ../ExampleData/run1664.top -o ../ExampleData/M1B_S4_out.pdb -m 10
+	./test -f ../ExampleData/M1B_S4_avi.xtc -t ../ExampleData/run1664.top -o ../ExampleData/M1B_S4_out.pdb -m 10 -s 6 -g -a
 
 bs1: test
 	./test -f ../ExampleData/M1B_S1_avi.xtc -t ../ExampleData/run312.top -o ../ExampleData/M1B_S1_out.pdb -m 10

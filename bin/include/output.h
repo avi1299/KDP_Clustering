@@ -12,8 +12,9 @@
  * @param cluster stack*
  * @param mol_no int*
  * @param atom_no int*
+ * @param index int
  */
-void fprintf_cluster_PDB(FILE* fp_out,ION molecules[],stack* cluster,int *mol_no,int* atom_no);
+void fprintf_cluster_PDB(FILE* fp_out,ION molecules[],stack* cluster,int *mol_no,int* atom_no, int index);
 
 /** 
  * @brief Prints the details of the configuration to the PDB file
