@@ -59,19 +59,19 @@ minicell_xtc: test
 
 
 bsh: test
-	./test -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1B_Sh_out.pdb -m 10 -s 6 -g
+	./test -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1B_Sh_out.pdb -m 10 
 
 bs1: test
-	./test -f ../ExampleData/M1B_S1_avi.xtc -t ../ExampleData/M1B_S1.top -o ../ExampleData/M1B_S1_out.pdb -m 10 -s 6 -g
+	./test -f ../ExampleData/M1B_S1_avi.xtc -t ../ExampleData/run312.top -o ../ExampleData/M1B_S1_out.pdb -m 10 
 
 bs2: test
-	./test -f ../ExampleData/M1B_S2_avi.xtc -t ../ExampleData/run624.top -o ../ExampleData/M1B_S2_out.pdb -m 10 -s 6 -g
+	./test -f ../ExampleData/M1B_S2_avi.xtc -t ../ExampleData/run624.top -o ../ExampleData/M1B_S2_out.pdb -m 10 
 
 bs3: test
-	./test -f ../ExampleData/M1B_S3_avi.xtc -t ../ExampleData/run1248.top -o ../ExampleData/M1B_S3_out.pdb -m 10 -s 6 -g
+	./test -f ../ExampleData/M1B_S3_avi.xtc -t ../ExampleData/run1248.top -o ../ExampleData/M1B_S3_out.pdb -m 10 
 
 bs4: test
-	./test -f ../ExampleData/M1B_S4_avi.xtc -t ../ExampleData/run1664.top -o ../ExampleData/M1B_S4_out.pdb -m 10 -s 6 -g
+	./test -f ../ExampleData/M1B_S4_avi.xtc -t ../ExampleData/run1664.top -o ../ExampleData/M1B_S4_out.pdb -m 10 
 
 csh: test
 	./test -f ../ExampleData/M1C_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1C_Sh_out.pdb -m
