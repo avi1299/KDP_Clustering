@@ -279,6 +279,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
                         }
                         //molSumCount+=o.quantity;
                         SOLcount+=o.quantity;
+                        (*no_of_SOL)=o.quantity;
                         //Kcount+=o.quantity;
                         xcount+=o.quantity*(SOL_ATOM_COUNT);
                     }

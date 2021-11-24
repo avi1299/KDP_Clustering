@@ -13,6 +13,7 @@ typedef struct
     vector<int> COUTERION_list;
     vector<int> SOL_list;
     int charge;
+    int hydration;
     double avg_coordination_number;
     ringElementsArray ringElements;
 }t_cluster;

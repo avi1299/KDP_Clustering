@@ -38,5 +38,23 @@ void set_mols_of_interest(int mols_of_interest[], stack* cluster);
  */
 void count_counterion_affinity(FILE* fp_Kstat, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_molecules);
 
+/**
+ * @brief Prints the SOL ions
+ * 
+ * @param fp_out 
+ * @param SOLadjacency_matrix 
+ * @param SOLmolecules 
+ * @param clusters 
+ * @param no_of_molecules 
+ * @param number_of_clusters 
+ * @param no_of_SOL 
+ * @param current_atom 
+ * @param current_mol 
+ * @param threshold 
+ * @param greater_than_flag 
+ * @return int 
+ */
+int fprintf_SOL(FILE* fp_out, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , SOL SOLmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int no_of_SOL, int current_atom, int current_mol,int threshold, int greater_than_flag);
+
 
 #endif

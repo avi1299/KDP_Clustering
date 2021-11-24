@@ -4,6 +4,7 @@
 #include "HPO.h"
 #include "stack.h"
 #include "constants.h"
+#include "cluster.h"
 
 /**
  * @brief Calculates the average coordination number(number of connections per molecule) of each cluster 
