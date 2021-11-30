@@ -1,5 +1,5 @@
-#ifndef GRAPH_HEADER
-#define GRAPH_HEADER
+#ifndef CLUSTER_HEADER
+#define CLUSTER_HEADER
 
 #include "stack.h"
 #include "ring.h"
@@ -12,10 +12,10 @@ typedef struct
     vector<int> ION_list;
     vector<int> COUTERION_list;
     vector<int> SOL_list;
+    ringElementsArray ringElements;
     int charge;
     int hydration;
     double avg_coordination_number;
-    ringElementsArray ringElements;
 }t_cluster;
 
 #endif

@@ -3,6 +3,8 @@
 
 #include "HPO.h"
 #include "stack.h"
+#include "cluster.h"
+#include "vector"
 
 /**
  * @brief Prints the details of the clusters to the PDB file
@@ -16,6 +18,7 @@
  */
 void fprintf_cluster_PDB(FILE* fp_out,ION molecules[],stack* cluster,int *mol_no,int* atom_no, int index);
 
+void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SOLmolecules[], vector<t_cluster>* clusters, int threshold, int greater_than_flag);
 /** 
  * @brief Prints the details of the configuration to the PDB file
  * 

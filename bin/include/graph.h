@@ -51,6 +51,17 @@ void adjacency_matrix_populator(ION molecules[],coordinates boxlength,int no_of_
  */
 void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],int no_of_molecules,stack adjacency_list[],int verbose_flag, int strong_flag);
 
+// /**
+//  * @brief Constructs the adjacency list from the adjcency matrix
+//  * 
+//  * @param adjacency_matrix int* [MAX_MOLECULES][MAX_MOLECULES]
+//  * @param no_of_molecules int
+//  * @param clusters vector<t_cluster>
+//  * @param verbose_flag int
+//  * @param strong_flag int
+//  */
+// void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],int no_of_molecules,vector<t_cluster> clusters,int verbose_flag, int strong_flag);
+
 /**
  * @brief Returns the ratio of strong connections to all connections
  * 

@@ -13,6 +13,8 @@
 #include "gromacs/fileio/xtcio.h"
 #include <time.h>
 
+using namespace std;
+
 
 
 int main(int argc,char *argv[])
@@ -157,6 +159,7 @@ int main(int argc,char *argv[])
     FILE *fp_ring=fopen("ring_statistics.dat","w");
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
     FILE *fp_Kstats=fopen("Kstatistics.dat","w");
+    FILE *fp_testout=fopen("check.pdb","w");
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
     int no_of_molecules=0;
@@ -169,6 +172,8 @@ int main(int argc,char *argv[])
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
     static int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES];
+    static int cluster_COUNTERION_matrix[MAX_MOLECULES][MAX_MOLECULES];
+    static int cluster_SOL_matrix[MAX_MOLECULES][MAX_MOLECULES];
 
     //Ring analysis
     static int D[MAX_MOLECULES][MAX_MOLECULES];
@@ -206,8 +211,19 @@ int main(int argc,char *argv[])
     if (verbose_level>=3)
         printf("BoxLength = %lf %lf %lf \n\n",boxlength[0],boxlength[1],boxlength[2]);
 
+    //printf("no_of_SOL:%d\n",no_of_SOL);
     /*-------------------------END: read the file --------------------------*/
     //Constructing the graph by the means of an adjacency list
+    //printf("hi1\n");
+    vector<t_cluster> clusters(no_of_molecules,t_cluster());
+    // for(i=0;i<no_of_molecules;i++)
+    //     {
+    //         clusters[i].ION_list.reserve(no_of_molecules);
+    //         clusters[i].COUTERION_list.reserve(no_of_molecules);
+    //         clusters[i].SOL_list.reserve(no_of_molecules);
+    //         clusters[i].ringElements.clear();
+    //     }
+    //printf("hi1\n");
     stack adjacency_list[no_of_molecules];
     int coordination_no[no_of_molecules];
     double average_cluster_coordination_no[no_of_molecules];
@@ -232,6 +248,8 @@ int main(int argc,char *argv[])
     {
         fprintf(fp_out, "CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
                 boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);
+        // fprintf(fp_testout, "CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
+        //         boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);
         // printf("CRYST1%9.3lf%9.3lf%9.3lf%7.2lf%7.2lf%7.2lf P 1           1\n",
         //         boxlength[0], boxlength[1], boxlength[2], 90.0, 90.0, 90.0);     
     }
@@ -277,6 +295,15 @@ int main(int argc,char *argv[])
 
         count_counterion_affinity(fp_Kstats, Kadjacency_matrix, no_of_molecules);
 
+        // int countit=0;
+        // for(i=0;i<no_of_SOL;i++)
+        //     for(j=0;j<no_of_molecules;j++)
+        //         if(SOL_ION_adjacency_matrix[i][j])
+        //         {
+        //             countit++;
+        //             //break;
+        //         }
+        // printf("SOL in conf: %d\n", countit);
         //Ring Analysis
         if(ring_flag)
         {
@@ -356,6 +383,34 @@ int main(int argc,char *argv[])
 
         dfs(adjacency_list,visited,no_of_molecules,&number_of_clusters);
 
+
+        //TODO: Clusters
+        //vector<t_cluster>().swap(clusters);
+        //printf("%d\n", clusters.size());
+        //clusters.clear();
+        //clusters.shrink_to_fit();
+        //vector<t_cluster> temp;
+        //temp.swap(clusters);
+        //printf("maybe\n");
+
+        #pragma omp parallel for
+        for(i=0;i<number_of_clusters;i++)
+        {
+            clusters[i].ION_list.clear();
+            clusters[i].COUTERION_list.clear();
+            clusters[i].SOL_list.clear();
+            clusters[i].charge=0;
+            clusters[i].avg_coordination_number=0;
+            clusters[i].hydration=0;
+            clusters[i].ringElements.clear();
+        }
+            
+
+        for(i=0;i<no_of_molecules;i++)
+            clusters[visited[i]].ION_list.push_back(i);
+        //printf("maybe\n");
+        //printf("hi1\n");
+
         /*If the adjacency lists are empty after the operation, it is an indication that
         all the vertices were processed during DFS*/  
         /* 
@@ -397,16 +452,26 @@ int main(int argc,char *argv[])
         for(i=0;i<no_of_molecules;i++)
             add_node_given_value(&cluster[visited[i]],i);
 
+        
+
         //Recording cluster_size and cluster_max_size
         cluster_max_size=0;
+        // for(i=0;i<number_of_clusters;i++)
+        // {
+        //     cluster_size[cluster[i].length]++;
+        //     if(cluster[i].length>cluster_max_size)
+        //         cluster_max_size=cluster[i].length;
+        // }
+        //TODO: CLusters
         for(i=0;i<number_of_clusters;i++)
         {
-            cluster_size[cluster[i].length]++;
-            if(cluster[i].length>cluster_max_size)
-                cluster_max_size=cluster[i].length;
+            cluster_size[clusters[i].ION_list.size()]++;
+            if(clusters[i].ION_list.size()>cluster_max_size)
+                cluster_max_size=clusters[i].ION_list.size();
         }
+        //printf("hi1\n");
 
-        
+        //TODO: Obsoltet code
 
         //Calculation average coordination number of cluster
         calculate_cluster_coordination_number(cluster,coordination_no,average_cluster_coordination_no,number_of_clusters);
@@ -415,6 +480,7 @@ int main(int argc,char *argv[])
         {
             cluster_coordination_statistic[cluster[i].length]+=average_cluster_coordination_no[i];
         }
+
         for(i=2;i<=cluster_max_size;i++)
         {
             if(cluster_size[i]!=0)
@@ -454,21 +520,38 @@ int main(int argc,char *argv[])
         //     printf("Conf: %d | Max Cluster size: %d\n",conf,cluster_max_size);
         // }
 
+
+        //TODO: Obsoltet code END
+
+        //printf("hi1\n");
+
         //Adding details to cluster_statisitcs.dat
         for(i=1;i<=no_of_molecules;i++)
             fprintf(fp_stats,"%d ",cluster_size[i]);
         fprintf(fp_stats,"\n");
 
         fprintf(fp_cms,"%d\n",cluster_max_size);
+
+        
         // int k;
         // if(conf==0)
         // for(i=0;i<2;i++)
         // for(j=0;j<MAX_MOLECULES;j++)
         // for(k=0;k<MAX_MOLECULES;k++)
         // fprintf(fp_cms,"%d",adjacency_matrix[i][j][k]);
+        //printf("hi1\n");
 
-        
-
+        add_COUNTERION_to_cluster(Kadjacency_matrix, cluster_COUNTERION_matrix,no_of_molecules, no_of_molecules,&clusters);
+        add_SOL_to_cluster(SOL_ION_adjacency_matrix, cluster_SOL_matrix,no_of_molecules, no_of_SOL,&clusters);
+        // int count=0;
+        // for(i=0;i<no_of_molecules;i++)
+        //     for(j=0;j<no_of_molecules;j++)
+        //         if(Kadjacency_matrix[i][j])
+        //         {
+        //             count+=1;
+        //             break;
+        //         }
+        // printf("Acutal: %d\n",count);
         /*--------------------------END: clustering calculations------------------*/
 
         /*-----------------------START: Output PDB------------------*/
@@ -477,10 +560,22 @@ int main(int argc,char *argv[])
         if(fp_out!=NULL)
         {
             //number_of_K_molecules_in_cluster=0;
-            number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,Kadjacency_matrix,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag);
+            //number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,Kadjacency_matrix,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag);
             //printf("No of K mols in cluster =%d\n",number_of_K_molecules_in_cluster);
-            fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
+            //fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
+            fprintf_all(fp_out,mol_start,Kmol_start, SOLmol_start, &clusters, threshold, greater_than_flag);
+
         }
+
+
+
+        int number_of_K_molecules_in_cluster=0;
+        for(auto x: clusters)
+            if(x.ION_list.size()>=threshold)
+                number_of_K_molecules_in_cluster+=x.COUTERION_list.size();
+        //printf("%d %d %d\n",number_of_K_molecules_in_cluster,CION_sum, cluster_size[threshold]);
+        //assert(CION_sum==number_of_K_molecules_in_cluster);
+
 
         /*-----------------------END: Output PDB------------------*/
 
@@ -568,6 +663,7 @@ int main(int argc,char *argv[])
     fclose(fp_cms);
     fclose(fp_ring);
     fclose(fp_Kstats);
+    fclose(fp_testout);
 
     clock_gettime(CLOCK_MONOTONIC, &finish);
 

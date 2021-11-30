@@ -4,8 +4,10 @@
 #include "HPO.h"
 #include "stack.h"
 #include "constants.h"
+#include "cluster.h"
 #include <set>
 #include <vector>
+#include <assert.h>
 /**
  * @brief Prints the details of the K molecules associated with all the clusters to the fp_out file and returns the total number of K ions printed  
  * 
@@ -56,5 +58,8 @@ void count_counterion_affinity(FILE* fp_Kstat, int Kadjacency_matrix[MAX_MOLECUL
  */
 int fprintf_SOL(FILE* fp_out, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES] , SOL SOLmolecules[], stack clusters[], int no_of_molecules, int number_of_clusters, int no_of_SOL, int current_atom, int current_mol,int threshold, int greater_than_flag);
 
+void add_COUNTERION_to_cluster(int CIONadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_COUNTERION_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_CION, vector<t_cluster>* clusters);
+
+void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_SOL_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_SOL, vector<t_cluster>* clusters);
 
 #endif

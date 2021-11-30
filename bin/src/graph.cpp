@@ -132,37 +132,37 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
 
 }
 
-void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],int no_of_molecules,vector<t_cluster> cluster,int verbose_flag, int strong_flag){
-    //We are using the undirected graph to create the the adjacency lists so that the direction of the connection is ignored
-    //We are only focusssing on the existence of the connection
-    //int i,j;
-    cluster= new cluster
-    #pragma omp parallel for
-    for(int i=0;i<no_of_molecules;i++)
-    {
-        adjacency_list[i].top=NULL;
-        adjacency_list[i].length=0;        
-    }
-    int strong_level=WEAK;
-    if(strong_flag)
-        strong_level=STRONG;
+// void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],int no_of_molecules,vector<t_cluster> cluster,int verbose_flag, int strong_flag){
+//     //We are using the undirected graph to create the the adjacency lists so that the direction of the connection is ignored
+//     //We are only focusssing on the existence of the connection
+//     //int i,j;
+//     cluster= new cluster
+//     #pragma omp parallel for
+//     for(int i=0;i<no_of_molecules;i++)
+//     {
+//         adjacency_list[i].top=NULL;
+//         adjacency_list[i].length=0;        
+//     }
+//     int strong_level=WEAK;
+//     if(strong_flag)
+//         strong_level=STRONG;
 
-    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
-    #pragma omp parallel for collapse(2) //if (parallelism_enabled)
-    for(int i=0;i<no_of_molecules;i++)
-    {
-        for(int j=0;j<no_of_molecules;j++)
-        {
-            if(adjacency_matrix[UNDIRECTED_GRAPH][i][j]>=strong_level)
-            {
-                add_node_given_value(&adjacency_list[i],j);
-                if(verbose_flag)
-                    printf("Nodes %d and %d are strongly connected\n",i,j);
-            }
-        }
-    }
+//     //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+//     #pragma omp parallel for collapse(2) //if (parallelism_enabled)
+//     for(int i=0;i<no_of_molecules;i++)
+//     {
+//         for(int j=0;j<no_of_molecules;j++)
+//         {
+//             if(adjacency_matrix[UNDIRECTED_GRAPH][i][j]>=strong_level)
+//             {
+//                 add_node_given_value(&adjacency_list[i],j);
+//                 if(verbose_flag)
+//                     printf("Nodes %d and %d are strongly connected\n",i,j);
+//             }
+//         }
+//     }
 
-}
+// }
 
 //Constructs adjacency matrix from the array of molecules by checking connectednes between molecules
 void adjacency_matrix_populator(ION molecules[],coordinates boxlength,int no_of_molecules, int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
@@ -225,13 +225,13 @@ void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordin
         }
     }
 
-    no_of_SOL=0;
-    for(int j=0;j<no_of_molecules;j++)
-    {
-        for(int i=0;i<no_of_SOL;i++)
-        {
-            no_of_SOL+=SOLadjacency_matrix[i][j];
-        }
-    }
+    // no_of_SOL=0;
+    // for(int j=0;j<no_of_molecules;j++)
+    // {
+    //     for(int i=0;i<no_of_SOL;i++)
+    //     {
+    //         no_of_SOL+=SOLadjacency_matrix[i][j];
+    //     }
+    // }
 
 }

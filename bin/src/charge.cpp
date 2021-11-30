@@ -120,3 +120,97 @@ int fprintf_SOL(FILE* fp_out, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECUL
     fprintf(fp_out, "END\n");
     return j;
 }
+
+void add_COUNTERION_to_cluster(int CIONadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_COUNTERION_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_CION, vector<t_cluster>* clusters)
+{
+    int clusterList_size=clusters->size();
+    int i,j,k;
+
+    #pragma omp parallel for private(j)
+    for(i=0;i<clusterList_size;i++)
+    {
+        (*clusters)[i].COUTERION_list.clear();
+        for(j=0;j<no_of_CION;j++)
+            cluster_COUNTERION_matrix[i][j]=0;
+    }
+
+
+    #pragma omp parallel for private(j)
+    for(i=0;i<clusterList_size;i++)
+        for(j=0;j<no_of_CION;j++)
+            for(auto x: (*clusters)[i].ION_list)
+                cluster_COUNTERION_matrix[i][j]+=CIONadjacency_matrix[j][x];
+    
+    int maxnum[no_of_CION];
+    int COUNTERION_belongs_to[no_of_CION];
+    for(i=0;i<no_of_CION;i++)
+    {
+        maxnum[i]=0;
+        COUNTERION_belongs_to[i]=-1;
+    }
+
+    #pragma omp parallel for private(i)
+    for(j=0;j<no_of_CION;j++)
+        for(i=0;i<clusterList_size;i++)
+            if(cluster_COUNTERION_matrix[i][j]>maxnum[j])
+            {
+                maxnum[j]=cluster_COUNTERION_matrix[i][j];
+                COUNTERION_belongs_to[j]=i;
+            }
+
+    for(i=0;i<no_of_CION;i++)
+    {
+        //printf("%d %d\n",i, COUNTERION_belongs_to[i]);
+        if(COUNTERION_belongs_to[i]!=-1)
+        {
+            (*clusters)[COUNTERION_belongs_to[i]].COUTERION_list.push_back(i);
+        }
+    }
+}
+
+void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_SOL_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_SOL, vector<t_cluster>* clusters)
+{
+    int clusterList_size=clusters->size();
+    int i,j,k;
+
+    #pragma omp parallel for private(j)
+    for(i=0;i<clusterList_size;i++)
+    {
+        (*clusters)[i].SOL_list.clear();
+        for(j=0;j<no_of_SOL;j++)
+            cluster_SOL_matrix[i][j]=0;
+    }
+
+
+    #pragma omp parallel for private(j)
+    for(i=0;i<clusterList_size;i++)
+        for(j=0;j<no_of_SOL;j++)
+            for(auto x: (*clusters)[i].ION_list)
+                cluster_SOL_matrix[i][j]+=SOL_ION_adjacency_matrix[j][x];
+    
+    int maxnum[no_of_SOL];
+    int SOL_belongs_to[no_of_SOL];
+    for(i=0;i<no_of_SOL;i++)
+    {
+        maxnum[i]=0;
+        SOL_belongs_to[i]=-1;
+    }
+
+    #pragma omp parallel for private(i)
+    for(j=0;j<no_of_SOL;j++)
+        for(i=0;i<clusterList_size;i++)
+            if(cluster_SOL_matrix[i][j]>maxnum[j])
+            {
+                maxnum[j]=cluster_SOL_matrix[i][j];
+                SOL_belongs_to[j]=i;
+            }
+
+    for(i=0;i<no_of_SOL;i++)
+    {
+        //printf("%d %d\n",i, COUNTERION_belongs_to[i]);
+        if(SOL_belongs_to[i]!=-1)
+        {
+            (*clusters)[SOL_belongs_to[i]].SOL_list.push_back(i);
+        }
+    }
+}

@@ -14,7 +14,7 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolec
     int sol_count=0;
 
     *no_of_molecules=-1;
-    *no_of_SOL=0;
+    //*no_of_SOL=0;
     *conf_number=0;
     sol_count=0;
     coordinates coordinate;
@@ -39,17 +39,17 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolec
             if (strcmp(atom_name,"OW")==0)             //For the O atom
             {
                 for(i=0;i<3;i++)
-                    SOLmolecules[*no_of_SOL+sol_count/SOL_ATOM_COUNT].posn[OW][i]=coordinate[i];
+                    SOLmolecules[sol_count/SOL_ATOM_COUNT].posn[OW][i]=coordinate[i];
             }
             else if (strcmp(atom_name,"HW1")==0)             //For the H atom
             {
                 for(i=0;i<3;i++)
-                    SOLmolecules[*no_of_SOL+sol_count/SOL_ATOM_COUNT].posn[HW1][i]=coordinate[i];
+                    SOLmolecules[sol_count/SOL_ATOM_COUNT].posn[HW1][i]=coordinate[i];
             }
             else if (strcmp(atom_name,"HW2")==0)             //For the H atom
             {
                 for(i=0;i<3;i++)
-                    SOLmolecules[*no_of_SOL+sol_count/SOL_ATOM_COUNT].posn[HW2][i]=coordinate[i];
+                    SOLmolecules[sol_count/SOL_ATOM_COUNT].posn[HW2][i]=coordinate[i];
             }
 
             sol_count++;
@@ -125,7 +125,7 @@ void PDB_reader(FILE* fp_in,ION molecules[],COUNTERION Kmolecules[],SOL SOLmolec
         
         }
     }
-    (*no_of_SOL)+=sol_count/SOL_ATOM_COUNT;
+    (*no_of_SOL)=sol_count/SOL_ATOM_COUNT/(*conf_number);
     (*no_of_molecules)++;
     (*no_of_molecules)=(*no_of_molecules)/(*conf_number);
     fclose(fp_in);
