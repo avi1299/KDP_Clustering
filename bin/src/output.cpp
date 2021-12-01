@@ -51,16 +51,19 @@ void fprintf_conf_PDB(FILE* fp_out,ION molecules[],stack clusters[],int number_o
         fprintf(fp_out, "END\n");
 }
 
-void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SOLmolecules[], vector<t_cluster>* clusters, int threshold, int greater_than_flag)
+void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SOLmolecules[], t_cluster* clusters, int number_of_clusters, int threshold, int greater_than_flag)
 {
         int mol_num=1;
         int atom_num=1;
-        for(auto clust:*clusters)
+        int i,j;
+        int mol;
+        for(i=0;i<number_of_clusters;i++)
         {
-                if(((greater_than_flag)&&(clust.ION_list.size()>=threshold))||((!greater_than_flag)&&(clust.ION_list.size()==threshold)))
+                if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
                 {
-                        for(auto mol:clust.COUTERION_list)
+                        for(j=0;j<clusters[i].COUNTERION_list_size;j++)
                         {
+                                mol=clusters[i].COUTERION_list[j];
                                 fprintf(fp_out, "ATOM  %5d  K   K   X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                                 atom_num, mol_num,CIONmolecules[mol].posn[0],CIONmolecules[mol].posn[1],CIONmolecules[mol].posn[2]);
                                 atom_num++;
@@ -68,12 +71,13 @@ void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SO
                         }
                 }
         }
-        for(auto clust:*clusters)
+        for(i=0;i<number_of_clusters;i++)
         {
-                if(((greater_than_flag)&&(clust.ION_list.size()>=threshold))||((!greater_than_flag)&&(clust.ION_list.size()==threshold)))
+                if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
                 {
-                        for(auto mol:clust.ION_list)
+                        for(j=0;j<clusters[i].ION_list_size;j++)
                         {
+                                mol=clusters[i].ION_list[j];
                                 fprintf(fp_out, "ATOM  %5d  PL  HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                                         atom_num,  mol_num,molecules[mol].posn[PL][0],molecules[mol].posn[PL][1],molecules[mol].posn[PL][2]);
                                 atom_num++;
@@ -99,12 +103,13 @@ void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SO
                         }
                 }
         }
-        for(auto clust:*clusters)
+        for(i=0;i<number_of_clusters;i++)
         {
-                if(((greater_than_flag)&&(clust.ION_list.size()>=threshold))||((!greater_than_flag)&&(clust.ION_list.size()==threshold)))
+                if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
                 {
-                        for(auto mol:clust.SOL_list)
+                        for(j=0;j<clusters[i].SOL_list_size;j++)
                         {
+                                mol=clusters[i].SOL_list[j];
                                 fprintf(fp_out, "ATOM  %5d  OW  SOL X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
                                         atom_num,  mol_num,SOLmolecules[mol].posn[OW][0],SOLmolecules[mol].posn[OW][1],SOLmolecules[mol].posn[OW][2]);
                                 atom_num++;

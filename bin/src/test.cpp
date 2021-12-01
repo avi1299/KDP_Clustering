@@ -215,7 +215,17 @@ int main(int argc,char *argv[])
     /*-------------------------END: read the file --------------------------*/
     //Constructing the graph by the means of an adjacency list
     //printf("hi1\n");
-    vector<t_cluster> clusters(no_of_molecules,t_cluster());
+    //vector<t_cluster> clusters(no_of_molecules,t_cluster());
+    t_cluster clusters[no_of_molecules];
+    for(i=0;i<no_of_molecules;i++)
+    {
+        clusters[i].ION_list=NULL;
+        clusters[i].COUTERION_list=NULL;
+        clusters[i].SOL_list=NULL;
+        clusters[i].ION_list_size=0;
+        clusters[i].COUNTERION_list_size=0;
+        clusters[i].SOL_list_size=0;
+    }
     // for(i=0;i<no_of_molecules;i++)
     //     {
     //         clusters[i].ION_list.reserve(no_of_molecules);
@@ -393,21 +403,67 @@ int main(int argc,char *argv[])
         //temp.swap(clusters);
         //printf("maybe\n");
 
-        #pragma omp parallel for
+        //printf("should be good here\n");
+
+        //#pragma omp parallel for
         for(i=0;i<number_of_clusters;i++)
         {
-            clusters[i].ION_list.clear();
-            clusters[i].COUTERION_list.clear();
-            clusters[i].SOL_list.clear();
-            clusters[i].charge=0;
-            clusters[i].avg_coordination_number=0;
-            clusters[i].hydration=0;
+            //printf("conf:%d\n",conf);
+            //printf("ION: %p\n",clusters[i].SOL_list);
+            // if(clusters[i].ION_list!=NULL)
+            // {
+            //     delete[] clusters[i].ION_list;
+            //     clusters[i].ION_list=NULL;
+            //     //printf("ION dealloc\n");
+            // }
+            clusters[i].ION_list_size=0;
+            // if(clusters[i].COUTERION_list!=NULL)
+            // {
+            //     delete[] clusters[i].COUTERION_list;
+            //     clusters[i].COUTERION_list=NULL;
+            //     //printf("CION dealloc\n");
+            // }
+            clusters[i].COUNTERION_list_size=0;
+            // if(clusters[i].SOL_list!=NULL)
+            // {
+            //     delete[] clusters[i].SOL_list;
+            //     clusters[i].SOL_list=NULL;
+            //     printf("SOl dealloc\n");
+            // }
+            clusters[i].SOL_list_size=0;
             clusters[i].ringElements.clear();
         }
-            
-
+        
+        
+        int cluster_ION_frequency[number_of_clusters]={0};
         for(i=0;i<no_of_molecules;i++)
-            clusters[visited[i]].ION_list.push_back(i);
+        {
+            cluster_ION_frequency[visited[i]]++;
+        }
+        // for(i=0;i<number_of_clusters;i++)
+        // {
+        //     printf("%d ",cluster_ION_frequency[i]);
+        // }
+        for(i=0;i<number_of_clusters;i++)
+        {
+            clusters[i].ION_list= (int*)malloc(sizeof(int)*cluster_ION_frequency[i]);
+        }
+        //printf("should be bad here\n");
+            
+        //Adding molecule number to ION_list
+        for(i=0;i<no_of_molecules;i++)
+        {
+            clusters[visited[i]].ION_list[clusters[visited[i]].ION_list_size++]=i;
+
+        }
+        //printf("should be bad here\n");
+
+        // for(i=0;i<number_of_clusters;i++)
+        // {
+        //     for (j=0;j<clusters[i].ION_list_size;j++)
+        //         printf("%d ",clusters[i].ION_list[j]);
+        //     printf("\n");
+        // }
         //printf("maybe\n");
         //printf("hi1\n");
 
@@ -465,9 +521,9 @@ int main(int argc,char *argv[])
         //TODO: CLusters
         for(i=0;i<number_of_clusters;i++)
         {
-            cluster_size[clusters[i].ION_list.size()]++;
-            if(clusters[i].ION_list.size()>cluster_max_size)
-                cluster_max_size=clusters[i].ION_list.size();
+            cluster_size[clusters[i].ION_list_size]++;
+            if(clusters[i].ION_list_size>cluster_max_size)
+                cluster_max_size=clusters[i].ION_list_size;
         }
         //printf("hi1\n");
 
@@ -541,8 +597,9 @@ int main(int argc,char *argv[])
         // fprintf(fp_cms,"%d",adjacency_matrix[i][j][k]);
         //printf("hi1\n");
 
-        add_COUNTERION_to_cluster(Kadjacency_matrix, cluster_COUNTERION_matrix,no_of_molecules, no_of_molecules,&clusters);
-        add_SOL_to_cluster(SOL_ION_adjacency_matrix, cluster_SOL_matrix,no_of_molecules, no_of_SOL,&clusters);
+        add_COUNTERION_to_cluster(Kadjacency_matrix, cluster_COUNTERION_matrix,no_of_molecules, no_of_molecules,clusters,number_of_clusters);
+        //printf("Done with cion\n");
+        add_SOL_to_cluster(SOL_ION_adjacency_matrix, cluster_SOL_matrix,no_of_molecules, no_of_SOL,clusters,number_of_clusters);
         // int count=0;
         // for(i=0;i<no_of_molecules;i++)
         //     for(j=0;j<no_of_molecules;j++)
@@ -563,16 +620,16 @@ int main(int argc,char *argv[])
             //number_of_K_molecules_in_cluster=fprintf_K_ions_in_cluster(fp_out,Kadjacency_matrix,Kmol_start,cluster,no_of_molecules,number_of_clusters,threshold,greater_than_flag);
             //printf("No of K mols in cluster =%d\n",number_of_K_molecules_in_cluster);
             //fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
-            fprintf_all(fp_out,mol_start,Kmol_start, SOLmol_start, &clusters, threshold, greater_than_flag);
+            fprintf_all(fp_out,mol_start,Kmol_start, SOLmol_start, clusters, number_of_clusters, threshold, greater_than_flag);
 
         }
 
 
 
         int number_of_K_molecules_in_cluster=0;
-        for(auto x: clusters)
-            if(x.ION_list.size()>=threshold)
-                number_of_K_molecules_in_cluster+=x.COUTERION_list.size();
+        for(i=0;i<number_of_clusters;i++)
+            if(clusters[i].ION_list_size>=threshold)
+                number_of_K_molecules_in_cluster+=clusters[i].COUNTERION_list_size;
         //printf("%d %d %d\n",number_of_K_molecules_in_cluster,CION_sum, cluster_size[threshold]);
         //assert(CION_sum==number_of_K_molecules_in_cluster);
 
@@ -638,6 +695,43 @@ int main(int argc,char *argv[])
         CSSSR_Elements.clear();
         CSet.clear();
         CSSSR.clear();
+        for(i=0;i<number_of_clusters;i++)
+        {
+            //printf("conf:%d\n",conf);
+            //printf("ION: %p\n",clusters[i].SOL_list);
+            if(clusters[i].ION_list!=NULL)
+            {
+                free(clusters[i].ION_list);
+                clusters[i].ION_list=NULL;
+                //printf("ION dealloc\n");
+            }
+            clusters[i].ION_list_size=0;
+            if(clusters[i].COUTERION_list!=NULL)
+            {
+                free(clusters[i].COUTERION_list);
+                clusters[i].COUTERION_list=NULL;
+                //printf("CION dealloc\n");
+            }
+            clusters[i].COUNTERION_list_size=0;
+            if(clusters[i].SOL_list!=NULL)
+            {
+                free(clusters[i].SOL_list);
+                clusters[i].SOL_list=NULL;
+                //printf("SOl dealloc\n");
+            }
+            clusters[i].SOL_list_size=0;
+            clusters[i].ringElements.clear();
+        }
+        // printf("Deleting teh lists\n");
+        // for(i=0;i<number_of_clusters;i++)
+        // {
+        //     delete clusters[i].ION_list;
+        //     printf("Deleted ion teh lists\n");
+        //     delete clusters[i].COUTERION_list;
+        //     printf("Deleted cion lists\n");
+        //     delete clusters[i].SOL_list;
+        //     printf("Deleted sol lists\n");
+        // }
         //break;
 
         /*-----------------------END: Cleanup------------------*/

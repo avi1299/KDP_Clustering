@@ -9,13 +9,14 @@ using namespace std;
 
 typedef struct
 {
-    vector<int> ION_list;
-    vector<int> COUTERION_list;
-    vector<int> SOL_list;
+    int* ION_list;
+    int ION_list_size;
+    int* COUTERION_list;
+    int COUNTERION_list_size;
+    int* SOL_list;
+    int SOL_list_size;
     ringElementsArray ringElements;
-    int charge;
-    int hydration;
-    double avg_coordination_number;
+    //double avg_coordination_number;
 }t_cluster;
 
 #endif
