@@ -5,6 +5,7 @@
 #include "stack.h"
 #include "constants.h"
 #include "cluster.h"
+#include "string.h"
 #include <set>
 #include <vector>
 #include <assert.h>
