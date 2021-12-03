@@ -278,7 +278,7 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULE
                 free(clusters[i].SOL_list);
                 clusters[i].SOL_list= (int*) malloc(sizeof(int)*cluster_SOL_frequency[i]);
             }
-            assert(clusters[i].SOL_list!=NULL);
+            //assert(clusters[i].SOL_list!=NULL);
             clusters[i].SOL_list_size=0;
         // else
         //     clusters[i].SOL_list=new int[1];

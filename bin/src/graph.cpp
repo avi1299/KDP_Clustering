@@ -203,8 +203,7 @@ void adjacency_matrix_populator(ION molecules[],coordinates boxlength,int no_of_
 }
 
 void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecules[], coordinates boxlength, int no_of_molecules, int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag){
-    #pragma omp parallel for collapse(2) //if (parallelism_enabled)
-    //#pragma omp parallel for schedule(static, 1) private(j) if (parallelism_enabled)
+    #pragma omp parallel for collapse(2)
     for(int i=0;i<no_of_molecules;i++)
     {
         for(int j=0;j<no_of_molecules;j++)
@@ -214,14 +213,24 @@ void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecule
     }
 }
 
-void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag)
+void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_SOL][MAX_MOLECULES], int PBC_flag)
 {
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2)
     for(int j=0;j<no_of_molecules;j++)
     {
         for(int i=0;i<no_of_SOL;i++)
         {
-            SOLadjacency_matrix[i][j]=connected_SOL_ION(&SOLmolecules[i],&molecules[j],boxlength,PBC_flag); 
+            //SOLadjacency_matrix[i][j]=connected_SOL_ION(&SOLmolecules[i],&molecules[j],boxlength,PBC_flag); 
+            SOLadjacency_matrix[i][j]=(periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[O2L_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[O2L_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[OHL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[OHL_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[O2L_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[O2L_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[OHL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[OHL_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[i].posn[HOL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[i].posn[HOL_2], boxlength)<CUTOFF);
         }
     }
 
@@ -233,5 +242,31 @@ void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordin
     //         no_of_SOL+=SOLadjacency_matrix[i][j];
     //     }
     // }
+
+
+    int count=0;
+    for(int j=0;j<no_of_molecules;j++)
+    {
+        //count=0;
+        for(int i=0;i<no_of_SOL;i++)
+        {
+            //count+=SOLadjacency_matrix[i][j];
+            assert(SOLadjacency_matrix[i][j]<2);
+            if(SOLadjacency_matrix[i][j])
+                printf("MOL: %d SOL: %d Conn: %d Dist:%d \n",j,i,
+                connected_SOL_ION(&SOLmolecules[i],&molecules[j],boxlength,PBC_flag),
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[O2L_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[O2L_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[OHL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[OHL_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[O2L_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[O2L_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[OHL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[i].posn[OHL_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[i].posn[HOL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[i].posn[HOL_2], boxlength)<CUTOFF);
+        }
+        //printf("Mol: %d SOL: %d\n",j,count);
+    }
 
 }
