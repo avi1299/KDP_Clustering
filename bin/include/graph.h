@@ -94,6 +94,6 @@ void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecule
  * @param SOLadjacency_matrix int[MAX_MOLECULES][MAX_MOLECULES]
  * @param PBC_flag int
  */
-void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int PBC_flag);
+void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_SOL][MAX_MOLECULES], int PBC_flag);
 
 #endif

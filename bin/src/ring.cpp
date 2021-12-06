@@ -1,5 +1,34 @@
 #include "ring.h"
 
+
+void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_list, 
+    int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
+    pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag, int verbose_level, vector<ringCandidate> *CSet, 
+    pathArray* CSSSR,vector<ringElements> *CSSSR_Elements)
+{
+    makePIDmatrix(adjacency_matrix, no_of_molecules, D, P, P_dash,(verbose_level>=0));
+    ringCandidateSearch(CSet, no_of_molecules, D,P,P_dash);
+    findSSSR(CSSSR,CSet);
+    // for(auto x: CSet)
+    //     printf("CNum:%5d | P:%5ld | P_Dash:%5ld\n",x.CNum,x.P->size(),x.P_dash->size());
+    ringElements* temp;
+    CSSSR_Elements->clear();
+    for(auto x: *CSSSR)
+    {
+        temp=ringToElements(&x);
+        CSSSR_Elements->push_back(*temp);
+        //printRingElements(temp);
+        delete temp;
+    }
+    if(verbose_level>=1)
+        printRingElementsArray(CSSSR_Elements);
+    if(verbose_level>=2)
+        printPathArray(CSSSR);
+
+    CSet->clear();
+    CSSSR->clear();
+}
+
 void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], 
     int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
     pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag)
@@ -45,7 +74,91 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES],
                 if(i!=j&&i!=k&&j!=k&&D[i][k]!=numeric_limits<int>::max()&&D[k][j]!=numeric_limits<int>::max())
                 {
                     //printf("hi\n");
-                    if(D[i][j]>D[i][k]+D[k][j])
+                    if(D[i][j]>D[i][k]+D[k][j] && D[i][k]+D[k][j]<=RING_LENGTH_CUTOFF)//The second condition was added to limit the length of the path between any two nodes
+                    {
+                        //printf("hi1\n");
+                        if(D[i][j]==D[i][k]+D[k][j]+1)
+                        {
+                            *P_dash[i][j]=*P[i][j];
+                        }
+                        else
+                            P_dash[i][j]->clear();
+                        D[i][j]=D[i][k]+D[k][j];
+                        delete P[i][j];
+                        P[i][j]=addPathArray(P[i][k],P[k][j]);
+                    }
+                    else if(D[i][j]==D[i][k]+D[k][j])
+                    {
+                        temp=addPathArray(P[i][k],P[k][j]);
+                        appendPathArray(P[i][j],temp);
+                        delete temp;
+                    }
+                        
+                    else if(D[i][j]==D[i][k]+D[k][j]-1)
+                    {
+                        temp=addPathArray(P[i][k],P[k][j]);
+                        appendPathArray(P_dash[i][j],temp);
+                        delete temp;
+                    }
+                }
+    
+    // for(i=0;i<no_of_molecules;i++)
+    //     for(j=0;j<no_of_molecules;j++)
+    //     {
+    //         //printf("pathArray from %d to %d:\n", i, j);
+    //         printPathArray(P[i][j]);
+    //     }
+
+
+//printf("Made PID\n");
+}
+
+void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_list, 
+    int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
+    pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag)
+{
+    int i,j,k;
+    path s;
+    int strong_level=WEAK;
+    if(strong_flag)
+        strong_level=STRONG;
+    #pragma omp parallel for private(s,j)
+    for(i=0;i<no_of_molecules;i++)
+        for(j=0;j<no_of_molecules;j++)
+        {
+            P[i][j]= new pathArray;
+            P_dash[i][j]= new pathArray;
+            if(adjacency_matrix[UNDIRECTED_GRAPH][ION_list[i]][ION_list[j]]>=strong_level)
+            {
+                D[i][j]=1;
+                if(i<j)
+                    s.push_back(make_pair(i,j));
+                else
+                    s.push_back(make_pair(j,i));
+                P[i][j]->push_back(s);
+                s.clear();
+            }
+                
+            else
+                D[i][j]=numeric_limits<int>::max();
+            
+        }
+
+    // for(i=0;i<no_of_molecules;i++)
+    //     for(j=0;j<no_of_molecules;j++)
+    //     {
+    //         //printf("pathArray from %d to %d:\n", i, j);
+    //         printPathArray(P[i][j]);
+    //     }
+
+    pathArray* temp;
+    for(k=0;k<no_of_molecules;k++)
+        for(i=0;i<no_of_molecules;i++)
+            for(j=0;j<no_of_molecules;j++)
+                if(i!=j&&i!=k&&j!=k&&D[i][k]!=numeric_limits<int>::max()&&D[k][j]!=numeric_limits<int>::max())
+                {
+                    //printf("hi\n");
+                    if(D[i][j]>D[i][k]+D[k][j])// && D[i][k]+D[k][j]<=RING_LENGTH_CUTOFF)//The second condition was added to limit the length of the path between any two nodes
                     {
                         //printf("hi1\n");
                         if(D[i][j]==D[i][k]+D[k][j]+1)

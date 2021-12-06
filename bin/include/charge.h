@@ -61,6 +61,6 @@ int fprintf_SOL(FILE* fp_out, int SOLadjacency_matrix[MAX_MOLECULES][MAX_MOLECUL
 
 void add_COUNTERION_to_cluster(int CIONadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_COUNTERION_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_CION, t_cluster* clusters, int number_of_clusters);
 
-void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_SOL_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_SOL, t_cluster* clusters, int number_of_clusters);
+void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES], int cluster_SOL_matrix[MAX_MOLECULES][MAX_SOL], int no_of_ION, int no_of_SOL, t_cluster* clusters, int number_of_clusters);
 
 #endif

@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#define RING_LENGTH_CUTOFF 6
+
 typedef pair<int,int> edge;
 typedef vector<edge> path;
 typedef vector<path> pathArray;
@@ -192,6 +194,11 @@ pathArray *addPathArrayWithoutCommonElements(pathArray* arr1, pathArray* arr2);
  * @return ringElements* 
  */
 ringElements* ringToElements(path* ring);
+
+void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_list, 
+    int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
+    pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag, int verbose_level, vector<ringCandidate> *CSet, 
+    pathArray* CSSSR,vector<ringElements> *CSSSR_Elements);
 
 
 #endif
