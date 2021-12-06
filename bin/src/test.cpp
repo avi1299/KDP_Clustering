@@ -669,12 +669,12 @@ int main(int argc,char *argv[])
         if(threshold_flag==0)
             threshold=cluster_max_size;
 
-        for(i=0;i<number_of_clusters;i++)
-        {
-            if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
-                printf("Cluster %d: ION: %d CION: %d SOL: %d\n", i, clusters[i].ION_list_size, clusters[i].COUNTERION_list_size, clusters[i].SOL_list_size);
+        // for(i=0;i<number_of_clusters;i++)
+        // {
+        //     if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
+        //         printf("Cluster %d: ION: %d CION: %d SOL: %d\n", i, clusters[i].ION_list_size, clusters[i].COUNTERION_list_size, clusters[i].SOL_list_size);
 
-        }
+        // }
         if(fp_out!=NULL)
         {
             //number_of_K_molecules_in_cluster=0;
