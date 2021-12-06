@@ -199,9 +199,9 @@ void add_COUNTERION_to_cluster(int CIONadjacency_matrix[MAX_MOLECULES][MAX_MOLEC
             //printf("%d\n",i);
             //int *index=&(clusters[COUNTERION_belongs_to[i]].COUNTERION_list_size);
             //printf("%d\n",*index);
-            clusters[COUNTERION_belongs_to[i]].COUTERION_list[clusters[COUNTERION_belongs_to[i]].COUNTERION_list_size]=i;
+            clusters[COUNTERION_belongs_to[i]].COUTERION_list[clusters[COUNTERION_belongs_to[i]].COUNTERION_list_size++]=i;
             //printf("done\n");
-            clusters[COUNTERION_belongs_to[i]].COUNTERION_list_size++;
+            //clusters[COUNTERION_belongs_to[i]].COUNTERION_list_size++;
 
         }
     }
@@ -216,12 +216,14 @@ void add_COUNTERION_to_cluster(int CIONadjacency_matrix[MAX_MOLECULES][MAX_MOLEC
     //printf("here\n");
 }
 
-void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULES], int cluster_SOL_matrix[MAX_MOLECULES][MAX_MOLECULES], int no_of_ION, int no_of_SOL, t_cluster* clusters, int number_of_clusters)
+void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES], int cluster_SOL_matrix[MAX_MOLECULES][MAX_SOL], int no_of_ION, int no_of_SOL, t_cluster* clusters, int number_of_clusters)
 {
     int clusterList_size=number_of_clusters;
     int i,j,k;
 
     int count=0;
+
+    //printf("No of SOL: %d\n",no_of_SOL);
 
     #pragma omp parallel for private(j)
     for(i=0;i<clusterList_size;i++)
@@ -236,11 +238,11 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULE
     for(i=0;i<clusterList_size;i++)
         for(j=0;j<no_of_SOL;j++)
             for(k=0;k<clusters[i].ION_list_size;k++)
-                cluster_SOL_matrix[i][j]+=SOL_ION_adjacency_matrix[j][clusters[i].ION_list[k]];
+                    cluster_SOL_matrix[i][j]+=SOL_ION_adjacency_matrix[j][clusters[i].ION_list[k]];
     
-    for(i=0;i<clusterList_size;i++)
-        for(j=0;j<no_of_SOL;j++)
-            count+=cluster_SOL_matrix[i][j];
+    // for(i=0;i<clusterList_size;i++)
+    //     for(j=0;j<no_of_SOL;j++)
+    //         count+=cluster_SOL_matrix[i][j];
     //printf("count: %d\n",count);
     int maxnum[no_of_SOL]={0};
     int SOL_belongs_to[no_of_SOL];
@@ -266,8 +268,8 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULE
         if(SOL_belongs_to[i]>=0)
         cluster_SOL_frequency[SOL_belongs_to[i]]++;
     }
-    //for(i=0;i<number_of_clusters;i++)
-        //printf("space:%d\n", cluster_SOL_frequency[i]);
+    // for(i=0;i<number_of_clusters;i++)
+    //     printf("Cluster: %d, MOL: %d, SOL:%d\n", i,clusters[i].ION_list_size,cluster_SOL_frequency[i]);
 
     for(i=0;i<number_of_clusters;i++)
     {
@@ -277,6 +279,7 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULE
             {
                 free(clusters[i].SOL_list);
                 clusters[i].SOL_list= (int*) malloc(sizeof(int)*cluster_SOL_frequency[i]);
+                //clusters[i].SOL_list= (int*) malloc(sizeof(int)*1000);
             }
             //assert(clusters[i].SOL_list!=NULL);
             clusters[i].SOL_list_size=0;
@@ -285,22 +288,70 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_MOLECULES][MAX_MOLECULE
         //printf("SOL Pointer: %p + %d\n",clusters[i].SOL_list,cluster_SOL_frequency[i]);
     }
 
+    // for(j=0;j<no_of_ION;j++)
+    // {
+    //     int conn=0;
+    //     for(i=0;i<no_of_SOL;i++)
+    //     {
+    //         if(SOL_ION_adjacency_matrix[i][j])
+    //             conn++;
+    //     }
+    //     printf("MOL: %3d, SOL: %5d\n",j,conn);
+    // }
+
 
 
     //printf("it should be wrong here\n");
     for(i=0;i<no_of_SOL;i++)
     {
         //printf("%d %d\n",i, COUNTERION_belongs_to[i]);
-        if(SOL_belongs_to[i]!=-1)
+        if(SOL_belongs_to[i]>=0)
         {
             //(*clusters)[SOL_belongs_to[i]].SOL_list.push_back(i);
             //int *index=&(clusters[SOL_belongs_to[i]].SOL_list_size);
             //printf("%d\n",*index);
-            clusters[SOL_belongs_to[i]].SOL_list[clusters[SOL_belongs_to[i]].SOL_list_size]=i;
+            clusters[SOL_belongs_to[i]].SOL_list[clusters[SOL_belongs_to[i]].SOL_list_size++]=i;
             //printf("%d\n",*index);
-            clusters[SOL_belongs_to[i]].SOL_list_size++;
+            //clusters[SOL_belongs_to[i]].SOL_list_size++;
         }
     }
+
+    //Check
+    // int mol;
+    // int newcou;
+    // //printf("No of clusters: %d\n",number_of_clusters);
+    // for(i=0;i<number_of_clusters;i++)
+    // {
+    //     //printf("clustter %d\n",i);
+    //     int sol_num=0;
+    //     newcou=0;
+    //     //printf("ION: %d\n",clusters[i].ION_list_size);
+    //     for(j=0;j<no_of_SOL;j++)
+    //     {
+    //         //printf("hi1\n");
+    //         for(k=0;k<clusters[i].ION_list_size;k++)
+    //         {
+    //             mol=clusters[i].ION_list[k];
+    //             if(SOL_ION_adjacency_matrix[j][mol])
+    //             {
+    //                 sol_num++;
+    //                 clusters[i].SOL_list[clusters[i].SOL_list_size++]=j;
+    //                 break;
+    //             }
+                    
+    //         }
+            
+    //     }
+    //     for(j=0;j<no_of_SOL;j++)
+    //     {
+    //         if(cluster_SOL_matrix[i][j])
+    //             newcou++;
+    //     }
+    //     printf("Cluster: %d, ION_n:%d, SOL_n: %d SOL:%d newcou:%d\n",i,clusters[i].ION_list_size,sol_num,clusters[i].SOL_list_size,newcou);
+    // }
+
+
+
     // for(i=0;i<number_of_clusters;i++)
     // {
     //     for (j=0;j<clusters[i].SOL_list_size;j++)

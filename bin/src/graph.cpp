@@ -75,7 +75,7 @@ void adjacency_complete(ION molecules[],coordinates boxlength,int no_of_molecule
                     add_node_given_value(&adjacency_list[i],j);
                     add_node_given_value(&adjacency_list[j],i);
                     if(verbose_flag)
-                        printf("Nodes %d and %d are connected\n",i,j);
+                        printf("Nodes %5.2lf and %5.2lf are connected\n",i,j);
                 }
             }
         }
@@ -93,7 +93,7 @@ void adjacency_complete(ION molecules[],coordinates boxlength,int no_of_molecule
                     add_node_given_value(&adjacency_list[i],j);
                     add_node_given_value(&adjacency_list[j],i);
                     if(verbose_flag)
-                        printf("Nodes %d and %d are connected\n",i,j);
+                        printf("Nodes %5.2lf and %5.2lf are connected\n",i,j);
                 }
             }
         }
@@ -125,7 +125,7 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
             {
                 add_node_given_value(&adjacency_list[i],j);
                 if(verbose_flag)
-                    printf("Nodes %d and %d are strongly connected\n",i,j);
+                    printf("Nodes %5.2lf and %5.2lf are strongly connected\n",i,j);
             }
         }
     }
@@ -157,7 +157,7 @@ void adjacency_list_from_matrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLEC
 //             {
 //                 add_node_given_value(&adjacency_list[i],j);
 //                 if(verbose_flag)
-//                     printf("Nodes %d and %d are strongly connected\n",i,j);
+//                     printf("Nodes %5.2lf and %5.2lf are strongly connected\n",i,j);
 //             }
 //         }
 //     }
@@ -216,9 +216,9 @@ void counterion_adjacency_matrix_populator(ION molecules[], COUNTERION Kmolecule
 void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordinates boxlength, int no_of_molecules, int no_of_SOL, int SOLadjacency_matrix[MAX_SOL][MAX_MOLECULES], int PBC_flag)
 {
     #pragma omp parallel for collapse(2)
-    for(int j=0;j<no_of_molecules;j++)
+    for(int i=0;i<no_of_SOL;i++)
     {
-        for(int i=0;i<no_of_SOL;i++)
+        for(int j=0;j<no_of_molecules;j++)
         {
             //SOLadjacency_matrix[i][j]=connected_SOL_ION(&SOLmolecules[i],&molecules[j],boxlength,PBC_flag); 
             SOLadjacency_matrix[i][j]=(periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[i].posn[O2L_1], boxlength)<CUTOFF||
@@ -234,14 +234,29 @@ void SOL_adjacency_matrix_populator(ION molecules[], SOL SOLmolecules[], coordin
         }
     }
 
-    // no_of_SOL=0;
+    // int count=0;
     // for(int j=0;j<no_of_molecules;j++)
     // {
     //     for(int i=0;i<no_of_SOL;i++)
     //     {
-    //         no_of_SOL+=SOLadjacency_matrix[i][j];
+    //         //count+=SOLadjacency_matrix[i][j];
+    //         if(SOLadjacency_matrix[i][j])
+    //             printf("MOL %3d, SOL %5d, Connections: %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf\n",j,i,
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[j].posn[O2L_1], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[j].posn[O2L_2], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[j].posn[OHL_1], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW1],molecules[j].posn[OHL_2], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[j].posn[O2L_1], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[j].posn[O2L_2], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[j].posn[OHL_1], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[HW2],molecules[j].posn[OHL_2], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[j].posn[HOL_1], boxlength),
+    //             periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[j].posn[HOL_2], boxlength));
+    //             // printf("MOL: %3d, SOL: %5d, Dist: %5.2f, CUTOFF: %5.2lf\n",j,i,periodicBoundaryMindistSquare(SOLmolecules[i].posn[OW],molecules[j].posn[PL], boxlength), CUTOFF);
     //     }
     // }
+    // // count/=no_of_molecules;
+    // // printf("AVG SOL/MOL = %5.2lf\n",count);
 
 
     int count=0;

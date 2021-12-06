@@ -137,19 +137,19 @@ int connected_K_HPO(K *Kmol, ION *HPOmol, coordinates boxlength, int PBC_flag)
 
 int connected_SOL_ION(SOL *SOLmol, ION *HPOmol, coordinates boxlength, int PBC_flag)
 {
-    if(PBC_flag)
-    return      (periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_1], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_2], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[OHL_1], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[OHL_2], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[O2L_1], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[O2L_2], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[OHL_1], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[OHL_2], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[OW],HPOmol->posn[HOL_1], boxlength)<CUTOFF) ||
-                (periodicBoundaryMindistSquare(SOLmol->posn[OW],HPOmol->posn[HOL_2], boxlength)<CUTOFF);
-    else
-    return      euclideanDistanceSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_1])<CUTOFF||
+        if(PBC_flag)
+        return  (periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[OHL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW1],HPOmol->posn[OHL_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[O2L_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[O2L_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[OHL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[HW2],HPOmol->posn[OHL_2], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[OW],HPOmol->posn[HOL_1], boxlength)<CUTOFF||
+                periodicBoundaryMindistSquare(SOLmol->posn[OW],HPOmol->posn[HOL_2], boxlength)<CUTOFF); 
+        else
+        return  (euclideanDistanceSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_1])<CUTOFF||
                 euclideanDistanceSquare(SOLmol->posn[HW1],HPOmol->posn[O2L_2])<CUTOFF||
                 euclideanDistanceSquare(SOLmol->posn[HW1],HPOmol->posn[OHL_1])<CUTOFF||
                 euclideanDistanceSquare(SOLmol->posn[HW1],HPOmol->posn[OHL_2])<CUTOFF||
@@ -158,7 +158,7 @@ int connected_SOL_ION(SOL *SOLmol, ION *HPOmol, coordinates boxlength, int PBC_f
                 euclideanDistanceSquare(SOLmol->posn[HW2],HPOmol->posn[OHL_1])<CUTOFF||
                 euclideanDistanceSquare(SOLmol->posn[HW2],HPOmol->posn[OHL_2])<CUTOFF||
                 euclideanDistanceSquare(SOLmol->posn[OW],HPOmol->posn[HOL_1])<CUTOFF||
-                euclideanDistanceSquare(SOLmol->posn[OW],HPOmol->posn[HOL_2])<CUTOFF;                
+                euclideanDistanceSquare(SOLmol->posn[OW],HPOmol->posn[HOL_2])<CUTOFF);            
 }
 
 

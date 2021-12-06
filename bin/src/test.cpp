@@ -31,6 +31,7 @@ int main(int argc,char *argv[])
     double overall_cluster_charge=0;
     double overall_ring_count=0;
     double overall_ring_size=0;
+    double overall_hydration=0;
 
     int cluster_charge;
     double percent_clustered_molecules,strong_ratio;
@@ -159,7 +160,8 @@ int main(int argc,char *argv[])
     FILE *fp_ring=fopen("ring_statistics.dat","w");
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
     FILE *fp_Kstats=fopen("Kstatistics.dat","w");
-    FILE *fp_testout=fopen("check.pdb","w");
+    //FILE *fp_testout=fopen("check.pdb","w");
+    FILE *fp_csv=fopen("Results.csv","w");
     /*------------------------- END: read the arguments-------------------------*/
     int start_mol_no=-1;
     int no_of_molecules=0;
@@ -173,7 +175,7 @@ int main(int argc,char *argv[])
     static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
     static int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES];
     static int cluster_COUNTERION_matrix[MAX_MOLECULES][MAX_MOLECULES];
-    static int cluster_SOL_matrix[MAX_MOLECULES][MAX_MOLECULES];
+    static int cluster_SOL_matrix[MAX_MOLECULES][MAX_SOL];
 
     //Ring analysis
     static int D[MAX_MOLECULES][MAX_MOLECULES];
@@ -265,6 +267,8 @@ int main(int argc,char *argv[])
     }
 
     //conf_number=1;
+
+    fprintf(fp_csv,"Conf, CNo., ION, CION, SOL\n");
     
     for(conf=0;conf<conf_true;conf++)
     {
@@ -618,9 +622,50 @@ int main(int argc,char *argv[])
         //             break;
         //         }
         // printf("Acutal: %d\n",count);
+        // if(ring_flag)
+        // {
+        //     number_of_rings=0;
+        //     ring_max_size=0;
+        //     for(i=0;i<=no_of_molecules;i++)
+        //         ring_size[i]=0;
+        //     for(i=0;i<number_of_clusters;i++)
+        //     {
+        //         if(clusters[i].ION_list_size>=3)
+        //         {
+        //             ringDriver(adjacency_matrix,clusters[i].ION_list_size,D,P,P_dash,strong_connections_flag, verbose_level,&CSet,&CSSSR,&clusters[i].ringElements);
+        //             printf("Number of rings:%d\n",clusters[i].ringElements.size());
+        //             number_of_rings+=clusters[i].ringElements.size();
+        //             for(auto x: clusters[i].ringElements)
+        //             {
+        //                 ring_size[x.size()]++;
+        //                 if(x.size()>ring_max_size)
+        //                     ring_max_size=x.size();
+
+        //                 //     //smallest ring size is 3
+        //                 //     for(i=3;i<=no_of_molecules;i++)
+        //                 //         fprintf(fp_ring,"%d ",ring_size[i]);
+        //                 //     fprintf(fp_ring,"\n");
+        //                 //     overall_ring_count+=number_of_rings;
+        //                 //     if(number_of_rings!=0)
+        //                 //         ring_max_size=CSSSR_Elements[CSSSR_Elements.size()-1].size();
+        //                 //     else
+        //                 //         ring_max_size=0;
+        //                 //     overall_ring_size+=ring_max_size;
+        //             }
+        //         }
+        //     }
+        //     for(i=3;i<=no_of_molecules;i++)
+        //         fprintf(fp_ring,"%d ",ring_size[i]);
+        //     fprintf(fp_ring,"\n");
+
+        //     overall_ring_size+=ring_max_size;
+        // }
         /*--------------------------END: clustering calculations------------------*/
 
         /*-----------------------START: Output PDB------------------*/
+        for(i=0;i<number_of_clusters;i++)
+            fprintf(fp_csv,"%d, %d, %d, %d, %d\n",conf,i,clusters[i].ION_list_size,clusters[i].COUNTERION_list_size,clusters[i].SOL_list_size);
+        
         if(threshold_flag==0)
             threshold=cluster_max_size;
 
@@ -643,9 +688,14 @@ int main(int argc,char *argv[])
 
 
         int number_of_K_molecules_in_cluster=0;
+        int hydration=0;
         for(i=0;i<number_of_clusters;i++)
-            if(clusters[i].ION_list_size>=threshold)
+            if((greater_than_flag&&clusters[i].ION_list_size>=threshold)||(!greater_than_flag&&clusters[i].ION_list_size==threshold))
+            {
                 number_of_K_molecules_in_cluster+=clusters[i].COUNTERION_list_size;
+                hydration+=clusters[i].SOL_list_size;
+            }
+                
         //printf("%d %d %d\n",number_of_K_molecules_in_cluster,CION_sum, cluster_size[threshold]);
         //assert(CION_sum==number_of_K_molecules_in_cluster);
 
@@ -668,6 +718,7 @@ int main(int argc,char *argv[])
         overall_percentage_clustered+=percent_clustered_molecules;
         strong_ratio=strong_connection_ratio(adjacency_matrix,no_of_molecules)*100;
         overall_percentage_strong+=strong_ratio;
+        overall_hydration+=hydration;
         
         if(greater_than_flag)
         {
@@ -687,9 +738,9 @@ int main(int argc,char *argv[])
         {
             //double percent_clustered_molecules= ((double)(no_of_molecules-cluster_size[1]))/no_of_molecules*100;
             if(ring_flag)
-                printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5d | MaxRingSize : %5d | RingCount : %5d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge,ring_max_size,number_of_rings);
+                printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5d | Hydration : %5d | MaxRingSize : %5d | RingCount : %5d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge,hydration,ring_max_size,number_of_rings);
             else
-                printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %3d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge);
+                printf("Conf: %5d | MaxClusterSize: %5d | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5d | Hydration : %5d\n",conf,cluster_max_size,percent_clustered_molecules,strong_ratio,cluster_charge, hydration);
         }
 
         /*-----------------------START: Cleanup------------------*/
@@ -702,6 +753,8 @@ int main(int argc,char *argv[])
                     delete P_dash[i][j];
                 }
         }
+
+
 
         // for(i=0;i<number_of_clusters;i++)
         // {
@@ -768,11 +821,12 @@ int main(int argc,char *argv[])
     overall_cluster_charge/=conf_true;
     overall_ring_count/=conf_true;
     overall_ring_size/=conf_true;
+    overall_hydration/=conf_true;
 
     if(!ring_flag)
-        printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge);
+        printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf | Hydration : %5.2lf \n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge, overall_hydration);
     else
-        printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf | MaxRingSize : %5.2lf | RingCount : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge,overall_ring_size,overall_ring_count);
+        printf("\nOverall     | MaxClusterSize: %5.2lf | %%age Clustered: %5.2lf | %%age Strong : %5.2lf | Cluster Charge : %5.2lf | Hydration : %5.2lf | MaxRingSize : %5.2lf | RingCount : %5.2lf\n",overall_cluster_size,overall_percentage_clustered,overall_percentage_strong,overall_cluster_charge,overall_hydration,overall_ring_size,overall_ring_count);
     if(fp_out!=NULL)
         fclose(fp_out);
 
@@ -780,7 +834,8 @@ int main(int argc,char *argv[])
     fclose(fp_cms);
     fclose(fp_ring);
     fclose(fp_Kstats);
-    fclose(fp_testout);
+    //fclose(fp_testout);
+    fclose(fp_csv);
 
     clock_gettime(CLOCK_MONOTONIC, &finish);
 
