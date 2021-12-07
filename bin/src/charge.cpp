@@ -222,6 +222,17 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES], in
     int i,j,k;
 
     int count=0;
+    for(j=0;j<no_of_ION;j++)
+    {
+        count=0;
+        for(i=0;i<no_of_SOL;i++)
+            if(SOL_ION_adjacency_matrix[i][j])
+                count++;
+        if(count>10000)
+            printf("MOL: %d, SOL:%d\n", j,count);
+
+    }
+
 
     //printf("No of SOL: %d\n",no_of_SOL);
 
@@ -268,6 +279,11 @@ void add_SOL_to_cluster(int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES], in
         if(SOL_belongs_to[i]>=0)
         cluster_SOL_frequency[SOL_belongs_to[i]]++;
     }
+
+    for(i=0;i<number_of_clusters;i++)
+        if(cluster_SOL_frequency[i]>10000)
+            printf("Cluster: %d, MOL: %d, SOL:%d\n", i,clusters[i].ION_list_size,cluster_SOL_frequency[i]);
+
     // for(i=0;i<number_of_clusters;i++)
     //     printf("Cluster: %d, MOL: %d, SOL:%d\n", i,clusters[i].ION_list_size,cluster_SOL_frequency[i]);
 

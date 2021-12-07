@@ -170,7 +170,7 @@ int main(int argc,char *argv[])
 
     static ION molecules[MAX_M];
     static COUNTERION Kmolecules[MAX_M];
-    static SOL SOLmolecules[MAX_SOL];
+    static SOL SOLmolecules[MAX_M];
     static int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES];
     static int Kadjacency_matrix[MAX_MOLECULES][MAX_MOLECULES];
     static int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES];
@@ -268,7 +268,7 @@ int main(int argc,char *argv[])
 
     //conf_number=1;
 
-    fprintf(fp_csv,"Conf, CNo., ION, CION, SOL\n");
+    fprintf(fp_csv,"Conf,CNo.,ION,CION,SOL\n");
     
     for(conf=0;conf<conf_true;conf++)
     {
@@ -307,6 +307,16 @@ int main(int argc,char *argv[])
         SOL_adjacency_matrix_populator(mol_start,SOLmol_start, boxlength, no_of_molecules, no_of_SOL, SOL_ION_adjacency_matrix, periodicBoundary_flag);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
 
+    // for(j=0;j<no_of_molecules;j++)
+    // {
+    //     int count=0;
+    //     for(i=0;i<no_of_SOL;i++)
+    //         if(SOL_ION_adjacency_matrix[i][j])
+    //             count++;
+    //     if(count>10000)
+    //         printf("MOL: %d, SOL:%d\n", j,count);
+
+    // }
         count_counterion_affinity(fp_Kstats, Kadjacency_matrix, no_of_molecules);
 
         // int countit=0;
