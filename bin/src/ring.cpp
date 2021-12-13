@@ -6,13 +6,22 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
     pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag, int verbose_level, vector<ringCandidate> *CSet, 
     pathArray* CSSSR,vector<ringElements> *CSSSR_Elements)
 {
-    makePIDmatrix(adjacency_matrix, no_of_molecules, D, P, P_dash,(verbose_level>=0));
+    makePIDmatrix(adjacency_matrix, ION_list, no_of_molecules, D, P, P_dash,(verbose_level>=0));
     ringCandidateSearch(CSet, no_of_molecules, D,P,P_dash);
+    //printf("Problem is nnot here\n");
     findSSSR(CSSSR,CSet);
+
+    for(int i=0;i<no_of_molecules;i++)
+        for(int j=0;j<no_of_molecules;j++)
+        {
+            delete P[i][j];
+            delete P_dash[i][j];
+        }
+    //printf("Problem is nnot here\n");
     // for(auto x: CSet)
     //     printf("CNum:%5d | P:%5ld | P_Dash:%5ld\n",x.CNum,x.P->size(),x.P_dash->size());
     ringElements* temp;
-    CSSSR_Elements->clear();
+    //CSSSR_Elements->clear();
     for(auto x: *CSSSR)
     {
         temp=ringToElements(&x);
@@ -126,6 +135,10 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
     for(i=0;i<no_of_molecules;i++)
         for(j=0;j<no_of_molecules;j++)
         {
+            // if(P[i][j]!=NULL)
+            // delete P[i][j];
+            // if(P_dash[i][j]!=NULL)
+            // delete P_dash[i][j];
             P[i][j]= new pathArray;
             P_dash[i][j]= new pathArray;
             if(adjacency_matrix[UNDIRECTED_GRAPH][ION_list[i]][ION_list[j]]>=strong_level)
@@ -143,6 +156,15 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
                 D[i][j]=numeric_limits<int>::max();
             
         }
+
+    // for(i=0;i<no_of_molecules;i++)
+    // {
+    //     for(j=0;j<no_of_molecules;j++)
+    //     {
+    //         printf("%d ",D[i][j]);
+    //     }
+    //     printf("\n");
+    // }
 
     // for(i=0;i<no_of_molecules;i++)
     //     for(j=0;j<no_of_molecules;j++)
@@ -231,17 +253,23 @@ void ringCandidateSearch(vector<ringCandidate> *CSet, int no_of_molecules, int D
     //     printPathArray(x.P);
     //     printPathArray(x.P_dash);
     // }
+
+
+    //printf("Problem is not after deleteing\n");
 }
 
 void findSSSR(pathArray* CSSSR, vector<ringCandidate> *CSet)
 {
     //TODO: Implement nRingIdx and nSSSR
+    
     CSSSR->clear();
     int i, j;
     pathArray *C;
     path temp;
+    //printf("CSet size:%d\n",CSet->size());
     for(auto x: *CSet)
     {
+        //printf("x.CNum=%d\n",x.CNum);
         if(x.CNum%2==1)
         {
             C=addPathArrayWithoutCommonElements(x.P,x.P_dash);
@@ -260,11 +288,14 @@ void findSSSR(pathArray* CSSSR, vector<ringCandidate> *CSet)
             //         }
             C=addPathArrayWithoutCommonElements(x.P,x.P);
         }
+        //printf("should be bad here\n");
         for(auto ring: *C)
             pathArrayXORandAdd(CSSSR, &ring);
         //C->clear();
         delete C;
     }
+    
+
     removeDuplicateRings(CSSSR);
 
     //printPathArray(CSSSR);
