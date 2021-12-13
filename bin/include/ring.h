@@ -200,5 +200,7 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
     pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag, int verbose_level, vector<ringCandidate> *CSet, 
     pathArray* CSSSR,vector<ringElements> *CSSSR_Elements);
 
-
+void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_list, 
+    int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
+    pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag);
 #endif

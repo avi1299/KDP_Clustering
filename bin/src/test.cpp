@@ -328,46 +328,47 @@ int main(int argc,char *argv[])
         //             //break;
         //         }
         // printf("SOL in conf: %d\n", countit);
+
         //Ring Analysis
-        if(ring_flag)
-        {
-            makePIDmatrix(adjacency_matrix, no_of_molecules, D, P, P_dash,(verbose_level>=0));
-            ringCandidateSearch(&CSet, no_of_molecules, D,P,P_dash);
-            findSSSR(&CSSSR,&CSet);
-            // for(auto x: CSet)
-            //     printf("CNum:%5d | P:%5ld | P_Dash:%5ld\n",x.CNum,x.P->size(),x.P_dash->size());
-            ringElements* temp;
-            for(auto x: CSSSR)
-            {
-                temp=ringToElements(&x);
-                CSSSR_Elements.push_back(*temp);
-                //printRingElements(temp);
-                delete temp;
-            }
-            if(verbose_level>=1)
-                printRingElementsArray(&CSSSR_Elements);
-            if(verbose_level>=2)
-                printPathArray(&CSSSR);
+        // if(ring_flag)
+        // {
+        //     makePIDmatrix(adjacency_matrix, no_of_molecules, D, P, P_dash,(verbose_level>=0));
+        //     ringCandidateSearch(&CSet, no_of_molecules, D,P,P_dash);
+        //     findSSSR(&CSSSR,&CSet);
+        //     // for(auto x: CSet)
+        //     //     printf("CNum:%5d | P:%5ld | P_Dash:%5ld\n",x.CNum,x.P->size(),x.P_dash->size());
+        //     ringElements* temp;
+        //     for(auto x: CSSSR)
+        //     {
+        //         temp=ringToElements(&x);
+        //         CSSSR_Elements.push_back(*temp);
+        //         //printRingElements(temp);
+        //         delete temp;
+        //     }
+        //     if(verbose_level>=1)
+        //         printRingElementsArray(&CSSSR_Elements);
+        //     if(verbose_level>=2)
+        //         printPathArray(&CSSSR);
 
-            number_of_rings=CSSSR_Elements.size();
-            for(i=0;i<=no_of_molecules;i++)
-                ring_size[i]=0;
-            for(i=0;i<number_of_rings;i++)
-                ring_size[CSSSR_Elements[i].size()]++;
-            //smallest ring size is 3
-            for(i=3;i<=no_of_molecules;i++)
-                fprintf(fp_ring,"%d ",ring_size[i]);
-            fprintf(fp_ring,"\n");
-            overall_ring_count+=number_of_rings;
-            if(number_of_rings!=0)
-                ring_max_size=CSSSR_Elements[CSSSR_Elements.size()-1].size();
-            else
-                ring_max_size=0;
-            overall_ring_size+=ring_max_size;
+        //     number_of_rings=CSSSR_Elements.size();
+        //     for(i=0;i<=no_of_molecules;i++)
+        //         ring_size[i]=0;
+        //     for(i=0;i<number_of_rings;i++)
+        //         ring_size[CSSSR_Elements[i].size()]++;
+        //     //smallest ring size is 3
+        //     for(i=3;i<=no_of_molecules;i++)
+        //         fprintf(fp_ring,"%d ",ring_size[i]);
+        //     fprintf(fp_ring,"\n");
+        //     overall_ring_count+=number_of_rings;
+        //     if(number_of_rings!=0)
+        //         ring_max_size=CSSSR_Elements[CSSSR_Elements.size()-1].size();
+        //     else
+        //         ring_max_size=0;
+        //     overall_ring_size+=ring_max_size;
 
-            //CSet.clear();
-            //CSSSR.clear();
-        }
+        //     //CSet.clear();
+        //     //CSSSR.clear();
+        // }
 
 
         //Printing the adjacency list and connectedness
@@ -632,44 +633,48 @@ int main(int argc,char *argv[])
         //             break;
         //         }
         // printf("Acutal: %d\n",count);
-        // if(ring_flag)
-        // {
-        //     number_of_rings=0;
-        //     ring_max_size=0;
-        //     for(i=0;i<=no_of_molecules;i++)
-        //         ring_size[i]=0;
-        //     for(i=0;i<number_of_clusters;i++)
-        //     {
-        //         if(clusters[i].ION_list_size>=3)
-        //         {
-        //             ringDriver(adjacency_matrix,clusters[i].ION_list_size,D,P,P_dash,strong_connections_flag, verbose_level,&CSet,&CSSSR,&clusters[i].ringElements);
-        //             printf("Number of rings:%d\n",clusters[i].ringElements.size());
-        //             number_of_rings+=clusters[i].ringElements.size();
-        //             for(auto x: clusters[i].ringElements)
-        //             {
-        //                 ring_size[x.size()]++;
-        //                 if(x.size()>ring_max_size)
-        //                     ring_max_size=x.size();
 
-        //                 //     //smallest ring size is 3
-        //                 //     for(i=3;i<=no_of_molecules;i++)
-        //                 //         fprintf(fp_ring,"%d ",ring_size[i]);
-        //                 //     fprintf(fp_ring,"\n");
-        //                 //     overall_ring_count+=number_of_rings;
-        //                 //     if(number_of_rings!=0)
-        //                 //         ring_max_size=CSSSR_Elements[CSSSR_Elements.size()-1].size();
-        //                 //     else
-        //                 //         ring_max_size=0;
-        //                 //     overall_ring_size+=ring_max_size;
-        //             }
-        //         }
-        //     }
-        //     for(i=3;i<=no_of_molecules;i++)
-        //         fprintf(fp_ring,"%d ",ring_size[i]);
-        //     fprintf(fp_ring,"\n");
 
-        //     overall_ring_size+=ring_max_size;
-        // }
+        if(ring_flag)
+        {
+            //printf("Conf for ring:%d\n",conf);
+            number_of_rings=0;
+            ring_max_size=0;
+            for(i=0;i<=no_of_molecules;i++)
+                ring_size[i]=0;
+            for(i=0;i<number_of_clusters;i++)
+            {
+                if(clusters[i].ION_list_size>=3)
+                {
+                    ringDriver(adjacency_matrix,clusters[i].ION_list,clusters[i].ION_list_size,D,P,P_dash,strong_connections_flag, verbose_level,&CSet,&CSSSR,&(clusters[i].ringElements));
+                    //printf("Number of rings:%d\n",clusters[i].ringElements.size());
+                    number_of_rings+=clusters[i].ringElements.size();
+                    for(auto x: clusters[i].ringElements)
+                    {
+                        ring_size[x.size()]++;
+                        if(x.size()>ring_max_size)
+                            ring_max_size=x.size();
+
+                        //     //smallest ring size is 3
+                        //     for(i=3;i<=no_of_molecules;i++)
+                        //         fprintf(fp_ring,"%d ",ring_size[i]);
+                        //     fprintf(fp_ring,"\n");
+                        //     overall_ring_count+=number_of_rings;
+                        //     if(number_of_rings!=0)
+                        //         ring_max_size=CSSSR_Elements[CSSSR_Elements.size()-1].size();
+                        //     else
+                        //         ring_max_size=0;
+                        //     overall_ring_size+=ring_max_size;
+                    }
+                }
+            }
+            for(i=3;i<=no_of_molecules;i++)
+                fprintf(fp_ring,"%d ",ring_size[i]);
+            fprintf(fp_ring,"\n");
+
+            overall_ring_size+=ring_max_size;
+            overall_ring_count+=number_of_rings;
+        }
         /*--------------------------END: clustering calculations------------------*/
 
         /*-----------------------START: Output PDB------------------*/
@@ -754,15 +759,17 @@ int main(int argc,char *argv[])
         }
 
         /*-----------------------START: Cleanup------------------*/
-        if(ring_flag)
-        {
-            for(i=0;i<no_of_molecules;i++)
-                for(j=0;j<no_of_molecules;j++)
-                {
-                    delete P[i][j];
-                    delete P_dash[i][j];
-                }
-        }
+        // if(ring_flag)
+        // {
+        //     printf("Conf for ring:%d\n",conf);
+        //     for(i=0;i<no_of_molecules;i++)
+        //         for(j=0;j<no_of_molecules;j++)
+        //         {
+        //             delete P[i][j];
+        //             delete P_dash[i][j];
+        //         }
+        //     printf("Conf for ring:%d\n",conf);
+        // }
 
 
 
