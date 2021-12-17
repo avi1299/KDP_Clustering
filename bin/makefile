@@ -55,7 +55,7 @@ minicell_pdb: test
 	./test -f ../ExampleData/avi_M1.pdb -o ../ExampleData/minicell_pdb.pdb
 
 minicell_xtc: test
-	./test -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb
+	./test -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb -r
 
 
 bsh: test
