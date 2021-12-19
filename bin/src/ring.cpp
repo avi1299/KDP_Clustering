@@ -189,7 +189,7 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
                 if(i!=j&&i!=k&&j!=k&&D[i][k]!=numeric_limits<int>::max()&&D[k][j]!=numeric_limits<int>::max())
                 {
                     //printf("hi\n");
-                    if(D[i][j]>D[i][k]+D[k][j])// && D[i][k]+D[k][j]<=RING_LENGTH_CUTOFF)//The second condition was added to limit the length of the path between any two nodes
+                    if(D[i][j]>D[i][k]+D[k][j] && D[i][k]+D[k][j]<=RING_LENGTH_CUTOFF)//The second condition was added to limit the length of the path between any two nodes
                     {
                         //printf("hi1\n");
                         if(D[i][j]==D[i][k]+D[k][j]+1)
