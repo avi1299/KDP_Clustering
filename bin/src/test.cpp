@@ -48,31 +48,35 @@ int main(int argc,char *argv[])
     static int probability_flag=0;
     static int XTC_in_flag=0;
     static int ring_flag=0;
+    static int CION_flag=1;
+    static int SOL_flag=1;
     static int periodicBoundary_flag=1;
     const char *ext = ".xtc";
     int xlen = strlen(ext);
     int slen;
     /*------------------------- START: read the arguments-------------------------*/
     int c;
-    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:nra")) != -1 )
+    while(( c = getopt(argc, argv, "f:o:v:t:cgs:hpm:nrabd")) != -1 )
     {
         switch(c)
         {
             case 'h':
-                printf("Usage: ./test [OPTIONS].. [ARGUMENTS]..\n");
+                printf("Usage: ./clusterIt [OPTIONS].. [ARGUMENTS]..\n");
                 printf("  -h\t\t: Prints the help information and exits\n");
                 printf("  -f <file>\t: Specify the input file\n");
                 printf("  -t <file>\t: Specify the .top file in case of XTC input\n");
                 printf("  -o <file>\t: Specify the output file\n");
                 printf("  -v <int>\t: Specify the verbose level among {1,2,3,4}.\n");
-                printf("  -c \t\t: Enables checking if stricter connectedness conditions affects number of connections in each configuration\n");
+                printf("  -c \t\t: Enables stricter connectedness conditions\n");
                 printf("  -s <int>\t: Specify size of clusters to be outputted in PDB format\n");
-                printf("  -g \t\t: Used with -s to include clusters having size greater than or equal to the argument for -s\n");
+                printf("  -g \t\t: Used with -s to output clusters having size >= argument for -s\n");
                 printf("  -p \t\t: Prints the percentage of molecule belonging to a cluster rather than the number of molecules\n");
                 printf("  -m <int>\t: Prints statisitics every argument number of configurations(default=1). Needs verbose flag to be disabled\n");
                 printf("  -n \t\t: Uses only strong bonds to perform clustering\n");
-                printf("  -r \t\t: Performs ring analysis and outputs rings instead\n");
-                printf("  -a \t\t: Specifies that the input file is that of a supercell and therefore Periodic Boundary Condition will not applied\n");
+                printf("  -r \t\t: Performs ring analysis\n");
+                printf("  -a \t\t: Removes Periodic Boundary Condition while forming clusters\n");
+                printf("  -b \t\t: Doesn't process the COUNTER-IONs\n");
+                printf("  -d \t\t: Doesn't process the SOL molecules\n");
                 exit(0);
             case 'f':
                 slen = strlen(optarg);
@@ -121,6 +125,12 @@ int main(int argc,char *argv[])
                 break;
             case 'r':
                 ring_flag=1;
+                break;
+            case 'b':
+                CION_flag=0;
+                break;
+            case 'd':
+                SOL_flag=0;
                 break;
             case 'p':
                 probability_flag=1;
@@ -303,8 +313,10 @@ int main(int argc,char *argv[])
         //Useful when you dont want to claculate the strong ratio
         //adjacency_complete(mol_start,boxlength,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
         adjacency_matrix_populator(mol_start,boxlength,no_of_molecules,adjacency_matrix,periodicBoundary_flag);
-        counterion_adjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
-        SOL_adjacency_matrix_populator(mol_start,SOLmol_start, boxlength, no_of_molecules, no_of_SOL, SOL_ION_adjacency_matrix, periodicBoundary_flag);
+        if(CION_flag)
+            counterion_adjacency_matrix_populator(mol_start,Kmol_start,boxlength,no_of_molecules,Kadjacency_matrix,periodicBoundary_flag);
+        if(SOL_flag)
+            SOL_adjacency_matrix_populator(mol_start,SOLmol_start, boxlength, no_of_molecules, no_of_SOL, SOL_ION_adjacency_matrix, periodicBoundary_flag);
         adjacency_list_from_matrix(adjacency_matrix,no_of_molecules,adjacency_list,(verbose_level>=3),strong_connections_flag);
 
     // for(j=0;j<no_of_molecules;j++)
@@ -317,7 +329,8 @@ int main(int argc,char *argv[])
     //         printf("MOL: %d, SOL:%d\n", j,count);
 
     // }
-        count_counterion_affinity(fp_Kstats, Kadjacency_matrix, no_of_molecules);
+        if(CION_flag)
+            count_counterion_affinity(fp_Kstats, Kadjacency_matrix, no_of_molecules);
 
         // int countit=0;
         // for(i=0;i<no_of_SOL;i++)
@@ -618,12 +631,12 @@ int main(int argc,char *argv[])
         // for(k=0;k<MAX_MOLECULES;k++)
         // fprintf(fp_cms,"%d",adjacency_matrix[i][j][k]);
         //printf("hi1\n");
-
-        add_COUNTERION_to_cluster(Kadjacency_matrix, cluster_COUNTERION_matrix,no_of_molecules, no_of_molecules,clusters,number_of_clusters);
+        if(CION_flag)
+            add_COUNTERION_to_cluster(Kadjacency_matrix, cluster_COUNTERION_matrix,no_of_molecules, no_of_molecules,clusters,number_of_clusters);
         //printf("Done with cion\n");
 
-
-        add_SOL_to_cluster(SOL_ION_adjacency_matrix, cluster_SOL_matrix,no_of_molecules, no_of_SOL,clusters,number_of_clusters);
+        if(SOL_flag)
+            add_SOL_to_cluster(SOL_ION_adjacency_matrix, cluster_SOL_matrix,no_of_molecules, no_of_SOL,clusters,number_of_clusters);
         // int count=0;
         // for(i=0;i<no_of_molecules;i++)
         //     for(j=0;j<no_of_molecules;j++)
