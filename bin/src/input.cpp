@@ -180,7 +180,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
         for(auto x:order)
         {
             //printf("hi\n");
-            if(strcmp(x.name.c_str(),"HPO")==0)
+            if(strcmp(x.name.c_str(),ION_NAME)==0)
                 *no_of_molecules+=x.quantity;
         }
         //printf("no of mols=%d\n",*no_of_molecules);
@@ -192,7 +192,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
         vector<int> atom_index;
         //int atom_index[HPO_ATOM_COUNT];
         for(auto x: molInfo)
-            if(strcmp(x.moleculeName.c_str(),"HPO")==0)
+            if(strcmp(x.moleculeName.c_str(),ION_NAME)==0)
                 atom_name_to_index(x.atomName, &atom_index);
         // for(auto x: atom_index)
         //     printf("%d \n",x);
@@ -218,7 +218,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
                 xcount=0;
                 for(auto o: order)
                 {
-                    if(strcmp(o.name.c_str(),"K")==0)
+                    if(strcmp(o.name.c_str(),CION_NAME)==0)
                     {
                         //printf("hiK\n");
                         //old_size=o.quantity;
@@ -231,7 +231,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
                         Kcount+=o.quantity;
                         xcount+=o.quantity;
                     }
-                    else if(strcmp(o.name.c_str(),"HPO")==0)
+                    else if(strcmp(o.name.c_str(),ION_NAME)==0)
                     {
                         //printf("hiHPO\n");
                         //printf("reached here somehow\n");
@@ -263,7 +263,7 @@ void XTC_reader(struct t_fileio* fio,FILE* fp_top,ION molecules[],COUNTERION Kmo
                         //Kcount+=o.quantity;
                         xcount+=o.quantity*(HPO_ATOM_COUNT);
                     }
-                    else if(strcmp(o.name.c_str(),"SOL")==0)
+                    else if(strcmp(o.name.c_str(),SOL_NAME)==0)
                     {
                         for(j=0;j<o.quantity;j++)
                         {

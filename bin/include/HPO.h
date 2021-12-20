@@ -18,13 +18,23 @@
 //coordinates is a typedef that represents the X,Y,Z values of a point in space
 typedef double coordinates[3];
 
+#define ION_NAME "HPO"
+
 #define HPO_ATOM_COUNT 7
 
 #define ION_ATOM_COUNT HPO_ATOM_COUNT
 
+#define ION_CHARGE -1
+
+#define CION_NAME "K"
+
 #define K_ATOM_COUNT 1
 
 #define COUNTERION_ATOM_COUNT K_ATOM_COUNT
+
+#define CION_CHARGE 1
+
+#define SOL_NAME "SOL"
 
 #define H2O_ATOM_COUNT 3
 
@@ -115,9 +125,9 @@ int strongly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, in
  * @return int 
  */
 int weakly_connected_molecules(ION *mol1, ION *mol2, coordinates boxlength, int PBC_flag);
-#define PL 0
-#define OHL_1 1
-#define HOL_1 2
+// #define PL 0
+// #define OHL_1 1
+// #define HOL_1 2
 
 /**
  * @brief Checks if an ION is connected to another ION using a stricter condition :  
