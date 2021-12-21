@@ -62,7 +62,10 @@ bsh: clusterIt
 	./clusterIt -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1B_Sh_out.pdb -m 10 
 
 bsh_r: clusterIt
-	./clusterIt -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -r 
+	./clusterIt -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -r -b -d
+
+bs4_r: clusterIt
+	./clusterIt -f ../ExampleData/M1B_S4_avi.xtc -t ../ExampleData/run1664.top -r -b -d
 
 bs1: clusterIt
 	./clusterIt -f ../ExampleData/M1B_S1_avi.xtc -t ../ExampleData/run312.top -o ../ExampleData/M1B_S1_out.pdb -m 10 

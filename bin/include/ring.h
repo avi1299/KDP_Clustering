@@ -203,4 +203,6 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
 void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_list, 
     int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
     pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag);
+
+void purgeAppendages(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* final_ION_list, int* no_of_molecules);
 #endif

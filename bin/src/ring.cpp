@@ -7,7 +7,17 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
     pathArray* CSSSR,vector<ringElements> *CSSSR_Elements)
 {
     //printf("size of cluster:%d\n",no_of_molecules);
-    makePIDmatrix(adjacency_matrix, ION_list, no_of_molecules, D, P, P_dash,(verbose_level>=0));
+    //int final_no_of_molecules=no_of_molecules;
+    int final_ION_list[no_of_molecules];
+    for(int i=0;i<no_of_molecules;i++)
+        final_ION_list[i]=ION_list[i];
+    //printf("orig List size: %d\n",no_of_molecules);
+    purgeAppendages(adjacency_matrix, final_ION_list, &no_of_molecules);
+    //printf("purged List size: %d\n",no_of_molecules);
+    if(no_of_molecules<3)
+        return;
+
+    makePIDmatrix(adjacency_matrix, final_ION_list, no_of_molecules, D, P, P_dash,(verbose_level>=0));
     
     ringCandidateSearch(CSet, no_of_molecules, D,P,P_dash);
     
@@ -45,6 +55,84 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
     CSet->clear();
     CSSSR->clear();
     
+}
+
+
+void purgeAppendages(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* final_ION_list, int *no_of_molecules)
+{
+    int current_no_of_molecules=*no_of_molecules;
+    int included_array[current_no_of_molecules];
+    stack to_check;
+    to_check.length=0;
+    to_check.top=NULL;
+
+    int joint;
+    for(int i=0;i<current_no_of_molecules;i++)
+        included_array[i]=1;
+    int count=0;
+
+    //Finds all appendages
+    for(int i=0;i<current_no_of_molecules;i++)
+    {
+        if(!included_array[i])
+            continue;
+        count=0;
+        for(int j=0;j<current_no_of_molecules;j++)
+        {
+            if(!included_array[j])
+                continue;
+            if(adjacency_matrix[UNDIRECTED_GRAPH][final_ION_list[i]][final_ION_list[j]])
+            {
+                count++;
+                if(count>1)
+                    break;
+                joint=j;
+            }
+                
+        }
+        if(count==1)
+        {
+            included_array[i]=0;
+            add_node_given_value(&to_check,joint);
+            //i=-1;
+        }            
+    }
+    //Recursively removes new formed appendages from sites where previous appendages were removed
+    //int ele;
+    while(to_check.length)
+    {
+        int i=pop_and_return_value(&to_check);
+        if(!included_array[i])
+            continue;
+        count=0;
+        for(int j=0;j<current_no_of_molecules;j++)
+        {
+            if(!included_array[j])
+                continue;
+            if(adjacency_matrix[UNDIRECTED_GRAPH][final_ION_list[joint]][final_ION_list[j]])
+            {
+                count++;
+                if(count>1)
+                    break;
+                joint=j;
+            }
+                
+        }
+        if(count==1)
+        {
+            included_array[joint]=0;
+            add_node_given_value(&to_check,joint);
+            //i=-1;
+        }  
+
+    }
+    int current_pos=0;
+    for(int i=0;i<current_no_of_molecules;i++)
+    {
+        if(included_array[i])
+            final_ION_list[current_pos++]=final_ION_list[i];
+    }
+    *no_of_molecules=current_pos;
 }
 
 void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], 
