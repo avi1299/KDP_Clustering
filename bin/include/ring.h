@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define RING_LENGTH_CUTOFF 3
+#define RING_LENGTH_CUTOFF 4
 
 typedef pair<int,int> edge;
 typedef vector<edge> path;
@@ -33,6 +33,12 @@ struct comp {
         }
  
         return x.second < y.second;
+    }
+};
+
+struct compCNumAsc {
+    bool operator()(const ringCandidate &x, const ringCandidate &y) const {
+        return x.CNum < y.CNum;
     }
 };
 
@@ -81,7 +87,7 @@ void ringCandidateSearch(vector<ringCandidate> *CSet, int no_of_molecules, int D
  * @param CSSSR pathArray *
  * @param CSet vector<ringCandidate> *
  */
-void findSSSR(pathArray *CSSSR, vector<ringCandidate> *CSet);
+void findSSSR(pathArray *CSSSR, vector<ringCandidate> *CSet, int n_sssr);
 
 /**
  * @brief Checks if the ring already exists in the smallest set of smallest rings and if it doesn't then it adds the rings to the SSSR
@@ -143,6 +149,9 @@ pathArray *addPathArray(pathArray* arr1, pathArray* arr2);
  * @param arr2 pathArray*
  */
 void appendPathArray(pathArray* arr1, pathArray* arr2);
+
+void appendPathArrayWithoutCheck(pathArray* arr1, pathArray* arr2);
+
 
 /**
  * @brief Removes duplicate edge in the path 

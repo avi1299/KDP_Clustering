@@ -36,6 +36,12 @@ small: clusterIt
 #xtc_1_silent: clusterIt
 #	./clusterIt -f ../ExampleData/M2A_S3_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -m 10
 
+monoclinic_ring: clusterIt
+	./clusterIt -f ../ExampleData/avi_M1.pdb -r -b -d
+
+tetragonal_ring: clusterIt
+	./clusterIt -f ../ExampleData/tetra_M1.pdb -r -b -d
+
 xtc_1001: clusterIt
 	./clusterIt -f ../ExampleData/M2A_S3_1001_Avi.xtc -t ../ExampleData/M2A_S3.top -o ../ExampleData/test_out.pdb -v2
 
@@ -55,7 +61,7 @@ minicell_pdb: clusterIt
 	./clusterIt -f ../ExampleData/avi_M1.pdb -o ../ExampleData/minicell_pdb.pdb
 
 minicell_xtc: clusterIt
-	./clusterIt -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb -r
+	./clusterIt -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb
 
 
 bsh: clusterIt

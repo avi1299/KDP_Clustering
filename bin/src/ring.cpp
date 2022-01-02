@@ -18,11 +18,18 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
         return;
 
     makePIDmatrix(adjacency_matrix, final_ION_list, no_of_molecules, D, P, P_dash,(verbose_level>=0));
+
+    int n_sssr=-no_of_molecules+1;
+    for(int i=0;i<no_of_molecules-1;i++)
+        for(int j=i+1;j<no_of_molecules;j++)
+            if(D[i][j]==1)
+                n_sssr++;
+            
     
     ringCandidateSearch(CSet, no_of_molecules, D,P,P_dash);
     
     //printf("Problem is nnot here\n");
-    findSSSR(CSSSR,CSet);
+    findSSSR(CSSSR,CSet,n_sssr);
     //printf("Done\n");
 
     
@@ -46,6 +53,12 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
         //printRingElements(temp);
         delete temp;
     }
+
+    //Replacing the relative index with the actuial elements of the ring
+    // for(int i=0;i<CSSSR_Elements->size();i++)
+    //     for(int j=0;j<CSSSR_Elements[i].size();j++)
+    //         CSSSR_Elements[i][j]=final_ION_list[CSSSR_Elements[i][j]];
+
     
     if(verbose_level>=1)
         printRingElementsArray(CSSSR_Elements);
@@ -109,7 +122,7 @@ void purgeAppendages(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int*
         {
             if(!included_array[j])
                 continue;
-            if(adjacency_matrix[UNDIRECTED_GRAPH][final_ION_list[joint]][final_ION_list[j]])
+            if(adjacency_matrix[UNDIRECTED_GRAPH][final_ION_list[i]][final_ION_list[j]])
             {
                 count++;
                 if(count>1)
@@ -120,7 +133,7 @@ void purgeAppendages(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int*
         }
         if(count==1)
         {
-            included_array[joint]=0;
+            included_array[i]=0;
             add_node_given_value(&to_check,joint);
             //i=-1;
         }  
@@ -135,89 +148,89 @@ void purgeAppendages(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int*
     *no_of_molecules=current_pos;
 }
 
-void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], 
-    int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
-    pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag)
-{
-    int i,j,k;
-    path s;
-    int strong_level=WEAK;
-    if(strong_flag)
-        strong_level=STRONG;
-    #pragma omp parallel for private(s,j)
-    for(i=0;i<no_of_molecules;i++)
-        for(j=0;j<no_of_molecules;j++)
-        {
-            P[i][j]= new pathArray;
-            P_dash[i][j]= new pathArray;
-            if(adjacency_matrix[UNDIRECTED_GRAPH][i][j]>=strong_level)
-            {
-                D[i][j]=1;
-                if(i<j)
-                    s.push_back(make_pair(i,j));
-                else
-                    s.push_back(make_pair(j,i));
-                P[i][j]->push_back(s);
-                s.clear();
-            }
+// void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], 
+//     int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
+//     pathArray *P_dash[MAX_MOLECULES][MAX_MOLECULES],int strong_flag)
+// {
+//     int i,j,k;
+//     path s;
+//     int strong_level=WEAK;
+//     if(strong_flag)
+//         strong_level=STRONG;
+//     #pragma omp parallel for private(s,j)
+//     for(i=0;i<no_of_molecules;i++)
+//         for(j=0;j<no_of_molecules;j++)
+//         {
+//             P[i][j]= new pathArray;
+//             P_dash[i][j]= new pathArray;
+//             if(adjacency_matrix[UNDIRECTED_GRAPH][i][j]>=strong_level)
+//             {
+//                 D[i][j]=1;
+//                 if(i<j)
+//                     s.push_back(make_pair(i,j));
+//                 else
+//                     s.push_back(make_pair(j,i));
+//                 P[i][j]->push_back(s);
+//                 s.clear();
+//             }
                 
-            else
-                D[i][j]=numeric_limits<int>::max();
+//             else
+//                 D[i][j]=numeric_limits<int>::max();
             
-        }
+//         }
 
-    // for(i=0;i<no_of_molecules;i++)
-    //     for(j=0;j<no_of_molecules;j++)
-    //     {
-    //         //printf("pathArray from %d to %d:\n", i, j);
-    //         printPathArray(P[i][j]);
-    //     }
+//     // for(i=0;i<no_of_molecules;i++)
+//     //     for(j=0;j<no_of_molecules;j++)
+//     //     {
+//     //         //printf("pathArray from %d to %d:\n", i, j);
+//     //         printPathArray(P[i][j]);
+//     //     }
 
-    pathArray* temp;
-    for(k=0;k<no_of_molecules;k++)
-        for(i=0;i<no_of_molecules;i++)
-            for(j=0;j<no_of_molecules;j++)
-                if(i!=j&&i!=k&&j!=k&&D[i][k]!=numeric_limits<int>::max()&&D[k][j]!=numeric_limits<int>::max())
-                {
-                    //printf("hi\n");
-                    if(D[i][j]>D[i][k]+D[k][j] && D[i][k]+D[k][j]<=RING_LENGTH_CUTOFF)//The second condition was added to limit the length of the path between any two nodes
-                    {
-                        //printf("hi1\n");
-                        if(D[i][j]==D[i][k]+D[k][j]+1)
-                        {
-                            *P_dash[i][j]=*P[i][j];
-                        }
-                        else
-                            P_dash[i][j]->clear();
-                        D[i][j]=D[i][k]+D[k][j];
-                        delete P[i][j];
-                        P[i][j]=addPathArray(P[i][k],P[k][j]);
-                    }
-                    else if(D[i][j]==D[i][k]+D[k][j])
-                    {
-                        temp=addPathArray(P[i][k],P[k][j]);
-                        appendPathArray(P[i][j],temp);
-                        delete temp;
-                    }
+//     pathArray* temp;
+//     for(k=0;k<no_of_molecules;k++)
+//         for(i=0;i<no_of_molecules;i++)
+//             for(j=0;j<no_of_molecules;j++)
+//                 if(i!=j&&i!=k&&j!=k&&D[i][k]!=numeric_limits<int>::max()&&D[k][j]!=numeric_limits<int>::max())
+//                 {
+//                     //printf("hi\n");
+//                     if(D[i][j]>D[i][k]+D[k][j] && D[i][k]+D[k][j]<=RING_LENGTH_CUTOFF)//The second condition was added to limit the length of the path between any two nodes
+//                     {
+//                         //printf("hi1\n");
+//                         if(D[i][j]==D[i][k]+D[k][j]+1)
+//                         {
+//                             *P_dash[i][j]=*P[i][j];
+//                         }
+//                         else
+//                             P_dash[i][j]->clear();
+//                         D[i][j]=D[i][k]+D[k][j];
+//                         delete P[i][j];
+//                         P[i][j]=addPathArray(P[i][k],P[k][j]);
+//                     }
+//                     else if(D[i][j]==D[i][k]+D[k][j])
+//                     {
+//                         temp=addPathArray(P[i][k],P[k][j]);
+//                         appendPathArray(P[i][j],temp);
+//                         delete temp;
+//                     }
                         
-                    else if(D[i][j]==D[i][k]+D[k][j]-1)
-                    {
-                        temp=addPathArray(P[i][k],P[k][j]);
-                        appendPathArray(P_dash[i][j],temp);
-                        delete temp;
-                    }
-                }
+//                     else if(D[i][j]==D[i][k]+D[k][j]-1)
+//                     {
+//                         temp=addPathArray(P[i][k],P[k][j]);
+//                         appendPathArray(P_dash[i][j],temp);
+//                         delete temp;
+//                     }
+//                 }
     
-    // for(i=0;i<no_of_molecules;i++)
-    //     for(j=0;j<no_of_molecules;j++)
-    //     {
-    //         //printf("pathArray from %d to %d:\n", i, j);
-    //         printPathArray(P[i][j]);
-    //     }
+//     // for(i=0;i<no_of_molecules;i++)
+//     //     for(j=0;j<no_of_molecules;j++)
+//     //     {
+//     //         //printf("pathArray from %d to %d:\n", i, j);
+//     //         printPathArray(P[i][j]);
+//     //     }
 
 
-//printf("Made PID\n");
-}
+// //printf("Made PID\n");
+// }
 
 void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_list, 
     int no_of_molecules, int D[MAX_MOLECULES][MAX_MOLECULES], pathArray *P[MAX_MOLECULES][MAX_MOLECULES],
@@ -241,6 +254,7 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
             if(adjacency_matrix[UNDIRECTED_GRAPH][ION_list[i]][ION_list[j]]>=strong_level)
             {
                 D[i][j]=1;
+                //We set the convention of the edge to go from a vertex with lower index to a vertex with higher index
                 if(i<j)
                     s.push_back(make_pair(i,j));
                 else
@@ -334,14 +348,21 @@ void ringCandidateSearch(vector<ringCandidate> *CSet, int no_of_molecules, int D
                 else 
                 {
                     //printf("%d\n", D[i][j]);
-                    if(P_dash[i][j]->size()!=0)
-                        CNum=2*D[i][j]+1;
-                    else
-                        CNum=2*D[i][j];
+                    // if(P_dash[i][j]->size()!=0)
+                    //     CNum=2*D[i][j]+1;
+                    // else
+                    //     CNum=2*D[i][j];
+                    CNum=2*D[i][j];
                     temp.CNum=CNum;
                     temp.P=P[i][j];
                     temp.P_dash=P_dash[i][j];
                     CSet->push_back(temp);
+                    if(P_dash[i][j]->size()!=0)
+                    {
+                        temp.CNum++;
+                        CSet->push_back(temp);
+                    }
+
                 }
             }
     // for(auto x: *CSet)
@@ -351,11 +372,13 @@ void ringCandidateSearch(vector<ringCandidate> *CSet, int no_of_molecules, int D
     //     printPathArray(x.P_dash);
     // }
 
+    sort(CSet->begin(),CSet->end(),compCNumAsc());
+
 
     //printf("Problem is not after deleteing\n");
 }
 
-void findSSSR(pathArray* CSSSR, vector<ringCandidate> *CSet)
+void findSSSR(pathArray* CSSSR, vector<ringCandidate> *CSet, int n_sssr)
 {
     //TODO: Implement nRingIdx and nSSSR
     
@@ -389,13 +412,20 @@ void findSSSR(pathArray* CSSSR, vector<ringCandidate> *CSet)
         }
         //printf("should be bad here\n");
         for(auto ring: *C)
+        {
             pathArrayXORandAdd(CSSSR, &ring);
+            if(CSSSR->size()>=n_sssr)
+                break;
+
+        }
         //C->clear();
         delete C;
+        if(CSSSR->size()>=n_sssr)
+            break;
     }
     
 
-    removeDuplicateRings(CSSSR);
+    //removeDuplicateRings(CSSSR);
 
     //printPathArray(CSSSR);
 
@@ -441,9 +471,28 @@ void printRingElementsArray(ringElementsArray *ringarray)
 
 void appendPathArray(pathArray* arr1, pathArray* arr2)
 {
+    //arr1->insert(arr1->end(),arr2->begin(), arr2->end());
+    // for(auto x: *arr1)
+    //     removeDuplicateEdgePairs(&x);
+    pathArray temp=*arr1;
+    for(auto x: temp)
+        for(auto y: *arr2)
+            if(!pathIntersection(&x,&y))
+                arr1->push_back(y);
+
+}
+
+void appendPathArrayWithoutCheck(pathArray* arr1, pathArray* arr2)
+{
     arr1->insert(arr1->end(),arr2->begin(), arr2->end());
     // for(auto x: *arr1)
     //     removeDuplicateEdgePairs(&x);
+    // pathArray temp=*arr1;
+    // for(auto x: temp)
+    //     for(auto y: *arr2)
+    //         if(!pathIntersection(&x,&y))
+    //             arr1->push_back(y);
+
 }
 
 pathArray *addPathArray(pathArray* arr1, pathArray* arr2)
@@ -452,12 +501,38 @@ pathArray *addPathArray(pathArray* arr1, pathArray* arr2)
     path temp;
     for(auto x: *arr1)
     {
+        int unique=1;
+        for(auto z: *arr)
+            if(pathIntersection(&x,&z))
+            {
+                unique=0;
+                break;
+            }
+
+        if(!unique)
+            continue;
+
         for(auto y: *arr2)
         {
-            temp=x;
-            temp.insert(temp.end(),y.begin(), y.end());
-            arr->push_back(temp);
-            temp.clear();
+            unique=1;
+            for(auto z: *arr)
+                if(pathIntersection(&y,&z))
+                {
+                    unique=0;
+                    break;
+                }
+
+            if(!unique)
+                continue;
+
+            if(!pathIntersection(&x,&y))
+            {
+                temp=x;
+                temp.insert(temp.end(),y.begin(), y.end());
+                arr->push_back(temp);
+            }
+
+            //temp.clear();
         }
     }
     // for(auto x: *arr)
@@ -496,9 +571,17 @@ pathArray *addPathArrayWithoutCommonElements(pathArray* arr1, pathArray* arr2)
             if(!pathIntersection(&x,&y))
             {
                 temp=x;
+                //int unique=1;
                 temp.insert(temp.end(),y.begin(), y.end());
+                // for(auto z: *arr)
+                //     if(pathIntersection(&z,&temp))
+                //     {
+                //         unique=0;
+                //         break;
+                //     }
+                // if(unique)
                 arr->push_back(temp);
-                temp.clear();
+                //temp.clear();
             }
         }
     }
@@ -512,7 +595,7 @@ pathArray *addPathArrayWithoutCommonElements(pathArray* arr1, pathArray* arr2)
 
 void pathArrayXORandAdd(pathArray *CSSSR, path *ring)
 {
-    sort(ring->begin(), ring->end(), comp());
+    //sort(ring->begin(), ring->end(), comp());
     // printf("Stopped before removing duplicates\n");
     // printpath(ring);
     //removeDuplicateEdgePairs(ring);
@@ -520,14 +603,14 @@ void pathArrayXORandAdd(pathArray *CSSSR, path *ring)
     int insert_flag=1;
     for(auto x: *CSSSR)
     {
-        if(x==*ring)
+        if(ringSubset(&x,ring))
         {
             insert_flag=0;
             break;
         }
     }
     if(insert_flag)
-    CSSSR->push_back(*ring);
+        CSSSR->push_back(*ring);
 }
 
 

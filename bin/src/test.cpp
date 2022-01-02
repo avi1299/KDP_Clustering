@@ -186,6 +186,9 @@ int main(int argc,char *argv[])
     static int SOL_ION_adjacency_matrix[MAX_SOL][MAX_MOLECULES];
     static int cluster_COUNTERION_matrix[MAX_MOLECULES][MAX_MOLECULES];
     static int cluster_SOL_matrix[MAX_MOLECULES][MAX_SOL];
+    //static int ringDistribution[(RING_LENGTH_CUTOFF+1)*2];
+
+    //printf("after static\n");
 
     //Ring analysis
     static int D[MAX_MOLECULES][MAX_MOLECULES];
@@ -278,8 +281,17 @@ int main(int argc,char *argv[])
 
     //conf_number=1;
 
-    fprintf(fp_csv,"Conf,CNo.,ION,CION,SOL\n");
-    
+
+    //Headers for Result.csv
+    fprintf(fp_csv,"Conf,CNo.,ION,CION,SOL");
+    if(ring_flag)
+        for(i=3;i<=RING_LENGTH_CUTOFF*2+1;i++)
+            fprintf(fp_csv,",R%d",i);
+    fprintf(fp_csv,"\n");
+
+    //printf("after headers\n");
+
+
     for(conf=0;conf<conf_true;conf++)
     {
         if (verbose_level>=1)
@@ -396,7 +408,7 @@ int main(int argc,char *argv[])
         }
 
         for(i=0;i<=MAX_CONNECTIONS;i++)
-            connectedness[i]=0;    
+            connectedness[i]=0;   
 
         for(i=0;i<no_of_molecules;i++)
         {
@@ -691,8 +703,25 @@ int main(int argc,char *argv[])
         /*--------------------------END: clustering calculations------------------*/
 
         /*-----------------------START: Output PDB------------------*/
+        //printf("before output\n");
         for(i=0;i<number_of_clusters;i++)
-            fprintf(fp_csv,"%d, %d, %d, %d, %d\n",conf,i,clusters[i].ION_list_size,clusters[i].COUNTERION_list_size,clusters[i].SOL_list_size);
+        {
+            // for(i=3;i<=(2*RING_LENGTH_CUTOFF+1);i++)
+            //     ringDistribution[i]=0;
+            fprintf(fp_csv,"%d, %d, %d, %d, %d",conf,i,clusters[i].ION_list_size,clusters[i].COUNTERION_list_size,clusters[i].SOL_list_size);
+            if(ring_flag)
+            {
+                int ringDistribution[(RING_LENGTH_CUTOFF+1)*2]={0};
+                for(auto x: clusters[i].ringElements)
+                    ringDistribution[x.size()]++;
+                for(j=3;j<=RING_LENGTH_CUTOFF*2+1;j++)
+                    fprintf(fp_csv,", %d",ringDistribution[j]);
+            }
+                
+                    
+            fprintf(fp_csv,"\n");
+        }
+        //printf("after output\n");
         
         if(threshold_flag==0)
             threshold=cluster_max_size;
