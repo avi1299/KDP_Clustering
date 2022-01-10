@@ -170,6 +170,7 @@ int main(int argc,char *argv[])
     FILE *fp_ring=fopen("ring_statistics.dat","w");
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
     FILE *fp_Kstats=fopen("Kstatistics.dat","w");
+    FILE *fp_SOLstats=fopen("SOLstats.dat","w");
     //FILE *fp_testout=fopen("check.pdb","w");
     FILE *fp_csv=fopen("Results.csv","w");
     /*------------------------- END: read the arguments-------------------------*/
@@ -288,6 +289,10 @@ int main(int argc,char *argv[])
         for(i=3;i<=RING_LENGTH_CUTOFF*2+1;i++)
             fprintf(fp_csv,",R%d",i);
     fprintf(fp_csv,"\n");
+
+    for(i=0;i<14;i++)
+        fprintf(fp_SOLstats,"S%d, ",i);
+    fprintf(fp_SOLstats,"S%d\n",14);
 
     //printf("after headers\n");
 
@@ -659,6 +664,31 @@ int main(int argc,char *argv[])
         //         }
         // printf("Acutal: %d\n",count);
 
+        int SOL_CNo[no_of_SOL]={0};
+        int SOL_connection_distribution[15]={0};
+        //#pragma omp parallel for
+        for(j=0;j<no_of_SOL;j++)
+        {
+            int sum=0;
+            for(i=0;i<number_of_clusters;i++)
+            {
+                sum+=cluster_SOL_matrix[i][j];
+            }
+            if(sum>=15)
+            {
+                printf("Too many waters\n");
+                exit(1);
+            }
+            SOL_CNo[j]=sum;
+            SOL_connection_distribution[sum]++;
+        }
+        
+
+
+        for(i=0;i<14;i++)
+            fprintf(fp_SOLstats,"%d, ",SOL_connection_distribution[i]);
+        fprintf(fp_SOLstats,"%d\n",SOL_connection_distribution[14]);
+
 
         if(ring_flag)
         {
@@ -739,6 +769,7 @@ int main(int argc,char *argv[])
             //printf("No of K mols in cluster =%d\n",number_of_K_molecules_in_cluster);
             //fprintf_conf_PDB(fp_out,mol_start,cluster,number_of_clusters,threshold,greater_than_flag,number_of_K_molecules_in_cluster);
             fprintf_all(fp_out,mol_start,Kmol_start, SOLmol_start, clusters, number_of_clusters, threshold, greater_than_flag);
+            //fprintf_SOL_to_ION_coordination_number(fp_out,mol_start,Kmol_start, SOLmol_start, SOL_CNo, clusters, number_of_clusters, threshold, greater_than_flag);
 
         }
 
@@ -893,6 +924,7 @@ int main(int argc,char *argv[])
     fclose(fp_cms);
     fclose(fp_ring);
     fclose(fp_Kstats);
+    fclose(fp_SOLstats);
     //fclose(fp_testout);
     fclose(fp_csv);
 

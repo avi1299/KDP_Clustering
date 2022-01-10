@@ -124,6 +124,65 @@ void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SO
                 }
         }
         fprintf(fp_out,"END\n");
+}
 
-
+void fprintf_SOL_to_ION_coordination_number(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SOLmolecules[], int SOL_CNo[], t_cluster* clusters, int number_of_clusters, int threshold, int greater_than_flag)
+{
+        int mol_num=1;
+        int atom_num=1;
+        int i,j;
+        int mol;
+        for(i=0;i<number_of_clusters;i++)
+        {
+                if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
+                {
+                        for(j=0;j<clusters[i].ION_list_size;j++)
+                        {
+                                mol=clusters[i].ION_list[j];
+                                fprintf(fp_out, "ATOM  %5d  PL  HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[PL][0],molecules[mol].posn[PL][1],molecules[mol].posn[PL][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  OHL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[OHL_1][0],molecules[mol].posn[OHL_1][1],molecules[mol].posn[OHL_1][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  HOL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[HOL_1][0],molecules[mol].posn[HOL_1][1],molecules[mol].posn[HOL_1][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  OHL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[OHL_2][0],molecules[mol].posn[OHL_2][1],molecules[mol].posn[OHL_2][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  HOL HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[HOL_2][0],molecules[mol].posn[HOL_2][1],molecules[mol].posn[HOL_2][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  O2L HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[O2L_1][0],molecules[mol].posn[O2L_1][1],molecules[mol].posn[O2L_1][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  O2L HPO X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num,  mol_num,molecules[mol].posn[O2L_2][0],molecules[mol].posn[O2L_2][1],molecules[mol].posn[O2L_2][2]);
+                                atom_num++;
+                                mol_num++;
+                        }
+                }
+        }
+        for(i=0;i<number_of_clusters;i++)
+        {
+                if(((greater_than_flag)&&(clusters[i].ION_list_size>=threshold))||((!greater_than_flag)&&(clusters[i].ION_list_size==threshold)))
+                {
+                        for(j=0;j<clusters[i].SOL_list_size;j++)
+                        {
+                                mol=clusters[i].SOL_list[j];
+                                fprintf(fp_out, "ATOM  %5d  OW  SO%d X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num, SOL_CNo[mol], mol_num,SOLmolecules[mol].posn[OW][0],SOLmolecules[mol].posn[OW][1],SOLmolecules[mol].posn[OW][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  HW1 SO%d X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num, SOL_CNo[mol],  mol_num,SOLmolecules[mol].posn[HW1][0],SOLmolecules[mol].posn[HW1][1],SOLmolecules[mol].posn[HW1][2]);
+                                atom_num++;
+                                fprintf(fp_out, "ATOM  %5d  HW2 SO%d X%4d   %8.3lf%8.3lf%8.3lf  0.00  0.00\n",
+                                        atom_num, SOL_CNo[mol],  mol_num,SOLmolecules[mol].posn[HW2][0],SOLmolecules[mol].posn[HW2][1],SOLmolecules[mol].posn[HW2][2]);
+                                atom_num++;
+                                mol_num++;
+                        }
+                }
+        }
+        fprintf(fp_out,"END\n");
 }

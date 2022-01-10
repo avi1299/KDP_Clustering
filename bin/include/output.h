@@ -32,4 +32,6 @@ void fprintf_all(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SO
  */
 void fprintf_conf_PDB(FILE* fp_out,ION molecules[],stack clusters[],int number_of_clusters, int threshold, int greater_than_flag, int HPO_start_no);
 
+void fprintf_SOL_to_ION_coordination_number(FILE* fp_out,ION molecules[],COUNTERION CIONmolecules[], SOL SOLmolecules[], int SOL_CNo[], t_cluster* clusters, int number_of_clusters, int threshold, int greater_than_flag);
+
 #endif
