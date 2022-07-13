@@ -63,6 +63,8 @@ minicell_pdb: clusterIt
 minicell_xtc: clusterIt
 	./clusterIt -f ../ExampleData/avi_M1.xtc -t ../ExampleData/run2.top -o ../ExampleData/minicell_xtc.pdb
 
+three_ring: clusterIt
+	./clusterIt -f ../ExampleData/three_ring.pdb -r -b -d -v4
 
 bsh: clusterIt
 	./clusterIt -f ../ExampleData/M1B_Sh_avi.xtc -t ../ExampleData/run156.top -o ../ExampleData/M1B_Sh_out.pdb -m 10 

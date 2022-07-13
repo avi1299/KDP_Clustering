@@ -171,6 +171,7 @@ int main(int argc,char *argv[])
     FILE *fp_cms=fopen("cluster_max_size.dat","w");
     FILE *fp_Kstats=fopen("Kstatistics.dat","w");
     FILE *fp_SOLstats=fopen("SOLstats.dat","w");
+    FILE *fp_CIONstats=fopen("CIONstats.dat","w");
     //FILE *fp_testout=fopen("check.pdb","w");
     FILE *fp_csv=fopen("Results.csv","w");
     /*------------------------- END: read the arguments-------------------------*/
@@ -284,7 +285,7 @@ int main(int argc,char *argv[])
 
 
     //Headers for Result.csv
-    fprintf(fp_csv,"Conf,CNo.,ION,CION,SOL");
+    fprintf(fp_csv,"Conf,CNo.,ION,CION,IntCION,SOL,IntSOL");
     if(ring_flag)
         for(i=3;i<=RING_LENGTH_CUTOFF*2+1;i++)
             fprintf(fp_csv,",R%d",i);
@@ -293,6 +294,10 @@ int main(int argc,char *argv[])
     for(i=0;i<14;i++)
         fprintf(fp_SOLstats,"S%d, ",i);
     fprintf(fp_SOLstats,"S%d\n",14);
+
+    for(i=0;i<9;i++)
+        fprintf(fp_CIONstats,"C%d, ",i);
+    fprintf(fp_CIONstats,"C%d\n",9);
 
     //printf("after headers\n");
 
@@ -652,6 +657,31 @@ int main(int argc,char *argv[])
             add_COUNTERION_to_cluster(Kadjacency_matrix, cluster_COUNTERION_matrix,no_of_molecules, no_of_molecules,clusters,number_of_clusters);
         //printf("Done with cion\n");
 
+        int CION_CNo[no_of_molecules]={0};
+        int CION_connection_distribution[10]={0};
+        //#pragma omp parallel for
+        for(j=0;j<no_of_molecules;j++)
+        {
+            int sum=0;
+            for(i=0;i<number_of_clusters;i++)
+            {
+                sum+=cluster_COUNTERION_matrix[i][j];
+            }
+            if(sum>=10)
+            {
+                printf("Too many CION\n");
+                exit(1);
+            }
+            CION_CNo[j]=sum;
+            CION_connection_distribution[sum]++;
+        }
+        
+
+
+        for(i=0;i<9;i++)
+            fprintf(fp_CIONstats,"%d, ",CION_connection_distribution[i]);
+        fprintf(fp_CIONstats,"%d\n",CION_connection_distribution[9]);
+
         if(SOL_flag)
             add_SOL_to_cluster(SOL_ION_adjacency_matrix, cluster_SOL_matrix,no_of_molecules, no_of_SOL,clusters,number_of_clusters);
         // int count=0;
@@ -738,7 +768,14 @@ int main(int argc,char *argv[])
         {
             // for(i=3;i<=(2*RING_LENGTH_CUTOFF+1);i++)
             //     ringDistribution[i]=0;
-            fprintf(fp_csv,"%d, %d, %d, %d, %d",conf,i,clusters[i].ION_list_size,clusters[i].COUNTERION_list_size,clusters[i].SOL_list_size);
+            int internal_SOL=0,internal_CION=0;
+            for(j=0;j<no_of_SOL;j++)
+                if(cluster_SOL_matrix[i][j]>=INTERNAL_SOL_NEIGHBOURS)
+                    internal_SOL++;
+            for(j=0;j<no_of_molecules;j++)
+                if(cluster_COUNTERION_matrix[i][j]>=INTERNAL_CION_NEIGHBOURS)
+                    internal_CION++;
+            fprintf(fp_csv,"%d, %d, %d, %d, %d, %d, %d",conf,i,clusters[i].ION_list_size,clusters[i].COUNTERION_list_size,internal_CION,clusters[i].SOL_list_size,internal_SOL);
             if(ring_flag)
             {
                 int ringDistribution[(RING_LENGTH_CUTOFF+1)*2]={0};
@@ -925,6 +962,7 @@ int main(int argc,char *argv[])
     fclose(fp_ring);
     fclose(fp_Kstats);
     fclose(fp_SOLstats);
+    fclose(fp_CIONstats);
     //fclose(fp_testout);
     fclose(fp_csv);
 

@@ -13,7 +13,7 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
         final_ION_list[i]=ION_list[i];
     //printf("orig List size: %d\n",no_of_molecules);
     purgeAppendages(adjacency_matrix, final_ION_list, &no_of_molecules);
-    //printf("purged List size: %d\n",no_of_molecules);
+    // printf("purged List size: %d\n",no_of_molecules);
     if(no_of_molecules<3)
         return;
 
@@ -23,10 +23,52 @@ void ringDriver(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* ION_
     for(int i=0;i<no_of_molecules-1;i++)
         for(int j=i+1;j<no_of_molecules;j++)
             if(D[i][j]==1)
+                //printf("%d %d\n",i,j);
                 n_sssr++;
+
+    //printf("D[2][3]:%d\n",D[2][3]);
+    // printf("Undirected Adjacency matrix\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",adjacency_matrix[UNDIRECTED_GRAPH][i][j]);
+    //     printf("\n");
+    // }
+
+    // printf("Distance matrix\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",D[i][j]);
+    //     printf("\n");
+    // }
+
+    // printf("P pathsize matrix\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",P[i][j]->size());
+    //     printf("\n");
+    // }
+
+    // printf("P_dash pathsize matrix\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",P_dash[i][j]->size());
+    //     printf("\n");
+    // }
+        
+        
+
+    // printf("Number of rings according to Euler's rule: %d\n",n_sssr);            
             
     
     ringCandidateSearch(CSet, no_of_molecules, D,P,P_dash);
+
+    // printf("Number of RingCandidates: %d\n",CSet->size());
+
+
     
     //printf("Problem is nnot here\n");
     findSSSR(CSSSR,CSet,n_sssr);
@@ -241,6 +283,8 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
     int strong_level=WEAK;
     if(strong_flag)
         strong_level=STRONG;
+
+    //printf("Strong level: %d\n",strong_level);
     #pragma omp parallel for private(s,j)
     for(i=0;i<no_of_molecules;i++)
         for(j=0;j<no_of_molecules;j++)
@@ -280,7 +324,7 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
     // for(i=0;i<no_of_molecules;i++)
     //     for(j=0;j<no_of_molecules;j++)
     //     {
-    //         //printf("pathArray from %d to %d:\n", i, j);
+    //         printf("pathArray from %d to %d:\n", i, j);
     //         printPathArray(P[i][j]);
     //     }
 
@@ -315,9 +359,36 @@ void makePIDmatrix(int adjacency_matrix[2][MAX_MOLECULES][MAX_MOLECULES], int* I
                     {
                         temp=addPathArray(P[i][k],P[k][j]);
                         appendPathArray(P_dash[i][j],temp);
+                        // printf("Triggered\n");
+                        // printPathArray(P_dash[i][j]);
                         delete temp;
                     }
                 }
+
+
+    // printf("Distance matrix inside\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",D[i][j]);
+    //     printf("\n");
+    // }
+
+    // printf("P pathsize matrix inside\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",P[i][j]->size());
+    //     printf("\n");
+    // }
+
+    // printf("P_dash pathsize matrix inside\n");
+    // for(int i=0;i<no_of_molecules;i++)
+    // {
+    //     for(int j=0;j<no_of_molecules;j++)
+    //         printf("%d ",P_dash[i][j]->size());
+    //     printf("\n");
+    // }
     
     // for(i=0;i<no_of_molecules;i++)
     //     for(j=0;j<no_of_molecules;j++)
@@ -474,6 +545,12 @@ void appendPathArray(pathArray* arr1, pathArray* arr2)
     //arr1->insert(arr1->end(),arr2->begin(), arr2->end());
     // for(auto x: *arr1)
     //     removeDuplicateEdgePairs(&x);
+    if(arr2->size()==0)
+        return;
+    if(arr1->size()==0)
+        for(auto y: *arr2)
+            arr1->push_back(y);
+
     pathArray temp=*arr1;
     for(auto x: temp)
         for(auto y: *arr2)

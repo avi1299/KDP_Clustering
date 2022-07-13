@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define RING_LENGTH_CUTOFF 4
+#define RING_LENGTH_CUTOFF 6
 
 typedef pair<int,int> edge;
 typedef vector<edge> path;

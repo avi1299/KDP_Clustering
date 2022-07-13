@@ -40,6 +40,10 @@ typedef double coordinates[3];
 
 #define SOL_ATOM_COUNT H2O_ATOM_COUNT
 
+#define INTERNAL_SOL_NEIGHBOURS 3
+
+#define INTERNAL_CION_NEIGHBOURS 4
+
  /* ------- Defining the molecules that will become the IONS, COUNTERIONS and SOL---------- */
 
 typedef struct
